@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Skill · 一分钟掌握</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #6c757d;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --border: #e5e7eb;
+      --ok: #16a34a;
+      --ok-bg: #f0fdf4;
+      --bad: #dc2626;
+      --bad-bg: #fef2f2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 24px 16px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 32px; }
+    header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+    header p { color: var(--muted); margin-top: 6px; font-size: 15px; }
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card h2 { font-size: 17px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .card h2 span { font-size: 15px; }
+
+    .point {
+      border-left: 3px solid var(--accent);
+      padding-left: 14px;
+      margin-bottom: 14px;
+      cursor: pointer;
+    }
+    .point:last-child { margin-bottom: 0; }
+    .point h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .point .lead { color: var(--muted); font-size: 14px; }
+    .point .detail {
+      display: none;
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .point.open .detail { display: block; }
+    .point.open .lead { color: var(--text); }
+
+    .tree {
+      background: var(--accent-light);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.9;
+      color: #1e3a8a;
+    }
+    .tree .dir { color: var(--accent); font-weight: 600; }
+    .tree .file { color: var(--text); }
+    .tree .note { color: var(--muted); font-size: 12px; margin-left: 8px; }
+
+    #quiz { margin-top: 28px; }
+    #quiz .level-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    #quiz .question { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    #quiz .options button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    #quiz .options button:hover { border-color: var(--accent); background: var(--accent-light); }
+    #quiz .options button.correct { border-color: var(--ok); background: var(--ok-bg); }
+    #quiz .options button.wrong { border-color: var(--bad); background: var(--bad-bg); }
+    #quiz .feedback {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    #quiz .feedback.show { display: block; }
+    #quiz .feedback.ok { background: var(--ok-bg); color: #14532d; }
+    #quiz .feedback.bad { background: var(--bad-bg); color: #7f1d1d; }
+    #quiz .next {
+      margin-top: 12px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+    }
+    #quiz .next.show { display: inline-block; }
+
+    .progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .progress .dot {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+    }
+    .progress .dot.done { background: var(--accent); }
+
+    footer {
+      margin-top: 32px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="badge">1 分钟课程</div>
+      <h1>Agent Skill 是什么？</h1>
+      <p>把 Agent 从“通才”变成“专家”的小册子</p>
+    </header>
+
+    <section class="card">
+      <h2><span>01</span> 一句话定义</h2>
+      <p>Skill 是 <strong>给 Agent 看的任务说明书</strong>。它告诉 Agent：什么时候该出场、具体怎么做、需要调用哪些工具。</p>
+    </section>
+
+    <section class="card">
+      <h2><span>02</span> 三个核心点（点击展开）</h2>
+      <div class="point" onclick="this.classList.toggle('open')">
+        <h3>Skill 是一个目录</h3>
+        <div class="lead">不是单文件，而是一个文件夹。</div>
+        <div class="detail">目录里必须包含 <code>SKILL.md</code>，还可以放 <code>scripts/</code>、<code>references/</code>、<code>assets/</code>。Agent 根据任务需要决定加载哪部分。</div>
+      </div>
+      <div class="point" onclick="this.classList.toggle('open')">
+        <h3>SKILL.md 决定触发时机</h3>
+        <div class="lead">开头的 name + description 是“触发器”。</div>
+        <div class="detail">当用户说的话匹配 description 描述的场景时，Agent 就会加载这个 skill。写得不清晰，Agent 就永远不会用它。</div>
+      </div>
+      <div class="point" onclick="this.classList.toggle('open')">
+        <h3>分三级加载</h3>
+        <div class="lead">省 token，也省认知负担。</div>
+        <div class="detail">① 元数据（name+description）常驻上下文；② SKILL.md 正文触发时加载；③ scripts/references/assets 按需加载。</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span>03</span> 目录长什么样</h2>
+      <div class="tree">
+        <div><span class="dir">my-skill/</span></div>
+        <div>&nbsp;&nbsp;├── <span class="file">SKILL.md</span> <span class="note">← 必须。YAML 头 + 流程说明</span></div>
+        <div>&nbsp;&nbsp;├── <span class="dir">scripts/</span> <span class="note">← 可复用脚本（Python / Bash）</span></div>
+        <div>&nbsp;&nbsp;├── <span class="dir">references/</span> <span class="note">← 参考资料，按需加载</span></div>
+        <div>&nbsp;&nbsp;└── <span class="dir">assets/</span> <span class="note">← 模板、图片等输出资源</span></div>
+      </div>
+    </section>
+
+    <section class="card" id="quiz">
+      <h2><span>04</span> 分层测试 · 每次一题</h2>
+      <div class="progress" id="progress"></div>
+      <div class="level-tag" id="levelTag">Level 1 · 基础</div>
+      <div class="question" id="questionText">加载中…</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next" id="nextBtn" onclick="nextQuestion()">下一题</button>
+    </section>
+
+    <footer>
+      <p><strong>知识来源：</strong></p>
+      <ul style="margin:8px 0 0 18px; line-height:2;">
+        <li>WorkBuddy Skill Creator 官方文档：<a href="https://www.workbuddy.cn/docs/workbuddy/Skills" target="_blank">workbuddy.cn/docs/workbuddy/Skills</a></li>
+        <li>本地 skill-creator SKILL.md：<code>~/.workbuddy/plugins/cache/workbuddy-builtin/skill-skill-creator/0.1.0/SKILL.md</code></li>
+      </ul>
+    </footer>
+  </div>
+
+  <script>
+    const levels = [
+      {
+        name: "Level 1 · 基础",
+        questions: [
+          {
+            q: "Agent Skill 本质上是什么？",
+            options: ["一个可执行程序", "给 Agent 看的任务说明书", "一个聊天窗口", "一种 AI 模型"],
+            correct: 1,
+            explain: "Skill 不是程序本身，而是告诉 Agent 何时、如何、用什么工具完成任务的说明书。"
+          },
+          {
+            q: "一个 Skill 目录里必须包含哪个文件？",
+            options: ["README.md", "index.html", "SKILL.md", "package.json"],
+            correct: 2,
+            explain: "SKILL.md 是必需的，包含 YAML 元数据和 Markdown 执行说明。"
+          }
+        ]
+      },
+      {
+        name: "Level 2 · 进阶",
+        questions: [
+          {
+            q: "SKILL.md 开头的 name + description 主要起什么作用？",
+            options: ["给人类阅读", "决定 Agent 何时加载这个 skill", "声明版权", "配置 API 密钥"],
+            correct: 1,
+            explain: "name 和 description 是触发器：用户请求匹配描述时，Agent 才会加载这个 skill。"
+          },
+          {
+            q: "references/ 目录适合放什么？",
+            options: ["可执行脚本", "临时缓存", "文档/知识，按需加载", "用户头像"],
+            correct: 2,
+            explain: "references/ 用于存放 Agent 执行时可能需要参考的文档、schema、政策等。"
+          }
+        ]
+      },
+      {
+        name: "Level 3 · 应用",
+        questions: [
+          {
+            q: "当 Agent 首次判断是否需要调用某个 skill 时，会优先读取什么？",
+            options: ["整个 SKILL.md 正文", "scripts/ 下所有脚本", "YAML 元数据（name + description）", "assets/ 里的图片"],
+            correct: 2,
+            explain: "三级加载：元数据常驻上下文，正文触发时加载，资源按需加载，避免浪费 token。"
+          },
+          {
+            q: "想让团队共享同一个 skill，应该放在哪？",
+            options: ["用户目录 ~/.workbuddy/skills/", "项目目录 .workbuddy/skills/", "系统目录 /usr/local/", "浏览器书签"],
+            correct: 1,
+            explain: "项目级 skill 放在 .workbuddy/skills/，会随仓库一起共享给协作者。"
+          }
+        ]
+      }
+    ];
+
+    let level = 0;
+    let qIndex = 0;
+    let current = null;
+    let answered = false;
+    const answeredPerLevel = [0, 0, 0];
+
+    function initProgress() {
+      const p = document.getElementById('progress');
+      p.innerHTML = levels.map((_, i) => `<div class="dot" id="dot${i}"></div>`).join('');
+    }
+
+    function updateProgress() {
+      for (let i = 0; i < levels.length; i++) {
+        document.getElementById(`dot${i}`).classList.toggle('done', i < level || (i === level && answeredPerLevel[i] >= levels[i].questions.length));
+      }
+    }
+
+    function renderQuestion() {
+      answered = false;
+      current = levels[level].questions[qIndex];
+      document.getElementById('levelTag').textContent = levels[level].name;
+      document.getElementById('questionText').textContent = current.q;
+      const opts = document.getElementById('options');
+      opts.innerHTML = current.options.map((opt, i) =>
+        `<button onclick="checkAnswer(${i}, this)">${String.fromCharCode(65 + i)}. ${opt}</button>`
+      ).join('');
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('nextBtn').classList.remove('show');
+      updateProgress();
+    }
+
+    function checkAnswer(idx, btn) {
+      if (answered) return;
+      answered = true;
+      const btns = document.querySelectorAll('#options button');
+      btns.forEach(b => b.disabled = true);
+      const fb = document.getElementById('feedback');
+      if (idx === current.correct) {
+        btn.classList.add('correct');
+        fb.className = 'feedback show ok';
+        fb.textContent = '✓ 正确。' + current.explain;
+        answeredPerLevel[level]++;
+        updateProgress();
+        document.getElementById('nextBtn').classList.add('show');
+      } else {
+        btn.classList.add('wrong');
+        btns[current.correct].classList.add('correct');
+        fb.className = 'feedback show bad';
+        fb.textContent = '✗ 不对。' + current.explain;
+        document.getElementById('nextBtn').classList.add('show');
+      }
+    }
+
+    function nextQuestion() {
+      // 如果答错，降级
+      if (!document.querySelector('#options button.wrong')) {
+        // 答对：本层还有没有题？
+        if (qIndex + 1 < levels[level].questions.length) {
+          qIndex++;
+        } else if (level + 1 < levels.length) {
+          level++;
+          qIndex = 0;
+        } else {
+          finishQuiz();
+          return;
+        }
+      } else {
+        // 答错：降级到第一层第一题
+        level = 0;
+        qIndex = 0;
+      }
+      renderQuestion();
+    }
+
+    function finishQuiz() {
+      document.getElementById('quiz').innerHTML = `
+        <h2><span>04</span> 分层测试 · 每次一题</h2>
+        <div style="text-align:center; padding: 20px 0;">
+          <div style="font-size: 40px; margin-bottom: 10px;">🎉</div>
+          <p style="font-size: 16px; font-weight: 600;">全部通关！</p>
+          <p style="font-size: 14px; color: var(--muted); margin-top: 6px;">你已经掌握了 Agent Skill 的核心概念。</p>
+          <button class="next show" style="margin-top: 16px;" onclick="location.reload()">重新测试</button>
+        </div>
+      `;
+    }
+
+    initProgress();
+    renderQuestion();
+  </script>
+</body>
+</html>
