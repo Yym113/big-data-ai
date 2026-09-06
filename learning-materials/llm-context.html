@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大模型的上下文（LLM Context）—— 个人学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2a6d4f;
+      --accent-bg: #ebf6f0;
+      --link: #1d5b9c;
+      --good: #2f7d3a;
+      --code-bg: #f3f1ea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+    header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    nav {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+    }
+    nav h2 { margin: 0 0 8px; font-size: 1rem; color: var(--muted); }
+    nav ul { margin: 0; padding-left: 20px; }
+    nav li { margin: 2px 0; }
+    nav a { color: var(--link); text-decoration: none; }
+    nav a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.2em; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      margin: 12px 0;
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-style: normal;
+    }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; }
+    pre code { display: block; padding: 12px; overflow-x: auto; }
+    a { color: var(--link); }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .check-list { list-style: none; padding-left: 0; }
+    .check-list li::before { content: "□ "; font-weight: bold; color: var(--muted); }
+    .check-list li.done::before { content: "✓ "; color: var(--good); font-weight: bold; }
+    .source-list { padding-left: 0; list-style: none; }
+    .source-list li { margin: 8px 0; padding-left: 22px; position: relative; }
+    .source-list li::before { content: "↗"; position: absolute; left: 0; color: var(--link); font-weight: bold; }
+    footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>大模型的上下文（LLM Context）</h1>
+    <p class="subtitle">概念学习资料 · 入门 · 由 concept-unpacker Skill 生成 · 经本人核查</p>
+  </header>
+
+  <nav>
+    <h2>目录</h2>
+    <ul>
+      <li><a href="#intro">01 个人理解</a></li>
+      <li><a href="#goals">02 学习目标</a></li>
+      <li><a href="#questions">03 核心问题</a></li>
+      <li><a href="#explain">04 结构化解释</a></li>
+      <li><a href="#examples">05 应用场景</a></li>
+      <li><a href="#boundaries">06 概念辨析 / 边界</a></li>
+      <li><a href="#self-test">07 自测问题</a></li>
+      <li><a href="#sources">08 可核查的参考来源</a></li>
+      <li><a href="#verify">09 核查记录</a></li>
+    </ul>
+  </nav>
+
+  <section id="intro">
+    <h2>01 · 个人理解</h2>
+    <p>我对「大模型的上下文」的人话版定义：</p>
+    <blockquote>
+      Context = 模型某一次「看」进来的<b>所有 token 序列</b>。它包含 system 提示、对话历史、检索回来的文档、工具返回结果、以及当前用户输入。
+    </blockquote>
+    <p>如果只能记一句话：<b>LLM 是 stateless 的，每一轮对话的「记忆」不是模型记住的，而是你自己把过去的内容再次塞回 context</b>。所以限制 context 窗口长度 = 限制了模型的「工作记忆」。</p>
+  </section>
+
+  <section id="goals">
+    <h2>02 · 学习目标</h2>
+    <ol>
+      <li>用一句话准确说出「context 是什么」</li>
+      <li>区分 <b>context</b>、<b>prompt</b>、<b>memory</b> 三个常被混用的词</li>
+      <li>理解 token、context window、注意力机制三者之间的关系</li>
+      <li>知道「lost in the middle」现象及其工程意义</li>
+      <li>会用「context engineering」这个视角设计 RAG、长文档总结等任务</li>
+    </ol>
+  </section>
+
+  <section id="questions">
+    <h2>03 · 核心问题清单</h2>
+    <ol>
+      <li>context 和 prompt 是一回事吗？</li>
+      <li>token 是什么？为什么计费用 token 而不是字？</li>
+      <li>上下文窗口（context window）大小是怎么影响模型行为的？</li>
+      <li>「lost in the middle」具体发现了什么？</li>
+      <li>LLM 是怎么「读」context 的？（粗粒度的注意力机制原理）</li>
+      <li>为什么有时候多轮对话 LLM 会「忘记」早期说过的话？</li>
+      <li>RAG 是怎么「扩展」有效 context 的？</li>
+      <li>「system prompt」为什么是特殊的？</li>
+    </ol>
+  </section>
+
+  <section id="explain">
+    <h2>04 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <blockquote>
+      <b>Context =</b> 一次 LLM 调用中送入模型的全部 token 序列 = system 消息 + 历史消息 + 用户消息 + 工具结果（按 chat template 排好）。
+    </blockquote>
+
+    <h3>4.2 token 的最小模型</h3>
+    <p>模型不直接看「字」，看的是<b>token id 序列</b>。一段中文 / 英文 / 代码会被切成不同数量的 token。例（粗略值）：</p>
+    <ul>
+      <li>1 个 ASCII 字符 ≈ 0.25–0.5 token</li>
+      <li>1 个汉字 ≈ 1 token 左右（现代分词器常把 Bigram 拆开）</li>
+      <li>1 个英文单词 ≈ 1–2 token</li>
+    </ul>
+
+    <h3>4.3 三大组成（按角色分）</h3>
+    <table>
+      <thead>
+        <tr><th>角色</th><th>是谁写</th><th>常见内容</th><th>用户能否改</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>system</code></td><td>应用方</td><td>人设、规则、风格、可用工具清单</td><td>通常不能</td></tr>
+        <tr><td><code>user</code></td><td>用户</td><td>真实问题、追加的指令</td><td>能</td></tr>
+        <tr><td><code>assistant</code></td><td>模型</td><td>之前的回复</td><td>看不到</td></tr>
+        <tr><td><code>tool</code></td><td>运行时注入</td><td>工具调用结果（搜索、读文件…）</td><td>不能直接改</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 上下文窗口（Context Window）</h3>
+    <p>不是「模型看见的字数」，而是模型<b>一次性吃下去</b>的 token 上限。常见量级：</p>
+    <ul>
+      <li>GPT-3.5：4K → 16K</li>
+      <li>GPT-4 / Claude 2：~100K</li>
+      <li>Claude 3 / 后续 / Gemini 等：200K–1M+</li>
+    </ul>
+    <p class="meta">窗口变大 ≠ 窗口变好用。Liu et al. 2023 的 <i>Lost in the Middle</i> 论文显示：把相关信息放在 context 的<b>开头或结尾</b>，模型表现明显<b>优于</b>放在<b>中间</b>。</p>
+
+    <h3>4.5 「Lost in the Middle」—— 为什么信息摆放位置很重要</h3>
+    <blockquote>
+      论文：<i>Lost in the Middle: How Language Models Use Long Contexts</i>，Liu et al., 2023, arXiv:2307.03172。<br>
+      核心发现：在多文档 QA / KV-retrieval 任务里，相关信息出现在 context 中段时，性能会显著下降；即使专为长 context 设计的模型也不能幸免。
+    </blockquote>
+    <p>工程意义：</p>
+    <ul>
+      <li>RAG 检索结果要<b>重排序</b>，让最相关的放在最前 / 最后</li>
+      <li>长 prompt 里关键指令放 <b>system</b> 段或最末尾</li>
+      <li>不要假设模型在中间也能均匀利用</li>
+    </ul>
+
+    <h3>4.6 context engineering（上下文工程）</h3>
+    <p>现在工业界流行的提法（见 Anthropic 工程博客）：把 context 当成「可被工程化的对象」，手段包括：</p>
+    <ul>
+      <li><b>补全</b>：检索、工具结果注入（= RAG 的本质）</li>
+      <li><b>压缩</b>：长对话做摘要、剪枝</li>
+      <li><b>隔离</b>：把长信息放到子 Agent 的 context 里</li>
+      <li><b>排序</b>：对抗 lost-in-the-middle</li>
+    </ul>
+  </section>
+
+  <section id="examples">
+    <h2>05 · 应用场景</h2>
+
+    <h3>场景 A：RAG 问答</h3>
+    <p>用户问「公司去年发布的隐私政策第 3 条是什么？」系统先搜向量库，把 top-3 段落塞到 user 消息后面、再把问题给 LLM。Context 的下半截就被「外部知识」填满了。</p>
+
+    <h3>场景 B：多轮对话 + 工具调用</h3>
+    <p>Agent 调「查天气 API」时，结果以 <code>tool</code> 角色插回 context，让下一轮 LLM 能看到。这是 ReAct 范式的核心。</p>
+
+    <p class="meta">共同点：context 不只是「用户输入」，而是<b>应用层主动构造的、把 LLM 当成 reasoning kernel 所需要的全部信息</b>。</p>
+  </section>
+
+  <section id="boundaries">
+    <h2>06 · 概念辨析 / 边界</h2>
+    <ol>
+      <li><b>Context ≠ Prompt</b>：Prompt 是你写好的输入模板；Context 是 LLM 实际看到的 token 序列（包括自动加的 chat template header、隐藏的 system prompt 等）。</li>
+      <li><b>Context ≠ Memory</b>：Context 是 <b>per-call</b> 的；Memory 是跨调用持久存在的（如向量库、本地笔记文件）。</li>
+      <li><b>Context Window ≠ Max Output Tokens</b>：前者是输入上限，后者是单次输出上限，两者独立。</li>
+      <li><b>Context Window 大 ≠ 实际可用</b>：Lost in the Middle 表明窗口再大，中间位置的信息也可能被「浪费」。</li>
+      <li><b>Context 不解决「知识陈旧」</b>：模型的「权重知识」是训练截止日的；让 LLM 知道新事实只能靠塞到 context 里（RAG / 工具）。</li>
+    </ol>
+  </section>
+
+  <section id="self-test">
+    <h2>07 · 自测问题</h2>
+    <ol>
+      <li>
+        <b>上下文窗口和 token 是什么关系？</b><br>
+        <span class="meta">答：上下文窗口是单次调用允许的最大 token 数；token 是模型处理的最小单位。窗口限制了 context 的最大长度。</span>
+      </li>
+      <li>
+        <b>为什么 LLM 在长上下文中会出现「lost in the middle」？</b><br>
+        <span class="meta">答：经验性发现——attention 对中段位置的查询响应更弱（具体机制仍在研究中）；不论窗口多大，相关信息在中间时表现明显差于两端。</span>
+      </li>
+      <li>
+        <b>RAG 是怎么「扩展」上下文的？</b><br>
+        <span class="meta">答：RAG 并不真正扩大窗口，而是<b>用检索</b>把最相关的片段塞进当前 context，等价于「用 freshness 换 context 容量」。</span>
+      </li>
+      <li>
+        <b>context、prompt、memory 三个词的区别？</b><br>
+        <span class="meta">答：context = 实际喂进去的 token 序列；prompt = 你写的输入；memory = 跨调用持久保留、之后会被注入 context 的信息。</span>
+      </li>
+      <li>
+        <b>system 段为什么特殊？</b><br>
+        <span class="meta">答：多数 chat template 把 system 段当成「最优先指令」，且用户对话不会覆盖它；因此把规则、安全边界放在 system 而不是 user 更稳。</span>
+      </li>
+    </ol>
+  </section>
+
+  <section id="sources">
+    <h2>08 · 可核查的参考来源</h2>
+    <ul class="source-list">
+      <li>Liu et al., 2023, <i>Lost in the Middle: How Language Models Use Long Contexts</i>, arXiv:2307.03172 —— <a href="https://arxiv.org/abs/2307.03172">论文页</a> | DOI <a href="https://doi.org/10.48550/arXiv.2307.03172">10.48550/arXiv.2307.03172</a></li>
+      <li>Anthropic Engineering Blog: <a href="https://www.anthropic.com/news/context-engineering">Effective context engineering for AI agents</a></li>
+      <li>Wikipedia: <a href="https://en.wikipedia.org/wiki/Context_window">Context window</a>（token 化与窗口的科普；本词条访问当日 Wikipedia 不稳定，建议二次核验）</li>
+      <li>Hugging Face NLP Course —— Chapter 1 / Tokenization：<a href="https://huggingface.co/learn/nlp-course/chapter2">huggingface.co/learn/nlp-course/chapter2</a></li>
+      <li>OpenAI API Reference: <a href="https://platform.openai.com/docs/guides/text-generation">messages / chat completions</a></li>
+    </ul>
+  </section>
+
+  <section id="verify">
+    <h2>09 · 核查记录（AI 生成 + 人工核对）</h2>
+    <ul class="check-list">
+      <li class="done">Lost in the Middle 论文标题 / 作者 / 年份 / arXiv ID：用 WebFetch 在 arXiv 上核到。</li>
+      <li class="done">Liu et al. 的核心结论（信息放中间性能下降）= 论文摘要原文表述。</li>
+      <li class="done">Wikipedia 词条 <i>Context window</i> 本次 fetch 失败（网络层面 502），已在「参考来源」里显式标注「建议二次核验」。</li>
+      <li class="done">Anthropic 上下文工程博客 URL：人工核实，与该公司在 2025 年发布的工程经验文章相对应。</li>
+      <li class="done">token 计费的粗略数字（汉字 ≈1 token）：来自 tokenize 工具经验值，作为<b>量级参考</b>，不当作精确值用。</li>
+      <li>说本人「改写」不是直接抄：所有正文段落由本人对照论文摘要和教材概念重写。</li>
+    </ul>
+  </section>
+
+<footer>
+      生成者：concept-unpacker Skill · 由本人复核 · 学习资料 / 入门深度 · 适用 袁玉明 (Yym113) 的 big-data-ai 课程作业。
+    </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill（AI Agent 的可复用技能包）—— 个人学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #4a3d8c;
+      --accent-bg: #f0edf8;
+      --link: #1d5b9c;
+      --good: #2f7d3a;
+      --code-bg: #f3f1ea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+    header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    nav {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+    }
+    nav h2 { margin: 0 0 8px; font-size: 1rem; color: var(--muted); }
+    nav ul { margin: 0; padding-left: 20px; }
+    nav li { margin: 2px 0; }
+    nav a { color: var(--link); text-decoration: none; }
+    nav a:hover { text-decoration: underline;; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.2em; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      margin: 12px 0;
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-style: normal;
+    }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; }
+    pre code { display: block; padding: 12px; overflow-x: auto; }
+    a { color: var(--link); }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .check-list { list-style: none; padding-left: 0; }
+    .check-list li::before { content: "□ "; font-weight: bold; color: var(--muted); }
+    .check-list li.done::before { content: "✓ "; color: var(--good); font-weight: bold; }
+    .source-list { padding-left: 0; list-style: none; }
+    .source-list li { margin: 8px 0; padding-left: 22px; position: relative; }
+    .source-list li::before { content: "↗"; position: absolute; left: 0; color: var(--link); font-weight: bold; }
+    footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Skill（AI Agent 的可复用技能包）</h1>
+    <p class="subtitle">概念学习资料 · 入门 · 由 concept-unpacker Skill 生成 · 经本人核查</p>
+  </header>
+
+  <nav>
+    <h2>目录</h2>
+    <ul>
+      <li><a href="#intro">01 个人理解</a></li>
+      <li><a href="#goals">02 学习目标</a></li>
+      <li><a href="#questions">03 核心问题</a></li>
+      <li><a href="#explain">04 结构化解释</a></li>
+      <li><a href="#examples">05 应用场景</a></li>
+      <li><a href="#boundaries">06 概念辨析 / 边界</a></li>
+      <li><a href="#self-test">07 自测问题</a></li>
+      <li><a href="#sources">08 可核查的参考来源</a></li>
+      <li><a href="#verify">09 核查记录</a></li>
+    </ul>
+  </nav>
+
+  <section id="intro">
+    <h2>01 · 个人理解</h2>
+    <p>我对「Skill」的人话版定义：</p>
+    <blockquote>
+      Skill = 一个<b>带 YAML 元数据的目录</b>，里面装着「给 AI Agent 用的指令 + 可选脚本 + 可选资源」。它被激活时，指令文本会被注入到 context 里，等同于「一段模块化的说明书」。
+    </blockquote>
+    <p>如果只能记一句话：<b>Skill 是「被复用的 prompt 段 + 配套文件」——它不是改模型权重，而是临时往上下文里塞一段说明书</b>。</p>
+  </section>
+
+  <section id="goals">
+    <h2>02 · 学习目标</h2>
+    <ol>
+      <li>用一句话准确说出 Skill 的最小形态与官方定义</li>
+      <li>说出 SKILL.md 顶部 YAML 的<strong>两个必填字段</strong>和常见可选字段</li>
+      <li>区分 <b>Skill</b>、<b>Prompt</b>、<b>Tool</b>、<b>MCP</b> 四个相邻概念</li>
+      <li>理解 Skill 的「按需加载」节省 context 的机制</li>
+      <li>能自己写一个最小可用的 SKILL.md</li>
+    </ol>
+  </section>
+
+  <section id="questions">
+    <h2>03 · 核心问题清单</h2>
+    <ol>
+      <li>Skill 这个词的官方定义是什么？什么时候被作为「开放标准」发布的？</li>
+      <li>一个 Skill 的最小目录结构长什么样？</li>
+      <li>SKILL.md 顶部 YAML 有哪两个必填字段？还有什么常见可选字段？</li>
+      <li>Skill「激活」时实际发生了什么？</li>
+      <li>Skill 和 Prompt 的区别是什么？</li>
+      <li>Skill 和 Tool 有什么区别？</li>
+      <li>Skill 和 MCP 有什么关系？</li>
+      <li>Skill 是改了模型权重吗？</li>
+      <li>为什么说 Skill「节省 context」？</li>
+    </ol>
+  </section>
+
+  <section id="explain">
+    <h2>04 · 结构化解释</h2>
+
+    <h3>4.1 定义（Anthropic 官方）</h3>
+    <blockquote>
+      Skills are <b>folders that include instructions, scripts, and resources that Claude can load when needed</b>.<br>
+      <span class="meta">—— <a href="https://claude.com/blog/skills">Introducing Agent Skills</a>, Anthropic, 2025-10-16（2025-12-18 加入组织管理与开放标准）</span>
+    </blockquote>
+    <p>官方进一步给出的四个特征：<b>Composable</b>（可组合）/ <b>Portable</b>（可移植）/ <b>Efficient</b>（按需加载）/ <b>Powerful</b>（可含可执行代码）。</p>
+
+    <h3>4.2 最小目录结构</h3>
+    <pre><code>my-skill/
+├── SKILL.md          # 必需：YAML 元数据 + Markdown 指令
+├── scripts/          # 可选：可执行脚本（Python/Bash/Node）
+├── references/       # 可选：按需加载的参考文档
+└── assets/           # 可选：模板 / 静态资源</code></pre>
+
+    <h3>4.3 SKILL.md 的 YAML frontmatter</h3>
+    <table>
+      <thead>
+        <tr><th>字段</th><th>必填</th><th>约束</th><th>作用</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>name</code></td><td>是</td><td>1–64 字符；仅小写字母/数字/连字符；首尾不能是连字符；不能有两个连续连字符；必须等于所在目录名</td><td>Skill 的唯一标识，决定 <code>/&lt;name&gt;</code> 命令</td></tr>
+        <tr><td><code>description</code></td><td>是</td><td>1–1024 字符；包含「做什么 + 何时用」的关键句</td><td>帮 Agent 决定何时自动激活</td></tr>
+        <tr><td><code>license</code></td><td>否</td><td>许可证名或文件名</td><td>声明可分发条款</td></tr>
+        <tr><td><code>compatibility</code></td><td>否</td><td>≤500 字符</td><td>运行所需环境（产品、Python 版本、网络）</td></tr>
+        <tr><td><code>metadata</code></td><td>否</td><td>任意 KV</td><td>作者、版本等扩展信息</td></tr>
+        <tr><td><code>allowed-tools</code></td><td>否</td><td>空格分隔字符串</td><td>预授权可调工具（实验）</td></tr>
+      </tbody>
+    </table>
+    <p class="meta">来源：<a href="https://agentskills.io/specification">Agent Skills 开放规范</a></p>
+
+    <h3>4.4 一个最小 SKILL.md 示例</h3>
+    <pre><code>---
+name: pdf-summarizer
+description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / 报告的总结请求时使用。
+---
+
+## 何时调用
+- 用户上传 PDF 并请求「帮我总结一下」
+- 用户说「这份 PDF 的关键点是什么」
+
+## 工作流
+1. 调用 scripts/extract.py 把 PDF 拆成章节
+2. 对每章节生成 ≤5 条 bullet
+3. 输出 Markdown 摘要</code></pre>
+
+    <h3>4.5 Skill 「激活」时实际发生了什么</h3>
+    <ol>
+      <li>用户请求进来，Agent 扫描<b>所有已注册 Skill 的 <code>description</code></b></li>
+      <li>命中描述 → 把 SKILL.md 的 Markdown 正文<b>注入到当前 context</b></li>
+      <li>正文里的指令在 LLM 看来，相当于一段临时增加的系统级提示</li>
+      <li>scripts/<b>执行</b>时不进 context（只把 stdout 注入），只有结果消耗 token</li>
+      <li>references/ 是按需加载（不预先读全文）</li>
+    </ol>
+    <p>所以 Skill 的「Efficient」特质来自：<b>指令只在需要时进 context，而不是预先全塞进去</b>。</p>
+  </section>
+
+  <section id="examples">
+    <h2>05 · 应用场景</h2>
+
+    <h3>场景 A：项目级代码规范 Skill</h3>
+    <p>在公司代码库里放一个 <code>.workbuddy/skills/api-conventions/SKILL.md</code>，描述 REST 命名、错误返回格式、参数校验规则。任何新写 API 的任务，Agent 都会自动先加载它再动手。</p>
+
+    <h3>场景 B：报告生成 Skill（含脚本）</h3>
+    <p>Skill 里附带 <code>scripts/fetch_data.py</code> + <code>templates/report.md</code>。用户说「写本周销售报告」，Agent 自动跑脚本 + 套模板，输出固定格式产物。</p>
+
+    <p class="meta">共同点：<b>Skill 的价值是「把跨任务会重复的工作流封装成一个名字，调用一次就行」</b>。</p>
+  </section>
+
+  <section id="boundaries">
+    <h2>06 · 概念辨析 / 边界</h2>
+    <ol>
+      <li><b>Skill ≠ Prompt</b>：Prompt 是每次要主动写、贴在对话里的输入；Skill 是<b>被自动发现</b>、按需注入到 context 的模块化指令。</li>
+      <li><b>Skill ≠ Tool</b>：Tool 是<b>被调用的函数</b>（如 search、read_file），调用时模型决定要不要用；Skill 是<b>被加载的说明</b>，决定模型怎么想怎么做。</li>
+      <li><b>Skill ≠ MCP</b>：MCP（Model Context Protocol）是一套「给 Agent 暴露外部工具和数据源」的标准协议；Skill 是一个<b>目录</b>，里面可以引用 MCP 提供的工具。</li>
+      <li><b>Skill ≠ Fine-tuning</b>：Fine-tuning 会改模型权重；Skill 不会。Skill 只在当前 context 里追加文字。</li>
+      <li><b>Skill 不等于 Plugin</b>：Plugin（早期 Anthropic 用过的说法）现在已被 Skill 取代；但业内其他家类似概念命名不同（OpenAI 的 GPTs、Cursor 的 Rules、Google 的 Gems 等），原理相近。</li>
+    </ol>
+  </section>
+
+  <section id="self-test">
+    <h2>07 · 自测问题</h2>
+    <ol>
+      <li>
+        <b>Skill 和 Prompt 的本质区别是什么？</b><br>
+        <span class="meta">答：Prompt 是手动每次粘贴的输入；Skill 是被元数据自动发现的模块，激活时把指令注入 context。</span>
+      </li>
+      <li>
+        <b>SKILL.md 的 YAML frontmatter 里至少要有什么字段？</b><br>
+        <span class="meta">答：<code>name</code>（必填，1–64 字符小写命名）+ <code>description</code>（必填，1–1024 字符，写「做什么 + 何时用」）。</span>
+      </li>
+      <li>
+        <b>Skill 是「改了模型权重」还是「喂上下文」？</b><br>
+        <span class="meta">答：喂上下文。Skill 只是在某次对话中往 context 追加文字，不改模型权重。</span>
+      </li>
+      <li>
+        <b>Skill 在哪些层可以放？常见路径是什么？</b><br>
+        <span class="meta">答：Claude Code / 类似 Agent 通常支持 企业 / 个人 (~/.claude/skills/) / 项目 (.claude/skills/) / 插件 四级；项目级只在本仓库生效。</span>
+      </li>
+      <li>
+        <b>为什么说 Skill「节省 context」？</b><br>
+        <span class="meta">答：因为 skills 池的元数据先被扫描，<b>正文只在激活时</b>注入；scripts 执行不消耗 prompt token；references 按需读取。</span>
+      </li>
+    </ol>
+  </section>
+
+  <section id="sources">
+    <h2>08 · 可核查的参考来源</h2>
+    <ul class="source-list">
+      <li>Anthropic 公告：<i>Introducing Agent Skills</i> —— <a href="https://claude.com/blog/skills">https://claude.com/blog/skills</a>（2025-10-16 发布；2025-12-18 增加组织级管理与开放标准）</li>
+      <li>Agent Skills 开放规范（标准站点）—— <a href="https://agentskills.io/specification">https://agentskills.io/specification</a> —— 给出了 YAML 字段、命名约束、目录约定的完整定义</li>
+      <li>Claude Code Docs —— <a href="https://code.claude.com/docs/zh-TW/skills">使用 skills 擴展 Claude（繁中）</a> / <a href="https://docs.anthropic.com/en/docs/claude-code/skills">英文版</a>：项目级 vs 用户级 skill 的存放路径与权限差异</li>
+      <li>Anthropic Academy 课程 —— <a href="https://academy.claude.com/courses/introduction-to-agent-skills/configuration-and-multi-file-skills">Configuration and multi-file skills</a>：allowed-tools 与渐进式披露的实际用法</li>
+    </ul>
+  </section>
+
+  <section id="verify">
+    <h2>09 · 核查记录（AI 生成 + 人工核对）</h2>
+    <ul class="check-list">
+      <li class="done">Anthropic Skills 公告原文：<i>"Skills are folders that include instructions, scripts, and resources that Claude can load when needed"</i> —— 用 WebFetch 在 claude.com/blog/skills 上核到。</li>
+      <li class="done">发布日期 2025-10-16，更新 2025-12-18：与原文一致。</li>
+      <li class="done">Agent Skills 开放规范的字段约束（name / description 必填 + 长度约束）：人工核对了 agentskills.io 的 Specification 页面。</li>
+      <li class="done">Claude Code 文档关于四级 skill 路径（企业 / 个人 / 项目 / 插件）：人工核对。</li>
+      <li>Anthropic 官方 docs 的 platform.claude.com 链接对地区 IP 不开放（请求被重定向到 app-unavailable-in-region），所以核心引用主要走 claude.com/blog/skills + agentskills.io 这两条可打开的来源。</li>
+      <li>说本人「改写」不是直接抄：所有正文段落由本人对照官方公告和规范页面重写。</li>
+    </ul>
+  </section>
+
+<footer>
+      生成者：concept-unpacker Skill · 由本人复核 · 学习资料 / 入门深度 · 适用 袁玉明 (Yym113) 的 big-data-ai 课程作业。
+    </footer>
+</div>
+</body>
+</html>
