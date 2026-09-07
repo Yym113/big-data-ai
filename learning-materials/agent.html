@@ -226,29 +226,69 @@
   </section>
 
   <section id="self-test">
-    <h2>07 · 自测问题</h2>
-    <ol>
-      <li>
-        <b>Agent 和 Chatbot 的本质区别是什么？</b><br>
-        <span class="meta">答：Chatbot 只会对话；Agent 能感知环境 + 决定 + 执行动作。</span>
-      </li>
-      <li>
-        <b>一个 LLM Agent 通常包含哪几个核心组件？</b><br>
-        <span class="meta">答：LLM（大脑）+ Tools（工具）+ Memory（记忆）+ Planning（规划）+ Loop controller（循环控制）。</span>
-      </li>
-      <li>
-        <b>ReAct 框架里「Reasoning」和「Acting」是怎么配合的？</b><br>
-        <span class="meta">答：两者交替出现——Thought → Action → Observation → Thought → …——让推理可以根据工具返回的观测纠正自己。</span>
-      </li>
-      <li>
-        <b>Russell &amp; Norvig 五类 Agent 的提升轴是什么？</b><br>
-        <span class="meta">答：从「只看现在」到「看历史 + 模型」到「有目标」到「能比较效用」再到「能自我学习」，越来越复杂。</span>
-      </li>
-      <li>
-        <b>一句话说出 ReAct 论文的核心结论。</b><br>
-        <span class="meta">答：推理 trace 和行动交错做，比纯 CoT 推理在交互决策任务上更强、且更可解释。</span>
-      </li>
-    </ol>
+    <h2>07 · 交互自测（点选项作答）</h2>
+    <p class="meta">共 5 题。点击选项即时判断对错；选错可以继续选，直到答对。</p>
+
+    <div class="quiz" id="quiz">
+      <div class="quiz-score" id="quiz-score">进度：答对 0 / 5</div>
+
+      <div class="q" data-answer="C" data-explain="Chatbot 只会对话；Agent 能感知环境、做决定并执行动作。">
+        <p class="q-text">1. Agent 和 Chatbot 的本质区别是什么？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. Agent 回答得更准确</button>
+          <button class="opt" data-key="B">B. Chatbot 用不了大模型</button>
+          <button class="opt" data-key="C">C. Agent 能感知环境并执行动作，Chatbot 只能对话</button>
+          <button class="opt" data-key="D">D. 两者没有本质区别</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="D" data-explain="规则引擎是写死的、没有推理与学习能力；LLM Agent 需要 LLM + 工具 + 记忆 + 规划 + 循环控制。">
+        <p class="q-text">2. 一个 LLM Agent 通常不包含下面哪个组件？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. LLM（大脑）</button>
+          <button class="opt" data-key="B">B. Tools（工具）</button>
+          <button class="opt" data-key="C">C. Memory（记忆）</button>
+          <button class="opt" data-key="D">D. 写死的规则引擎（无推理 / 学习）</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="C" data-explain="ReAct = Reasoning 和 Acting 交替：Thought → Action → Observation，中途观察可以纠错、补信息。">
+        <p class="q-text">3. ReAct 范式里，Reasoning 和 Acting 是怎么配合的？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 先全部推理完，再一次性行动</button>
+          <button class="opt" data-key="B">B. 先全部行动完，再总结推理</button>
+          <button class="opt" data-key="C">C. 两者交替进行：Thought → Action → Observation</button>
+          <button class="opt" data-key="D">D. 两者互不相关</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="B" data-explain="五类：简单反射 → 基于模型 → 基于目标 → 基于效用 → 学习型。">
+        <p class="q-text">4. Russell &amp; Norvig 把 Agent 由简单到复杂分成几类？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 三类</button>
+          <button class="opt" data-key="B">B. 五类</button>
+          <button class="opt" data-key="C">C. 七类</button>
+          <button class="opt" data-key="D">D. 只有一类</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="C" data-explain="一次性 Q&amp;A 用普通 prompt 即可，不需要 Agent 的多步规划与工具调用。">
+        <p class="q-text">5. 下列哪个任务「不该」用 Agent？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 自动改代码仓库里的 API 调用</button>
+          <button class="opt" data-key="B">B. 多步信息检索并汇总成报告</button>
+          <button class="opt" data-key="C">C. 回答「1+1 等于几」这种一次性问题</button>
+          <button class="opt" data-key="D">D. 让 AI 规划一个项目的里程碑</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <button id="quiz-reset">重新测验</button>
   </section>
 
   <section id="sources">
@@ -279,26 +319,32 @@
     </footer>
 </div>
 <style>
-    #self-test li{cursor:pointer;border-radius:6px;padding:2px 8px;transition:background .15s}
-    #self-test li:hover{background:var(--accent-bg)}
-    #self-test .meta{display:none;margin-top:4px}
-    #self-test li.open .meta{display:block}
-    .qa-hint{color:var(--accent);font-size:.82em;font-weight:normal;margin-left:6px}
     section.collapsible h2{cursor:pointer;user-select:none}
     section.collapsible h2::after{content:" ▾";color:var(--muted);font-size:.8em}
     section.collapsible.collapsed h2::after{content:" ▸"}
     section.collapsible.collapsed .sec-body{display:none}
     table tbody tr:hover td{background:var(--accent-bg)}
+
+    /* ===== 交互自测 ===== */
+    .quiz-score{background:var(--accent-bg);color:var(--accent);font-weight:600;padding:10px 14px;border-radius:8px;margin-bottom:16px;text-align:center}
+    .q{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;background:#fff}
+    .q-text{margin:0 0 10px;font-weight:600}
+    .opts{display:flex;flex-direction:column;gap:8px}
+    .opt{text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:.95rem;transition:all .12s;color:var(--text);line-height:1.5}
+    .opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-bg)}
+    .opt.correct{border-color:#2f7d3a;background:#eaf6ec;color:#1c5b28;font-weight:600}
+    .opt.wrong{border-color:#b5361e;background:#fbeae6;color:#8c2b17}
+    .opt:disabled{cursor:default;opacity:.78}
+    .feedback{margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.9rem;display:none}
+    .feedback.show{display:block}
+    .feedback.ok{background:#eaf6ec;color:#1c5b28;border-left:3px solid #2f7d3a}
+    .feedback.no{background:#fbeae6;color:#8c2b17;border-left:3px solid #b5361e}
+    #quiz-reset{margin-top:6px;padding:10px 22px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:.95rem;cursor:pointer;font-weight:600}
+    #quiz-reset:hover{opacity:.9}
   </style>
   <script>
     (function(){
-      document.querySelectorAll('#self-test li').forEach(function(li){
-        var ans=li.querySelector('.meta');if(!ans)return;
-        ans.style.display='none';
-        var q=li.querySelector('b');
-        if(q&&!q.querySelector('.qa-hint')){var h=document.createElement('span');h.className='qa-hint';h.textContent='（点我看答案）';q.appendChild(h);}
-        li.addEventListener('click',function(){var open=li.classList.toggle('open');ans.style.display=open?'block':'none';});
-      });
+      // 章节折叠
       document.querySelectorAll('section').forEach(function(sec){
         var h2=sec.querySelector('h2');if(!h2)return;
         if(sec.querySelector('.mermaid')||sec.querySelector('.mermaid-wrap'))return;
@@ -309,6 +355,53 @@
         sec.appendChild(body);
         h2.addEventListener('click',function(){sec.classList.toggle('collapsed');});
       });
+
+      // 交互自测
+      var quiz=document.getElementById('quiz');
+      if(!quiz)return;
+      var scoreEl=document.getElementById('quiz-score');
+      var total=quiz.querySelectorAll('.q').length;
+      var answered=0;
+      function renderScore(){
+        if(scoreEl){
+          scoreEl.textContent=(answered>=total)?('🎉 全部答对！得分 '+answered+' / '+total):('进度：答对 '+answered+' / '+total);
+        }
+      }
+      quiz.querySelectorAll('.q').forEach(function(q){
+        var answer=q.getAttribute('data-answer');
+        var explain=q.getAttribute('data-explain')||'';
+        var opts=q.querySelectorAll('.opt');
+        var fb=q.querySelector('.feedback');
+        var locked=false;
+        opts.forEach(function(opt){
+          opt.addEventListener('click',function(){
+            if(locked)return;
+            if(opt.getAttribute('data-key')===answer){
+              opt.classList.add('correct');
+              opts.forEach(function(o){o.disabled=true;});
+              fb.textContent='✓ 正确！'+explain;
+              fb.className='feedback show ok';
+              locked=true;answered++;renderScore();
+            }else{
+              opt.classList.add('wrong');opt.disabled=true;
+              fb.textContent='✗ 不对，再想想…';
+              fb.className='feedback show no';
+            }
+          });
+        });
+      });
+      var resetBtn=document.getElementById('quiz-reset');
+      if(resetBtn){
+        resetBtn.addEventListener('click',function(){
+          answered=0;
+          quiz.querySelectorAll('.q').forEach(function(q){
+            q.querySelectorAll('.opt').forEach(function(o){o.classList.remove('correct','wrong');o.disabled=false;});
+            var fb=q.querySelector('.feedback');fb.className='feedback';fb.textContent='';
+          });
+          renderScore();
+        });
+      }
+      renderScore();
     })();
   </script>
 </body>

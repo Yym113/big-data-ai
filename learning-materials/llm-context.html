@@ -227,29 +227,69 @@
   </section>
 
   <section id="self-test">
-    <h2>07 · 自测问题</h2>
-    <ol>
-      <li>
-        <b>上下文窗口和 token 是什么关系？</b><br>
-        <span class="meta">答：上下文窗口是单次调用允许的最大 token 数；token 是模型处理的最小单位。窗口限制了 context 的最大长度。</span>
-      </li>
-      <li>
-        <b>为什么 LLM 在长上下文中会出现「lost in the middle」？</b><br>
-        <span class="meta">答：经验性发现——attention 对中段位置的查询响应更弱（具体机制仍在研究中）；不论窗口多大，相关信息在中间时表现明显差于两端。</span>
-      </li>
-      <li>
-        <b>RAG 是怎么「扩展」上下文的？</b><br>
-        <span class="meta">答：RAG 并不真正扩大窗口，而是<b>用检索</b>把最相关的片段塞进当前 context，等价于「用 freshness 换 context 容量」。</span>
-      </li>
-      <li>
-        <b>context、prompt、memory 三个词的区别？</b><br>
-        <span class="meta">答：context = 实际喂进去的 token 序列；prompt = 你写的输入；memory = 跨调用持久保留、之后会被注入 context 的信息。</span>
-      </li>
-      <li>
-        <b>system 段为什么特殊？</b><br>
-        <span class="meta">答：多数 chat template 把 system 段当成「最优先指令」，且用户对话不会覆盖它；因此把规则、安全边界放在 system 而不是 user 更稳。</span>
-      </li>
-    </ol>
+    <h2>07 · 交互自测（点选项作答）</h2>
+    <p class="meta">共 5 题。点击选项即时判断对错；选错可以继续选，直到答对。</p>
+
+    <div class="quiz" id="quiz">
+      <div class="quiz-score" id="quiz-score">进度：答对 0 / 5</div>
+
+      <div class="q" data-answer="B" data-explain="prompt 是你写的输入；context 是模型实际看到的全部 token（含自动加的 system 段、历史消息等）。">
+        <p class="q-text">1. context 和 prompt 是一回事吗？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 完全一样</button>
+          <button class="opt" data-key="B">B. 不是——prompt 是你写的输入，context 是模型实际看到的全部 token</button>
+          <button class="opt" data-key="C">C. 不是——context 更短</button>
+          <button class="opt" data-key="D">D. 是，只是叫法不同</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="A" data-explain="上下文窗口限制的是「单次送入模型的输入 token 上限」，与输出长度、知识量无关。">
+        <p class="q-text">2. 「上下文窗口」限制的是什么？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 单次调用送入模型的最大 token 数</button>
+          <button class="opt" data-key="B">B. 模型能输出的最大字数</button>
+          <button class="opt" data-key="C">C. 模型的知识量</button>
+          <button class="opt" data-key="D">D. 用户的提问次数</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="B" data-explain="Lost in the Middle 发现：相关信息放在 context 开头或结尾，比放中间表现更好。">
+        <p class="q-text">3. 「Lost in the Middle」论文发现了什么？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 长上下文完全无用</button>
+          <button class="opt" data-key="B">B. 相关信息放开头或结尾，比放中间表现更好</button>
+          <button class="opt" data-key="C">C. 信息放中间效果最好</button>
+          <button class="opt" data-key="D">D. 模型表现与信息位置无关</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="B" data-explain="RAG 不真正扩大窗口，而是用检索把最相关的片段塞进当前 context。">
+        <p class="q-text">4. RAG 是怎么「扩展」上下文的？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 真正扩大模型的窗口</button>
+          <button class="opt" data-key="B">B. 用检索把最相关的片段塞进当前 context</button>
+          <button class="opt" data-key="C">C. 修改模型权重</button>
+          <button class="opt" data-key="D">D. 压缩用户的问题</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="C" data-explain="LLM 是无状态的，每轮「记忆」靠把历史内容再次塞回 context 来实现。">
+        <p class="q-text">5. 下列哪个说法正确？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. context 会跨调用持久保存</button>
+          <button class="opt" data-key="B">B. LLM 是有状态（stateful）的</button>
+          <button class="opt" data-key="C">C. LLM 无状态，每轮「记忆」靠把历史塞回 context</button>
+          <button class="opt" data-key="D">D. system 段用户可以直接修改</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <button id="quiz-reset">重新测验</button>
   </section>
 
   <section id="sources">
@@ -280,26 +320,32 @@
     </footer>
 </div>
 <style>
-    #self-test li{cursor:pointer;border-radius:6px;padding:2px 8px;transition:background .15s}
-    #self-test li:hover{background:var(--accent-bg)}
-    #self-test .meta{display:none;margin-top:4px}
-    #self-test li.open .meta{display:block}
-    .qa-hint{color:var(--accent);font-size:.82em;font-weight:normal;margin-left:6px}
     section.collapsible h2{cursor:pointer;user-select:none}
     section.collapsible h2::after{content:" ▾";color:var(--muted);font-size:.8em}
     section.collapsible.collapsed h2::after{content:" ▸"}
     section.collapsible.collapsed .sec-body{display:none}
     table tbody tr:hover td{background:var(--accent-bg)}
+
+    /* ===== 交互自测 ===== */
+    .quiz-score{background:var(--accent-bg);color:var(--accent);font-weight:600;padding:10px 14px;border-radius:8px;margin-bottom:16px;text-align:center}
+    .q{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;background:#fff}
+    .q-text{margin:0 0 10px;font-weight:600}
+    .opts{display:flex;flex-direction:column;gap:8px}
+    .opt{text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:.95rem;transition:all .12s;color:var(--text);line-height:1.5}
+    .opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-bg)}
+    .opt.correct{border-color:#2f7d3a;background:#eaf6ec;color:#1c5b28;font-weight:600}
+    .opt.wrong{border-color:#b5361e;background:#fbeae6;color:#8c2b17}
+    .opt:disabled{cursor:default;opacity:.78}
+    .feedback{margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.9rem;display:none}
+    .feedback.show{display:block}
+    .feedback.ok{background:#eaf6ec;color:#1c5b28;border-left:3px solid #2f7d3a}
+    .feedback.no{background:#fbeae6;color:#8c2b17;border-left:3px solid #b5361e}
+    #quiz-reset{margin-top:6px;padding:10px 22px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:.95rem;cursor:pointer;font-weight:600}
+    #quiz-reset:hover{opacity:.9}
   </style>
   <script>
     (function(){
-      document.querySelectorAll('#self-test li').forEach(function(li){
-        var ans=li.querySelector('.meta');if(!ans)return;
-        ans.style.display='none';
-        var q=li.querySelector('b');
-        if(q&&!q.querySelector('.qa-hint')){var h=document.createElement('span');h.className='qa-hint';h.textContent='（点我看答案）';q.appendChild(h);}
-        li.addEventListener('click',function(){var open=li.classList.toggle('open');ans.style.display=open?'block':'none';});
-      });
+      // 章节折叠
       document.querySelectorAll('section').forEach(function(sec){
         var h2=sec.querySelector('h2');if(!h2)return;
         if(sec.querySelector('.mermaid')||sec.querySelector('.mermaid-wrap'))return;
@@ -310,6 +356,53 @@
         sec.appendChild(body);
         h2.addEventListener('click',function(){sec.classList.toggle('collapsed');});
       });
+
+      // 交互自测
+      var quiz=document.getElementById('quiz');
+      if(!quiz)return;
+      var scoreEl=document.getElementById('quiz-score');
+      var total=quiz.querySelectorAll('.q').length;
+      var answered=0;
+      function renderScore(){
+        if(scoreEl){
+          scoreEl.textContent=(answered>=total)?('🎉 全部答对！得分 '+answered+' / '+total):('进度：答对 '+answered+' / '+total);
+        }
+      }
+      quiz.querySelectorAll('.q').forEach(function(q){
+        var answer=q.getAttribute('data-answer');
+        var explain=q.getAttribute('data-explain')||'';
+        var opts=q.querySelectorAll('.opt');
+        var fb=q.querySelector('.feedback');
+        var locked=false;
+        opts.forEach(function(opt){
+          opt.addEventListener('click',function(){
+            if(locked)return;
+            if(opt.getAttribute('data-key')===answer){
+              opt.classList.add('correct');
+              opts.forEach(function(o){o.disabled=true;});
+              fb.textContent='✓ 正确！'+explain;
+              fb.className='feedback show ok';
+              locked=true;answered++;renderScore();
+            }else{
+              opt.classList.add('wrong');opt.disabled=true;
+              fb.textContent='✗ 不对，再想想…';
+              fb.className='feedback show no';
+            }
+          });
+        });
+      });
+      var resetBtn=document.getElementById('quiz-reset');
+      if(resetBtn){
+        resetBtn.addEventListener('click',function(){
+          answered=0;
+          quiz.querySelectorAll('.q').forEach(function(q){
+            q.querySelectorAll('.opt').forEach(function(o){o.classList.remove('correct','wrong');o.disabled=false;});
+            var fb=q.querySelector('.feedback');fb.className='feedback';fb.textContent='';
+          });
+          renderScore();
+        });
+      }
+      renderScore();
     })();
   </script>
 </body>

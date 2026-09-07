@@ -227,29 +227,69 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
   </section>
 
   <section id="self-test">
-    <h2>07 · 自测问题</h2>
-    <ol>
-      <li>
-        <b>Skill 和 Prompt 的本质区别是什么？</b><br>
-        <span class="meta">答：Prompt 是手动每次粘贴的输入；Skill 是被元数据自动发现的模块，激活时把指令注入 context。</span>
-      </li>
-      <li>
-        <b>SKILL.md 的 YAML frontmatter 里至少要有什么字段？</b><br>
-        <span class="meta">答：<code>name</code>（必填，1–64 字符小写命名）+ <code>description</code>（必填，1–1024 字符，写「做什么 + 何时用」）。</span>
-      </li>
-      <li>
-        <b>Skill 是「改了模型权重」还是「喂上下文」？</b><br>
-        <span class="meta">答：喂上下文。Skill 只是在某次对话中往 context 追加文字，不改模型权重。</span>
-      </li>
-      <li>
-        <b>Skill 在哪些层可以放？常见路径是什么？</b><br>
-        <span class="meta">答：Claude Code / 类似 Agent 通常支持 企业 / 个人 (~/.claude/skills/) / 项目 (.claude/skills/) / 插件 四级；项目级只在本仓库生效。</span>
-      </li>
-      <li>
-        <b>为什么说 Skill「节省 context」？</b><br>
-        <span class="meta">答：因为 skills 池的元数据先被扫描，<b>正文只在激活时</b>注入；scripts 执行不消耗 prompt token；references 按需读取。</span>
-      </li>
-    </ol>
+    <h2>07 · 交互自测（点选项作答）</h2>
+    <p class="meta">共 5 题。点击选项即时判断对错；选错可以继续选，直到答对。</p>
+
+    <div class="quiz" id="quiz">
+      <div class="quiz-score" id="quiz-score">进度：答对 0 / 5</div>
+
+      <div class="q" data-answer="B" data-explain="Skill 是带 YAML 元数据的目录，激活时把指令注入 context，不改模型权重。">
+        <p class="q-text">1. Skill 的本质是什么？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 改了模型权重的微调</button>
+          <button class="opt" data-key="B">B. 一个带 YAML 元数据的目录，激活时把指令注入 context</button>
+          <button class="opt" data-key="C">C. 一段每次都要手写的 prompt</button>
+          <button class="opt" data-key="D">D. 一个外部 API 工具</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="A" data-explain="SKILL.md 的 YAML 至少要有 name 和 description 两个必填字段。">
+        <p class="q-text">2. SKILL.md 的 YAML frontmatter 至少要有什么字段？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. name 和 description</button>
+          <button class="opt" data-key="B">B. name 和 author</button>
+          <button class="opt" data-key="C">C. description 和 version</button>
+          <button class="opt" data-key="D">D. license 和 compatibility</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="B" data-explain="Skill 是被加载的「说明」，决定模型怎么做；Tool 是被调用的「函数」，执行具体操作。">
+        <p class="q-text">3. Skill 和 Tool 的区别是？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 完全一样</button>
+          <button class="opt" data-key="B">B. Skill 是被加载的说明，Tool 是被调用的函数</button>
+          <button class="opt" data-key="C">C. Tool 是说明，Skill 是函数</button>
+          <button class="opt" data-key="D">D. 没有区别</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="B" data-explain="正文只在激活时注入，脚本执行不消耗 prompt token，references 按需读取。">
+        <p class="q-text">4. 为什么说 Skill「节省 context」？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 因为 Skill 不占任何 token</button>
+          <button class="opt" data-key="B">B. 因为正文只在激活时注入，脚本执行不耗 prompt token</button>
+          <button class="opt" data-key="C">C. 因为 Skill 改小了模型</button>
+          <button class="opt" data-key="D">D. 因为 Skill 不用大模型</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="q" data-answer="B" data-explain="Skill 不会修改模型权重，它只在当前 context 里追加文字。">
+        <p class="q-text">5. Skill 会修改模型权重吗？</p>
+        <div class="opts">
+          <button class="opt" data-key="A">A. 会，等价于微调（fine-tuning）</button>
+          <button class="opt" data-key="B">B. 不会，它只在 context 里追加文字</button>
+          <button class="opt" data-key="C">C. 会，但很少</button>
+          <button class="opt" data-key="D">D. 取决于 skill 大小</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+
+    <button id="quiz-reset">重新测验</button>
   </section>
 
   <section id="sources">
@@ -279,26 +319,32 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
     </footer>
 </div>
 <style>
-    #self-test li{cursor:pointer;border-radius:6px;padding:2px 8px;transition:background .15s}
-    #self-test li:hover{background:var(--accent-bg)}
-    #self-test .meta{display:none;margin-top:4px}
-    #self-test li.open .meta{display:block}
-    .qa-hint{color:var(--accent);font-size:.82em;font-weight:normal;margin-left:6px}
     section.collapsible h2{cursor:pointer;user-select:none}
     section.collapsible h2::after{content:" ▾";color:var(--muted);font-size:.8em}
     section.collapsible.collapsed h2::after{content:" ▸"}
     section.collapsible.collapsed .sec-body{display:none}
     table tbody tr:hover td{background:var(--accent-bg)}
+
+    /* ===== 交互自测 ===== */
+    .quiz-score{background:var(--accent-bg);color:var(--accent);font-weight:600;padding:10px 14px;border-radius:8px;margin-bottom:16px;text-align:center}
+    .q{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;background:#fff}
+    .q-text{margin:0 0 10px;font-weight:600}
+    .opts{display:flex;flex-direction:column;gap:8px}
+    .opt{text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:.95rem;transition:all .12s;color:var(--text);line-height:1.5}
+    .opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-bg)}
+    .opt.correct{border-color:#2f7d3a;background:#eaf6ec;color:#1c5b28;font-weight:600}
+    .opt.wrong{border-color:#b5361e;background:#fbeae6;color:#8c2b17}
+    .opt:disabled{cursor:default;opacity:.78}
+    .feedback{margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.9rem;display:none}
+    .feedback.show{display:block}
+    .feedback.ok{background:#eaf6ec;color:#1c5b28;border-left:3px solid #2f7d3a}
+    .feedback.no{background:#fbeae6;color:#8c2b17;border-left:3px solid #b5361e}
+    #quiz-reset{margin-top:6px;padding:10px 22px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:.95rem;cursor:pointer;font-weight:600}
+    #quiz-reset:hover{opacity:.9}
   </style>
   <script>
     (function(){
-      document.querySelectorAll('#self-test li').forEach(function(li){
-        var ans=li.querySelector('.meta');if(!ans)return;
-        ans.style.display='none';
-        var q=li.querySelector('b');
-        if(q&&!q.querySelector('.qa-hint')){var h=document.createElement('span');h.className='qa-hint';h.textContent='（点我看答案）';q.appendChild(h);}
-        li.addEventListener('click',function(){var open=li.classList.toggle('open');ans.style.display=open?'block':'none';});
-      });
+      // 章节折叠
       document.querySelectorAll('section').forEach(function(sec){
         var h2=sec.querySelector('h2');if(!h2)return;
         if(sec.querySelector('.mermaid')||sec.querySelector('.mermaid-wrap'))return;
@@ -309,6 +355,53 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
         sec.appendChild(body);
         h2.addEventListener('click',function(){sec.classList.toggle('collapsed');});
       });
+
+      // 交互自测
+      var quiz=document.getElementById('quiz');
+      if(!quiz)return;
+      var scoreEl=document.getElementById('quiz-score');
+      var total=quiz.querySelectorAll('.q').length;
+      var answered=0;
+      function renderScore(){
+        if(scoreEl){
+          scoreEl.textContent=(answered>=total)?('🎉 全部答对！得分 '+answered+' / '+total):('进度：答对 '+answered+' / '+total);
+        }
+      }
+      quiz.querySelectorAll('.q').forEach(function(q){
+        var answer=q.getAttribute('data-answer');
+        var explain=q.getAttribute('data-explain')||'';
+        var opts=q.querySelectorAll('.opt');
+        var fb=q.querySelector('.feedback');
+        var locked=false;
+        opts.forEach(function(opt){
+          opt.addEventListener('click',function(){
+            if(locked)return;
+            if(opt.getAttribute('data-key')===answer){
+              opt.classList.add('correct');
+              opts.forEach(function(o){o.disabled=true;});
+              fb.textContent='✓ 正确！'+explain;
+              fb.className='feedback show ok';
+              locked=true;answered++;renderScore();
+            }else{
+              opt.classList.add('wrong');opt.disabled=true;
+              fb.textContent='✗ 不对，再想想…';
+              fb.className='feedback show no';
+            }
+          });
+        });
+      });
+      var resetBtn=document.getElementById('quiz-reset');
+      if(resetBtn){
+        resetBtn.addEventListener('click',function(){
+          answered=0;
+          quiz.querySelectorAll('.q').forEach(function(q){
+            q.querySelectorAll('.opt').forEach(function(o){o.classList.remove('correct','wrong');o.disabled=false;});
+            var fb=q.querySelector('.feedback');fb.className='feedback';fb.textContent='';
+          });
+          renderScore();
+        });
+      }
+      renderScore();
     })();
   </script>
 </body>
