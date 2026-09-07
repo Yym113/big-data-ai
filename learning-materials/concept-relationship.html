@@ -263,9 +263,36 @@ flowchart TB
     生成者：concept-unpacker Skill · 由本人复核 · 用 Mermaid 流程图直观表达三概念结构 · 适用 袁玉明 (Yym113) 的 big-data-ai 课程作业。
   </footer>
 </div>
-<script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/[email protected]/dist/mermaid.esm.min.mjs";
-  mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+  } else {
+    document.querySelectorAll('.mermaid-wrap').forEach(function (w) {
+      w.innerHTML = '<p class="meta">⚠ 关系图组件加载失败（当前网络无法访问 CDN）。文字版结构请见下方「三概念对照表」与「三两两之间的关系」。</p>';
+    });
+  }
 </script>
+<style>
+    section.collapsible h2{cursor:pointer;user-select:none}
+    section.collapsible h2::after{content:" ▾";color:var(--muted);font-size:.8em}
+    section.collapsible.collapsed h2::after{content:" ▸"}
+    section.collapsible.collapsed .sec-body{display:none}
+    table tbody tr:hover td{background:var(--accent-bg)}
+  </style>
+  <script>
+    (function(){
+      document.querySelectorAll('section').forEach(function(sec){
+        var h2=sec.querySelector('h2');if(!h2)return;
+        if(sec.querySelector('.mermaid')||sec.querySelector('.mermaid-wrap'))return;
+        sec.classList.add('collapsible');
+        var body=document.createElement('div');body.className='sec-body';
+        var el=h2.nextElementSibling;
+        while(el){var n=el.nextElementSibling;body.appendChild(el);el=n;}
+        sec.appendChild(body);
+        h2.addEventListener('click',function(){sec.classList.toggle('collapsed');});
+      });
+    })();
+  </script>
 </body>
 </html>

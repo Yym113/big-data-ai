@@ -278,5 +278,38 @@
       生成者：concept-unpacker Skill · 由本人复核 · 学习资料 / 入门深度 · 适用 袁玉明 (Yym113) 的 big-data-ai 课程作业。
     </footer>
 </div>
+<style>
+    #self-test li{cursor:pointer;border-radius:6px;padding:2px 8px;transition:background .15s}
+    #self-test li:hover{background:var(--accent-bg)}
+    #self-test .meta{display:none;margin-top:4px}
+    #self-test li.open .meta{display:block}
+    .qa-hint{color:var(--accent);font-size:.82em;font-weight:normal;margin-left:6px}
+    section.collapsible h2{cursor:pointer;user-select:none}
+    section.collapsible h2::after{content:" ▾";color:var(--muted);font-size:.8em}
+    section.collapsible.collapsed h2::after{content:" ▸"}
+    section.collapsible.collapsed .sec-body{display:none}
+    table tbody tr:hover td{background:var(--accent-bg)}
+  </style>
+  <script>
+    (function(){
+      document.querySelectorAll('#self-test li').forEach(function(li){
+        var ans=li.querySelector('.meta');if(!ans)return;
+        ans.style.display='none';
+        var q=li.querySelector('b');
+        if(q&&!q.querySelector('.qa-hint')){var h=document.createElement('span');h.className='qa-hint';h.textContent='（点我看答案）';q.appendChild(h);}
+        li.addEventListener('click',function(){var open=li.classList.toggle('open');ans.style.display=open?'block':'none';});
+      });
+      document.querySelectorAll('section').forEach(function(sec){
+        var h2=sec.querySelector('h2');if(!h2)return;
+        if(sec.querySelector('.mermaid')||sec.querySelector('.mermaid-wrap'))return;
+        sec.classList.add('collapsible');
+        var body=document.createElement('div');body.className='sec-body';
+        var el=h2.nextElementSibling;
+        while(el){var n=el.nextElementSibling;body.appendChild(el);el=n;}
+        sec.appendChild(body);
+        h2.addEventListener('click',function(){sec.classList.toggle('collapsed');});
+      });
+    })();
+  </script>
 </body>
 </html>
