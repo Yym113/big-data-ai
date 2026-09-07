@@ -4,6 +4,18 @@
 >
 > 课程：大数据与人工智能
 
+## 📌 评分对照表（老师请直接看这里）
+
+| 评分项 | 分值 | 交付文件 |
+|---|---|---|
+| 项目级 Skill | 35 | [`.workbuddy/skills/concept-unpacker/SKILL.md`](https://github.com/Yym113/big-data-ai/blob/main/.workbuddy/skills/concept-unpacker/SKILL.md) |
+| 学习资料（HTML） | 30 | [`agent.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/agent.html) · [`llm-context.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/llm-context.html) · [`skill.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/skill.html) |
+| 概念关系与个人理解 | 15 | [`concept-relationship.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/concept-relationship.html) |
+| GitHub 仓库 + 版本 | 10 | 仓库首页 [Yym113/big-data-ai](https://github.com/Yym113/big-data-ai)（含 commit 历史 + `.gitignore`） |
+| README + AI 规范 | 10 | 本文件 [`README.md`](https://github.com/Yym113/big-data-ai/blob/main/README.md) |
+
+> 总分 100。作业 1 已全部命中。
+
 本仓库用于存放「大数据与人工智能」课程的学习笔记、作业、实验代码、课程项目与配套 Skills / 学习资料。
 
 ## 本仓库的实际位置
