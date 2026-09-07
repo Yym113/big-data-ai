@@ -121,10 +121,6 @@
     .fill-submit:disabled { opacity: 0.6; cursor: default; }
 
     /* ===== 趣味互动 ===== */
-    h2 { display: flex; align-items: center; gap: 10px; }
-    .master-btn { font-size: 0.78rem; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--muted); cursor: pointer; font-weight: 400; }
-    .master-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .master-btn.done { background: var(--accent); color: #fff; border-color: var(--accent); }
     .tip { border-bottom: 1.5px dotted var(--accent); cursor: help; position: relative; }
     .tip:hover .tip-card { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
     .tip-card { position: absolute; left: 50%; top: 1.4em; transform: translate(-50%, -6px); background: #1a1a17; color: #fafaf7; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; max-width: 280px; width: max-content; opacity: 0; pointer-events: none; transition: all 0.18s; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.18); font-weight: 400; }
@@ -413,27 +409,8 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
       var h2 = sec.querySelector('h2');
       if (!h2) return;
       h2.addEventListener('click', function(e){
-        if (e.target.classList.contains('master-btn')) return;
         sec.classList.toggle('collapsed');
       });
-    });
-    var KEY = 'master-' + document.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g,'');
-    var mastered = {};
-    try { mastered = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) {}
-    document.querySelectorAll('section').forEach(function(sec){
-      var h2 = sec.querySelector('h2');
-      if (!h2 || !sec.id) return;
-      var btn = document.createElement('button');
-      btn.className = 'master-btn' + (mastered[sec.id] ? ' done' : '');
-      btn.textContent = mastered[sec.id] ? '✓ 已掌握' : '○ 已掌握';
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        mastered[sec.id] = !mastered[sec.id];
-        btn.className = 'master-btn' + (mastered[sec.id] ? ' done' : '');
-        btn.textContent = mastered[sec.id] ? '✓ 已掌握' : '○ 已掌握';
-        try { localStorage.setItem(KEY, JSON.stringify(mastered)); } catch(e) {}
-      });
-      h2.appendChild(btn);
     });
     // === 2) 多样化自测题：选择 / 判断 / 填空 ===
     var quiz = document.getElementById('quiz');
