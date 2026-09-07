@@ -121,6 +121,22 @@
     section.collapsed > *:not(h2) { display: none; }
     section.collapsed h2::after { content: " ▸"; color: var(--muted); font-size: 0.8em; }
     section:not(.collapsed) h2::after { content: " ▾"; color: var(--muted); font-size: 0.8em; }
+    /* 4) 闪卡 */
+    .flashcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 16px 0 8px; }
+    .fc { perspective: 800px; height: 120px; cursor: pointer; }
+    .fc-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; }
+    .fc.flipped .fc-inner { transform: rotateY(180deg); }
+    .fc-face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 10px; backface-visibility: hidden; text-align: center; line-height: 1.5; font-size: 0.92rem; }
+    .fc-front { background: var(--accent); color: #fff; font-weight: 600; }
+    .fc-back { background: var(--accent-bg); color: var(--text); transform: rotateY(180deg); }
+    .fc-tip { font-size: 0.8rem; color: var(--muted); text-align: center; margin: 0 0 20px; }
+    /* 5) 现场生成例子按钮 */
+    .gen-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 10px; }
+    .gen-btn { padding: 7px 14px; border: 1.5px solid var(--accent); border-radius: 999px; background: #fff; color: var(--accent); font-size: 0.88rem; cursor: pointer; }
+    .gen-btn:hover { background: var(--accent-bg); }
+    .gen-out { margin-top: 8px; padding: 12px 16px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 0.92rem; line-height: 1.65; display: none; }
+    .gen-out.show { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -238,6 +254,24 @@
     <p>你问「2024 年欧盟 AI Act 的关键条款 + 各方反应」，Agent 会：先搜索 → 读 PDF → 对比立场 → 整理成报告。它调用了多个工具（搜索、读文件、汇总），不是一次性 LLM 自答。</p>
 
     <p class="meta">两个例子的共同点：<b>Agent 的价值来自「能接入外部世界并动手」，而 LLM 是它的推理内核</b>。</p>
+
+    <h3>闪卡：点卡片翻面看定义（练术语）</h3>
+    <div class="flashcards">
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Sensor</div><div class="fc-face fc-back">感知输入：读温度、读图、读日志</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Actuator</div><div class="fc-face fc-back">执行动作：发邮件、调用 API、移动机械臂</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Policy</div><div class="fc-face fc-back">策略：从"看到的"映射到"该做的"</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">ReAct</div><div class="fc-face fc-back">Reason + Act 交替，Thought→Action→Observation</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Loop</div><div class="fc-face fc-back">循环控制：决定什么时候停、什么时候换路径</div></div></div>
+    </div>
+    <p class="fc-tip">✨ 鼠标点卡片翻面，再点翻回来</p>
+
+    <h3>再要一个例子？点按钮生成（本地预设）</h3>
+    <div class="gen-bar">
+      <button class="gen-btn" data-kind="pos">🎁 给个正面例子</button>
+      <button class="gen-btn" data-kind="neg">⚠️ 给个反例</button>
+      <button class="gen-btn" data-kind="meta">💡 给个比喻</button>
+    </div>
+    <div class="gen-out" id="gen-out"></div>
   </section>
 
   <section id="boundaries">
@@ -402,12 +436,12 @@
           if (opt.getAttribute('data-key') === answer){
             opt.classList.add('correct');
             opts.forEach(function(o){ o.disabled = true; });
-            fb.textContent = '✓ 正确！' + explain;
+            fb.textContent = '🎉 正确！' + explain;
             fb.className = 'feedback show ok';
             locked = true; answered++; renderScore();
           } else {
             opt.classList.add('wrong'); opt.disabled = true;
-            fb.textContent = '✗ 不对，再想想…';
+            fb.textContent = '💭 不对，再想想…';
             fb.className = 'feedback show no';
           }
         });
@@ -425,6 +459,41 @@
       });
     }
     renderScore();
+
+    // === 4) 闪卡翻面 ===
+    document.querySelectorAll('.fc').forEach(function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('flipped'); });
+    });
+
+    // === 5) 生成例子（本地预设） ===
+    var examples = {
+      pos: [
+        '🌟 <b>你让 AI 帮你订机票</b>：先搜航班（percept）→ 比较价格（reasoning）→ 选定一班（action）→ 填表下单（actuator）→ 收确认邮件（observation）。整个过程 Agent 走完了。',
+        '🌟 <b>家里扫地机器人</b>：红外/激光测距（sensor）→ 规划路径避开障碍（policy）→ 轮子转/吸尘口启动（actuator）→ 看是否清扫完（loop）。',
+        '🌟 <b>GitHub Copilot Agent 模式</b>：你提个 issue → 它读仓库 → 改代码 → 跑测试 → 自动开 PR。每一步都是"看→想→做→看结果"。'
+      ],
+      neg: [
+        '🚫 <b>「1+1 等于几」</b>用 Agent 是浪费：不需要感知环境、不需要工具、一步就能答。',
+        '🚫 <b>「把这段中文翻译成英文」</b>也不该用 Agent：单次 LLM 调用足够，多步规划反而拖慢。',
+        '🚫 <b>纯闲聊</b>（"今天心情如何"）用 Chatbot 就够；Agent 强在动手，没活儿可干就别上。'
+      ],
+      meta: [
+        '💡 <b>Agent 像一只被训练好的导盲犬</b>：主人（用户）说"带我去超市"，它自己判断路线、避车、过马路。',
+        '💡 <b>LLM 是大脑，Tool 是手脚，Memory 是日记本，Loop 是闹钟</b>——四个配合才叫 Agent。',
+        '💡 <b>Agent ≠ 万能助手</b>：它更像一个"会用工具的实习生"，聪明但需要你明确目标。'
+      ]
+    };
+    var genOut = document.getElementById('gen-out');
+    var usedIdx = { pos: -1, neg: -1, meta: -1 };
+    document.querySelectorAll('.gen-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var kind = btn.getAttribute('data-kind');
+        var pool = examples[kind];
+        usedIdx[kind] = (usedIdx[kind] + 1) % pool.length;
+        genOut.innerHTML = pool[usedIdx[kind]];
+        genOut.classList.add('show');
+      });
+    });
   })();
 </script>
 </body>

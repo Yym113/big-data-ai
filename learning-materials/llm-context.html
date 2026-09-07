@@ -118,6 +118,20 @@
     section.collapsed > *:not(h2) { display: none; }
     section.collapsed h2::after { content: " ▸"; color: var(--muted); font-size: 0.8em; }
     section:not(.collapsed) h2::after { content: " ▾"; color: var(--muted); font-size: 0.8em; }
+    .flashcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 16px 0 8px; }
+    .fc { perspective: 800px; height: 120px; cursor: pointer; }
+    .fc-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; }
+    .fc.flipped .fc-inner { transform: rotateY(180deg); }
+    .fc-face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 10px; backface-visibility: hidden; text-align: center; line-height: 1.5; font-size: 0.92rem; }
+    .fc-front { background: var(--accent); color: #fff; font-weight: 600; }
+    .fc-back { background: var(--accent-bg); color: var(--text); transform: rotateY(180deg); }
+    .fc-tip { font-size: 0.8rem; color: var(--muted); text-align: center; margin: 0 0 20px; }
+    .gen-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 10px; }
+    .gen-btn { padding: 7px 14px; border: 1.5px solid var(--accent); border-radius: 999px; background: #fff; color: var(--accent); font-size: 0.88rem; cursor: pointer; }
+    .gen-btn:hover { background: var(--accent-bg); }
+    .gen-out { margin-top: 8px; padding: 12px 16px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 0.92rem; line-height: 1.65; display: none; }
+    .gen-out.show { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -246,6 +260,24 @@
     <p>Agent 调「查天气 API」时，结果以 <code>tool</code> 角色插回 context，让下一轮 LLM 能看到。这是 ReAct 范式的核心。</p>
 
     <p class="meta">共同点：context 不只是「用户输入」，而是<b>应用层主动构造的、把 LLM 当成 reasoning kernel 所需要的全部信息</b>。</p>
+
+    <h3>闪卡：点卡片翻面（练术语）</h3>
+    <div class="flashcards">
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Token</div><div class="fc-face fc-back">模型处理文本的最小单位；中文≈1 字，英文≈1 词</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Context</div><div class="fc-face fc-back">一次调用模型看进去的全部文本</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Window</div><div class="fc-face fc-back">上下文窗口：单次输入的 token 上限</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">RAG</div><div class="fc-face fc-back">检索增强：把外部片段塞进 context</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Stateless</div><div class="fc-face fc-back">无状态：每轮独立，记忆靠回填 context</div></div></div>
+    </div>
+    <p class="fc-tip">✨ 鼠标点卡片翻面</p>
+
+    <h3>再要个例子？点按钮生成（本地预设）</h3>
+    <div class="gen-bar">
+      <button class="gen-btn" data-kind="pos">🎁 给个正面例子</button>
+      <button class="gen-btn" data-kind="neg">⚠️ 给个反例</button>
+      <button class="gen-btn" data-kind="meta">💡 给个比喻</button>
+    </div>
+    <div class="gen-out" id="gen-out"></div>
   </section>
 
   <section id="boundaries">
@@ -405,12 +437,12 @@
           if (opt.getAttribute('data-key') === answer){
             opt.classList.add('correct');
             opts.forEach(function(o){ o.disabled = true; });
-            fb.textContent = '✓ 正确！' + explain;
+            fb.textContent = '🎉 正确！' + explain;
             fb.className = 'feedback show ok';
             locked = true; answered++; renderScore();
           } else {
             opt.classList.add('wrong'); opt.disabled = true;
-            fb.textContent = '✗ 不对，再想想…';
+            fb.textContent = '💭 不对，再想想…';
             fb.className = 'feedback show no';
           }
         });
@@ -428,6 +460,37 @@
       });
     }
     renderScore();
+    document.querySelectorAll('.fc').forEach(function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('flipped'); });
+    });
+    var examples = {
+      pos: [
+        '🌟 <b>客服机器人接 100 轮对话</b>：每轮把历史消息 + 客户资料 + FAQ 摘要都塞进 context，模型才能"记得"你前面说过啥。',
+        '🌟 <b>代码助手续写函数</b>：当前文件、相关 import、刚才的报错日志，全部进 context，模型才能接上思路。',
+        '🌟 <b>RAG 查公司内部知识</b>：用户问"年假几天"→ 先向量检索员工手册相关条款 → 把 top-3 塞进 user 段后面 → 答得准。'
+      ],
+      neg: [
+        '🚫 <b>把整本 1000 页说明书一次塞进去</b>：超过窗口、且放在中间（Lost in the Middle）效果更差。',
+        '🚫 <b>把英文 + 中文 + 日文 + emoji 混在一起</b>：token 切分复杂度飙升、计费翻倍。',
+        '🚫 <b>用"忘记上文"来掩盖 prompt 写得差</b>：清空 context 是笨办法，模型本来就没记，是 prompt 设计的问题。'
+      ],
+      meta: [
+        '💡 <b>Context 像一张 A4 纸</b>：能写满的信息有上限，关键内容写哪里决定你能不能看到（首尾最清楚）。',
+        '💡 <b>Token 像拼图小块</b>：模型看到的是拼图块序列，不是完整的"字"和"词"。',
+        '💡 <b>System 段像公司规章制度</b>：写在最前面，模型当优先级最高；用户改不动。'
+      ]
+    };
+    var genOut = document.getElementById('gen-out');
+    var usedIdx = { pos: -1, neg: -1, meta: -1 };
+    document.querySelectorAll('.gen-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var kind = btn.getAttribute('data-kind');
+        var pool = examples[kind];
+        usedIdx[kind] = (usedIdx[kind] + 1) % pool.length;
+        genOut.innerHTML = pool[usedIdx[kind]];
+        genOut.classList.add('show');
+      });
+    });
   })();
 </script>
 </body>

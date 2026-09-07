@@ -118,6 +118,20 @@
     section.collapsed > *:not(h2) { display: none; }
     section.collapsed h2::after { content: " ▸"; color: var(--muted); font-size: 0.8em; }
     section:not(.collapsed) h2::after { content: " ▾"; color: var(--muted); font-size: 0.8em; }
+    .flashcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin: 16px 0 8px; }
+    .fc { perspective: 800px; height: 120px; cursor: pointer; }
+    .fc-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; }
+    .fc.flipped .fc-inner { transform: rotateY(180deg); }
+    .fc-face { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 10px; backface-visibility: hidden; text-align: center; line-height: 1.5; font-size: 0.92rem; }
+    .fc-front { background: var(--accent); color: #fff; font-weight: 600; }
+    .fc-back { background: var(--accent-bg); color: var(--text); transform: rotateY(180deg); }
+    .fc-tip { font-size: 0.8rem; color: var(--muted); text-align: center; margin: 0 0 20px; }
+    .gen-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 10px; }
+    .gen-btn { padding: 7px 14px; border: 1.5px solid var(--accent); border-radius: 999px; background: #fff; color: var(--accent); font-size: 0.88rem; cursor: pointer; }
+    .gen-btn:hover { background: var(--accent-bg); }
+    .gen-out { margin-top: 8px; padding: 12px 16px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 0.92rem; line-height: 1.65; display: none; }
+    .gen-out.show { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -247,6 +261,24 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
     <p>Skill 里附带 <code>scripts/fetch_data.py</code> + <code>templates/report.md</code>。用户说「写本周销售报告」，Agent 自动跑脚本 + 套模板，输出固定格式产物。</p>
 
     <p class="meta">共同点：<b>Skill 的价值是「把跨任务会重复的工作流封装成一个名字，调用一次就行」</b>。</p>
+
+    <h3>闪卡：点卡片翻面（练术语）</h3>
+    <div class="flashcards">
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">SKILL.md</div><div class="fc-face fc-back">YAML 元数据 + Markdown 指令，必备</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">description</div><div class="fc-face fc-back">YAML 必填字段：决定何时被自动激活</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">name</div><div class="fc-face fc-back">YAML 必填字段：等于目录名，决定 /命令</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">MCP</div><div class="fc-face fc-back">给 Agent 暴露外部工具/数据源的标准协议</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Tool</div><div class="fc-face fc-back">被调用的函数（search/read_file/...）</div></div></div>
+    </div>
+    <p class="fc-tip">✨ 鼠标点卡片翻面</p>
+
+    <h3>再要个例子？点按钮生成（本地预设）</h3>
+    <div class="gen-bar">
+      <button class="gen-btn" data-kind="pos">🎁 给个正面例子</button>
+      <button class="gen-btn" data-kind="neg">⚠️ 给个反例</button>
+      <button class="gen-btn" data-kind="meta">💡 给个比喻</button>
+    </div>
+    <div class="gen-out" id="gen-out"></div>
   </section>
 
   <section id="boundaries">
@@ -405,12 +437,12 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
           if (opt.getAttribute('data-key') === answer){
             opt.classList.add('correct');
             opts.forEach(function(o){ o.disabled = true; });
-            fb.textContent = '✓ 正确！' + explain;
+            fb.textContent = '🎉 正确！' + explain;
             fb.className = 'feedback show ok';
             locked = true; answered++; renderScore();
           } else {
             opt.classList.add('wrong'); opt.disabled = true;
-            fb.textContent = '✗ 不对，再想想…';
+            fb.textContent = '💭 不对，再想想…';
             fb.className = 'feedback show no';
           }
         });
@@ -428,6 +460,37 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
       });
     }
     renderScore();
+    document.querySelectorAll('.fc').forEach(function(c){
+      c.addEventListener('click', function(){ c.classList.toggle('flipped'); });
+    });
+    var examples = {
+      pos: [
+        '🌟 <b>写代码规范 Skill</b>：在仓库里放 <code>.workbuddy/skills/team-style/SKILL.md</code>，描述命名/缩进/注释规则。新人写代码前自动加载。',
+        '🌟 <b>周报生成 Skill</b>：带 <code>scripts/fetch_tickets.py</code> + <code>templates/weekly.md</code>，你说"写本周周报"自动产出。',
+        '🌟 <b>论文总结 Skill</b>：你贴 PDF 链接 → 调 <code>scripts/extract.py</code> 拆章节 → 按 prompt 模板生成 Markdown 摘要。'
+      ],
+      neg: [
+        '🚫 <b>把整个操作手册塞进 SKILL.md</b>：超过 ~2 千字，正文就进 context 把窗口占满。',
+        '🚫 <b>name 用 "MySkill" 带空格</b>：违反命名规范（小写+连字符），系统会拒绝加载。',
+        '🚫 <b>把 SKILL.md 当 Prompt 写：长篇散文</b>：description 要写"做什么+何时用"，正文要可被模型一步步执行。'
+      ],
+      meta: [
+        '💡 <b>Skill 像一份工作 SOP</b>：新人来了看一眼就知道怎么干，不用每次师傅口述。',
+        '💡 <b>description 是"招牌菜"：让 Agent 知道什么时候点这道菜；正文是"菜谱"：被点了才拿出来。</b>',
+        '💡 <b>项目级 Skill 像部门规章</b>：只在本仓库生效；个人级像个人笔记：跨项目都用。'
+      ]
+    };
+    var genOut = document.getElementById('gen-out');
+    var usedIdx = { pos: -1, neg: -1, meta: -1 };
+    document.querySelectorAll('.gen-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var kind = btn.getAttribute('data-kind');
+        var pool = examples[kind];
+        usedIdx[kind] = (usedIdx[kind] + 1) % pool.length;
+        genOut.innerHTML = pool[usedIdx[kind]];
+        genOut.classList.add('show');
+      });
+    });
   })();
 </script>
 </body>
