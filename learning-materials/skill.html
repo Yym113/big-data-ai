@@ -11,10 +11,11 @@
       --border: #e2e0d8;
       --text: #1a1a17;
       --muted: #5a5a55;
-      --accent: #4a3d8c;
-      --accent-bg: #f0edf8;
+      --accent: #2f6b8a;
+      --accent-bg: #eaf2f7;
       --link: #1d5b9c;
       --good: #2f7d3a;
+      --bad: #b5361e;
       --code-bg: #f3f1ea;
     }
     * { box-sizing: border-box; }
@@ -26,26 +27,26 @@
       line-height: 1.7;
       font-size: 16px;
     }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 36px 24px 80px; }
     header {
       border-bottom: 2px solid var(--accent);
       padding-bottom: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
-    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
-    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    h1 { margin: 0 0 8px; font-size: 2rem; color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 0.92rem; }
     nav {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 16px 20px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     nav h2 { margin: 0 0 8px; font-size: 1rem; color: var(--muted); }
     nav ul { margin: 0; padding-left: 20px; }
     nav li { margin: 2px 0; }
     nav a { color: var(--link); text-decoration: none; }
-    nav a:hover { text-decoration: underline;; }
+    nav a:hover { text-decoration: underline; }
     section {
       background: var(--card);
       border: 1px solid var(--border);
@@ -53,7 +54,7 @@
       padding: 24px 28px;
       margin-bottom: 20px;
     }
-    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h2 { margin-top: 0; font-size: 1.3rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
     h3 { font-size: 1.05rem; margin-top: 1.2em; }
     ul, ol { padding-left: 22px; }
     li { margin: 4px 0; }
@@ -63,12 +64,11 @@
       margin: 12px 0;
       padding: 10px 16px;
       border-radius: 4px;
-      font-style: normal;
     }
     code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; }
     pre code { display: block; padding: 12px; overflow-x: auto; }
     a { color: var(--link); }
-    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; }
+    table { border-collapse: collapse; width: 100%; }
     th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
     th { background: var(--code-bg); font-weight: 600; }
     .meta { color: var(--muted); font-size: 0.88em; }
@@ -85,6 +85,23 @@
       color: var(--muted);
       font-size: 0.85em;
     }
+
+    /* ===== 自测题 ===== */
+    .quiz-score { color: var(--accent); font-weight: 600; margin-bottom: 14px; font-size: 0.92rem; }
+    .q { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+    .q-text { margin: 0 0 10px; font-weight: 600; }
+    .opts { display: flex; flex-direction: column; gap: 8px; }
+    .opt { text-align: left; padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font-size: 0.95rem; color: var(--text); line-height: 1.5; }
+    .opt:hover:not(:disabled) { border-color: var(--accent); }
+    .opt.correct { border-color: var(--good); background: #eaf6ec; color: #1c5b28; font-weight: 600; }
+    .opt.wrong { border-color: var(--bad); background: #fbeae6; color: #8c2b17; }
+    .opt:disabled { cursor: default; opacity: 0.8; }
+    .feedback { margin-top: 10px; padding: 8px 12px; border-radius: 6px; font-size: 0.88rem; display: none; }
+    .feedback.show { display: block; }
+    .feedback.ok { background: #eaf6ec; color: #1c5b28; }
+    .feedback.no { background: #fbeae6; color: #8c2b17; }
+    #quiz-reset { margin-top: 4px; padding: 9px 20px; border: 1px solid var(--accent); border-radius: 8px; background: #fff; color: var(--accent); font-size: 0.9rem; cursor: pointer; }
+    #quiz-reset:hover { background: var(--accent-bg); }
   </style>
 </head>
 <body>
@@ -93,11 +110,6 @@
     <h1>Skill（AI Agent 的可复用技能包）</h1>
     <p class="subtitle">概念学习资料 · 入门 · 由 concept-unpacker Skill 生成 · 经本人核查</p>
   </header>
-
-  <div class="progress-wrap">
-    <div class="progress-text" id="progress-text">学习进度：0 / 9 节</div>
-    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-  </div>
 
   <nav>
     <h2>目录</h2>
@@ -108,7 +120,7 @@
       <li><a href="#explain">04 结构化解释</a></li>
       <li><a href="#examples">05 应用场景</a></li>
       <li><a href="#boundaries">06 概念辨析 / 边界</a></li>
-      <li><a href="#self-test">07 自测问题</a></li>
+      <li><a href="#self-test">07 自测题</a></li>
       <li><a href="#sources">08 可核查的参考来源</a></li>
       <li><a href="#verify">09 核查记录</a></li>
     </ul>
@@ -232,18 +244,8 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
   </section>
 
   <section id="self-test">
-    <h2>07 · 交互自测（点选项作答）</h2>
-    <p class="meta">共 5 题。点击选项即时判断对错；选错可以继续选，直到答对。</p>
-
-    <h3>核心概念闪卡（点卡片翻面）</h3>
-    <div class="flashcards">
-      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Skill</div><div class="fc-face fc-back">带 YAML 元数据的目录，激活时把指令注入 context</div></div></div>
-      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">SKILL.md</div><div class="fc-face fc-back">Skill 的核心文件：YAML 元数据 + Markdown 指令</div></div></div>
-      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Tool</div><div class="fc-face fc-back">被调用的函数，执行具体操作</div></div></div>
-      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">MCP</div><div class="fc-face fc-back">给 Agent 暴露外部工具和数据源的标准协议</div></div></div>
-      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">name + description</div><div class="fc-face fc-back">SKILL.md YAML 的两个必填字段</div></div></div>
-    </div>
-    <p class="fc-tip">提示：点卡片看背面定义，再点翻回来。</p>
+    <h2>07 · 自测题</h2>
+    <p class="meta">共 5 题。点击选项判断对错，选错可继续重选。</p>
 
     <div class="quiz" id="quiz">
       <div class="quiz-score" id="quiz-score">进度：答对 0 / 5</div>
@@ -304,20 +306,6 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
       </div>
     </div>
 
-    <h3>填空题（输入答案后提交）</h3>
-
-    <div class="fill" data-answers="name|description" data-std="name 和 description">
-      <p class="q-text">6. SKILL.md 的 YAML frontmatter 至少要写 ____ 和 ____ 两个字段。</p>
-      <div class="fill-row"><input type="text" class="fill-input" placeholder="输入答案"><button class="fill-btn">提交</button></div>
-      <div class="feedback"></div>
-    </div>
-
-    <div class="fill" data-answers="context|上下文" data-std="context（上下文）">
-      <p class="q-text">7. Skill 不改模型权重，它只在当前 ____ 里追加文字。</p>
-      <div class="fill-row"><input type="text" class="fill-input" placeholder="输入答案"><button class="fill-btn">提交</button></div>
-      <div class="feedback"></div>
-    </div>
-
     <button id="quiz-reset">重新测验</button>
   </section>
 
@@ -347,187 +335,56 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
       生成者：concept-unpacker Skill · 由本人复核 · 学习资料 / 入门深度 · 适用 袁玉明 (Yym113) 的 big-data-ai 课程作业。
     </footer>
 </div>
-<button id="back-top" aria-label="回到顶部">↑</button>
-<style>
-    section.collapsible h2{cursor:pointer;user-select:none}
-    section.collapsible h2::after{content:" ▾";color:var(--muted);font-size:.8em}
-    section.collapsible.collapsed h2::after{content:" ▸"}
-    section.collapsible.collapsed .sec-body{display:none}
-    table tbody tr:hover td{background:var(--accent-bg)}
-
-    /* ===== 交互自测 ===== */
-    .quiz-score{background:var(--accent-bg);color:var(--accent);font-weight:600;padding:10px 14px;border-radius:8px;margin-bottom:16px;text-align:center}
-    .q{border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;background:#fff}
-    .q-text{margin:0 0 10px;font-weight:600}
-    .opts{display:flex;flex-direction:column;gap:8px}
-    .opt{text-align:left;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:.95rem;transition:all .12s;color:var(--text);line-height:1.5}
-    .opt:hover:not(:disabled){border-color:var(--accent);background:var(--accent-bg)}
-    .opt.correct{border-color:#2f7d3a;background:#eaf6ec;color:#1c5b28;font-weight:600}
-    .opt.wrong{border-color:#b5361e;background:#fbeae6;color:#8c2b17}
-    .opt:disabled{cursor:default;opacity:.78}
-    .feedback{margin-top:10px;padding:10px 14px;border-radius:6px;font-size:.9rem;display:none}
-    .feedback.show{display:block}
-    .feedback.ok{background:#eaf6ec;color:#1c5b28;border-left:3px solid #2f7d3a}
-    .feedback.no{background:#fbeae6;color:#8c2b17;border-left:3px solid #b5361e}
-    #quiz-reset{margin-top:6px;padding:10px 22px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:.95rem;cursor:pointer;font-weight:600}
-    #quiz-reset:hover{opacity:.9}
-
-    /* ===== 学习进度 ===== */
-    .progress-wrap{position:sticky;top:0;z-index:60;background:var(--bg);padding:10px 2px 8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
-    .progress-text{font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-    .progress-track{height:8px;background:var(--border);border-radius:999px;overflow:hidden}
-    .progress-fill{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .35s}
-    .done-toggle{float:right;font-size:.78rem;padding:1px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--muted);cursor:pointer;transition:all .12s;font-weight:normal;line-height:1.7;margin-left:8px}
-    .done-toggle.done{background:var(--accent);color:#fff;border-color:var(--accent)}
-
-    /* ===== 闪卡 ===== */
-    .flashcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:14px 0 8px}
-    .fc{perspective:900px;height:150px;cursor:pointer}
-    .fc-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
-    .fc.flipped .fc-inner{transform:rotateY(180deg)}
-    .fc-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;border-radius:10px;backface-visibility:hidden}
-    .fc-front{background:var(--accent);color:#fff;font-size:1.05rem;font-weight:600}
-    .fc-back{background:var(--accent-bg);color:var(--text);transform:rotateY(180deg);font-weight:500;font-size:.9rem;line-height:1.5}
-    .fc-tip{font-size:.8rem;color:var(--muted);text-align:center;margin:0 0 18px}
-
-    /* ===== 填空题 ===== */
-    .fill{border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px;background:#fff}
-    .fill-row{display:flex;gap:8px;margin-top:8px}
-    .fill-input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;color:var(--text)}
-    .fill-input:focus{outline:none;border-color:var(--accent)}
-    .fill-btn{padding:8px 18px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:.95rem;cursor:pointer;font-weight:600}
-    .fill-btn:hover{opacity:.9}
-
-    /* ===== 返回顶部 ===== */
-    #back-top{position:fixed;right:24px;bottom:24px;width:44px;height:44px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
-    #back-top.show{opacity:1;pointer-events:auto}
-    #back-top:hover{opacity:.9}
-  </style>
-  <script>
-    (function(){
-      // 章节折叠
-      document.querySelectorAll('section').forEach(function(sec){
-        var h2=sec.querySelector('h2');if(!h2)return;
-        if(sec.querySelector('.mermaid')||sec.querySelector('.mermaid-wrap'))return;
-        sec.classList.add('collapsible');
-        var body=document.createElement('div');body.className='sec-body';
-        var el=h2.nextElementSibling;
-        while(el){var n=el.nextElementSibling;body.appendChild(el);el=n;}
-        sec.appendChild(body);
-        h2.addEventListener('click',function(){sec.classList.toggle('collapsed');});
-      });
-
-      // 交互自测
-      var quiz=document.getElementById('quiz');
-      if(!quiz)return;
-      var scoreEl=document.getElementById('quiz-score');
-      var total=quiz.querySelectorAll('.q').length;
-      var answered=0;
-      function renderScore(){
-        if(scoreEl){
-          scoreEl.textContent=(answered>=total)?('🎉 全部答对！得分 '+answered+' / '+total):('进度：答对 '+answered+' / '+total);
-        }
+<script>
+  (function(){
+    var quiz = document.getElementById('quiz');
+    if (!quiz) return;
+    var scoreEl = document.getElementById('quiz-score');
+    var total = quiz.querySelectorAll('.q').length;
+    var answered = 0;
+    function renderScore(){
+      if (scoreEl){
+        scoreEl.textContent = (answered >= total)
+          ? ('✓ 全部答对！得分 ' + answered + ' / ' + total)
+          : ('进度：答对 ' + answered + ' / ' + total);
       }
-      quiz.querySelectorAll('.q').forEach(function(q){
-        var answer=q.getAttribute('data-answer');
-        var explain=q.getAttribute('data-explain')||'';
-        var opts=q.querySelectorAll('.opt');
-        var fb=q.querySelector('.feedback');
-        var locked=false;
-        opts.forEach(function(opt){
-          opt.addEventListener('click',function(){
-            if(locked)return;
-            if(opt.getAttribute('data-key')===answer){
-              opt.classList.add('correct');
-              opts.forEach(function(o){o.disabled=true;});
-              fb.textContent='✓ 正确！'+explain;
-              fb.className='feedback show ok';
-              locked=true;answered++;renderScore();
-            }else{
-              opt.classList.add('wrong');opt.disabled=true;
-              fb.textContent='✗ 不对，再想想…';
-              fb.className='feedback show no';
-            }
-          });
+    }
+    quiz.querySelectorAll('.q').forEach(function(q){
+      var answer = q.getAttribute('data-answer');
+      var explain = q.getAttribute('data-explain') || '';
+      var opts = q.querySelectorAll('.opt');
+      var fb = q.querySelector('.feedback');
+      var locked = false;
+      opts.forEach(function(opt){
+        opt.addEventListener('click', function(){
+          if (locked) return;
+          if (opt.getAttribute('data-key') === answer){
+            opt.classList.add('correct');
+            opts.forEach(function(o){ o.disabled = true; });
+            fb.textContent = '✓ 正确！' + explain;
+            fb.className = 'feedback show ok';
+            locked = true; answered++; renderScore();
+          } else {
+            opt.classList.add('wrong'); opt.disabled = true;
+            fb.textContent = '✗ 不对，再想想…';
+            fb.className = 'feedback show no';
+          }
         });
       });
-      var resetBtn=document.getElementById('quiz-reset');
-      if(resetBtn){
-        resetBtn.addEventListener('click',function(){
-          answered=0;
-          quiz.querySelectorAll('.q').forEach(function(q){
-            q.querySelectorAll('.opt').forEach(function(o){o.classList.remove('correct','wrong');o.disabled=false;});
-            var fb=q.querySelector('.feedback');fb.className='feedback';fb.textContent='';
-          });
-          renderScore();
+    });
+    var resetBtn = document.getElementById('quiz-reset');
+    if (resetBtn){
+      resetBtn.addEventListener('click', function(){
+        answered = 0;
+        quiz.querySelectorAll('.q').forEach(function(q){
+          q.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('correct','wrong'); o.disabled = false; });
+          var fb = q.querySelector('.feedback'); fb.className = 'feedback'; fb.textContent = '';
         });
-      }
-      renderScore();
-
-      // 学习进度 + 每节打勾
-      var KEY='learned-'+document.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g,'');
-      var sections=Array.prototype.slice.call(document.querySelectorAll('section')).filter(function(s){return s.querySelector('h2');});
-      var learned={};
-      try{learned=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){learned={};}
-      var fill=document.getElementById('progress-fill');
-      var ptext=document.getElementById('progress-text');
-      function updateProgress(){
-        var n=sections.filter(function(s){return learned[s.id];}).length;
-        var total=sections.length;
-        var pct=total?Math.round(n/total*100):0;
-        if(fill)fill.style.width=pct+'%';
-        if(ptext)ptext.textContent='学习进度：'+n+' / '+total+' 节'+(pct===100?' 🎉':'');
-      }
-      sections.forEach(function(s){
-        if(!s.id)s.id='sec-'+(Math.random()+'').slice(2,8);
-        var h2=s.querySelector('h2');
-        var btn=document.createElement('button');
-        btn.className='done-toggle'+(learned[s.id]?' done':'');
-        btn.textContent=learned[s.id]?'✓ 已学':'标记已学';
-        btn.addEventListener('click',function(e){
-          e.stopPropagation();
-          learned[s.id]=!learned[s.id];
-          btn.className='done-toggle'+(learned[s.id]?' done':'');
-          btn.textContent=learned[s.id]?'✓ 已学':'标记已学';
-          try{localStorage.setItem(KEY,JSON.stringify(learned));}catch(e){}
-          updateProgress();
-        });
-        h2.appendChild(btn);
+        renderScore();
       });
-      updateProgress();
-
-      // 闪卡翻转
-      document.querySelectorAll('.fc').forEach(function(c){c.addEventListener('click',function(){c.classList.toggle('flipped');});});
-
-      // 填空题
-      document.querySelectorAll('.fill').forEach(function(f){
-        var input=f.querySelector('.fill-input');
-        var btn=f.querySelector('.fill-btn');
-        var fb=f.querySelector('.feedback');
-        var keys=(f.getAttribute('data-answers')||'').split('|').map(function(k){return k.trim();}).filter(Boolean);
-        var std=f.getAttribute('data-std')||'';
-        var done=false;
-        function check(){
-          if(done)return;
-          var val=(input.value||'').trim();
-          if(!val){fb.textContent='先输入答案再提交哦';fb.className='feedback show no';return;}
-          var hit=keys.some(function(k){return val.indexOf(k)>-1;});
-          if(hit){fb.textContent='✓ 正确！'+(std?('参考答案：'+std):'');fb.className='feedback show ok';done=true;input.disabled=true;btn.disabled=true;}
-          else{fb.textContent='✗ 还不完全对，再想想…';fb.className='feedback show no';}
-        }
-        btn.addEventListener('click',check);
-        input.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
-      });
-
-      // 返回顶部
-      var bt=document.getElementById('back-top');
-      if(bt){
-        window.addEventListener('scroll',function(){
-          if(window.scrollY>400){bt.classList.add('show');}else{bt.classList.remove('show');}
-        });
-        bt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
-      }
-    })();
-  </script>
+    }
+    renderScore();
+  })();
+</script>
 </body>
 </html>
