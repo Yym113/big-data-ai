@@ -103,6 +103,23 @@
     #quiz-reset { margin-top: 4px; padding: 9px 20px; border: 1px solid var(--accent); border-radius: 8px; background: #fff; color: var(--accent); font-size: 0.9rem; cursor: pointer; }
     #quiz-reset:hover { background: var(--accent-bg); }
 
+    /* 题型 2：判断（对/错） */
+    .judge-opts { display: flex; gap: 10px; }
+    .judge-opt { flex: 1; padding: 12px 0; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .judge-opt:hover:not(:disabled) { border-color: var(--accent); }
+    .judge-opt.right { border-color: var(--good); background: #eaf6ec; color: #1c5b28; }
+    .judge-opt.wrong { border-color: var(--bad); background: #fbeae6; color: #8c2b17; }
+    .judge-opt:disabled { cursor: default; opacity: 0.8; }
+
+    /* 题型 3：填空（输入框 + 提交） */
+    .fill-input { width: 100%; padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.95rem; font-family: inherit; background: #fff; color: var(--text); }
+    .fill-input:focus { outline: none; border-color: var(--accent); }
+    .fill-input.right { border-color: var(--good); background: #eaf6ec; color: #1c5b28; font-weight: 600; }
+    .fill-input.wrong { border-color: var(--bad); background: #fbeae6; color: #8c2b17; }
+    .fill-submit { margin-top: 8px; padding: 8px 18px; border: 1px solid var(--accent); border-radius: 8px; background: #fff; color: var(--accent); font-size: 0.9rem; cursor: pointer; }
+    .fill-submit:hover:not(:disabled) { background: var(--accent-bg); }
+    .fill-submit:disabled { opacity: 0.6; cursor: default; }
+
     /* ===== 趣味互动 ===== */
     h2 { display: flex; align-items: center; gap: 10px; }
     .master-btn { font-size: 0.78rem; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--muted); cursor: pointer; font-weight: 400; }
@@ -293,12 +310,13 @@
 
   <section id="self-test">
     <h2>07 · 自测题</h2>
-    <p class="meta">共 5 题。点击选项判断对错，选错可继续重选。</p>
+    <p class="meta">共 6 题，<b>3 种题型</b>（选择 / 判断 / 填空），各 2 道。错可重试。</p>
 
     <div class="quiz" id="quiz">
-      <div class="quiz-score" id="quiz-score">进度：答对 0 / 5</div>
+      <div class="quiz-score" id="quiz-score">进度：答对 0 / 6</div>
 
-      <div class="q" data-answer="B" data-explain="prompt 是你写的输入；context 是模型实际看到的全部 token（含自动加的 system 段、历史消息等）。">
+      <!-- 题 1：选择 -->
+      <div class="q" data-type="choice" data-answer="B" data-explain="prompt 是你写的输入；context 是模型实际看到的全部 token（含自动加的 system 段、历史消息等）。">
         <p class="q-text">1. context 和 prompt 是一回事吗？</p>
         <div class="opts">
           <button class="opt" data-key="A">A. 完全一样</button>
@@ -309,19 +327,9 @@
         <div class="feedback"></div>
       </div>
 
-      <div class="q" data-answer="A" data-explain="上下文窗口限制的是「单次送入模型的输入 token 上限」，与输出长度、知识量无关。">
-        <p class="q-text">2. 「上下文窗口」限制的是什么？</p>
-        <div class="opts">
-          <button class="opt" data-key="A">A. 单次调用送入模型的最大 token 数</button>
-          <button class="opt" data-key="B">B. 模型能输出的最大字数</button>
-          <button class="opt" data-key="C">C. 模型的知识量</button>
-          <button class="opt" data-key="D">D. 用户的提问次数</button>
-        </div>
-        <div class="feedback"></div>
-      </div>
-
-      <div class="q" data-answer="B" data-explain="Lost in the Middle 发现：相关信息放在 context 开头或结尾，比放中间表现更好。">
-        <p class="q-text">3. 「Lost in the Middle」论文发现了什么？</p>
+      <!-- 题 2：选择 -->
+      <div class="q" data-type="choice" data-answer="B" data-explain="Lost in the Middle 发现：相关信息放在 context 开头或结尾，比放中间表现更好。">
+        <p class="q-text">2. 「Lost in the Middle」论文发现了什么？</p>
         <div class="opts">
           <button class="opt" data-key="A">A. 长上下文完全无用</button>
           <button class="opt" data-key="B">B. 相关信息放开头或结尾，比放中间表现更好</button>
@@ -331,25 +339,39 @@
         <div class="feedback"></div>
       </div>
 
-      <div class="q" data-answer="B" data-explain="RAG 不真正扩大窗口，而是用检索把最相关的片段塞进当前 context。">
-        <p class="q-text">4. RAG 是怎么「扩展」上下文的？</p>
-        <div class="opts">
-          <button class="opt" data-key="A">A. 真正扩大模型的窗口</button>
-          <button class="opt" data-key="B">B. 用检索把最相关的片段塞进当前 context</button>
-          <button class="opt" data-key="C">C. 修改模型权重</button>
-          <button class="opt" data-key="D">D. 压缩用户的问题</button>
+      <!-- 题 3：判断 -->
+      <div class="q" data-type="judge" data-answer="wrong" data-explain="上下文窗口限制的是「单次送入模型的输入 token 上限」，与最大输出字数、知识量无关。">
+        <p class="q-text">3. 判断：「上下文窗口」限制的是模型最大输出字数。</p>
+        <div class="judge-opts">
+          <button class="judge-opt" data-key="right">✓ 对</button>
+          <button class="judge-opt" data-key="wrong">× 错</button>
         </div>
         <div class="feedback"></div>
       </div>
 
-      <div class="q" data-answer="C" data-explain="LLM 是无状态的，每轮「记忆」靠把历史内容再次塞回 context 来实现。">
-        <p class="q-text">5. 下列哪个说法正确？</p>
-        <div class="opts">
-          <button class="opt" data-key="A">A. context 会跨调用持久保存</button>
-          <button class="opt" data-key="B">B. LLM 是有状态（stateful）的</button>
-          <button class="opt" data-key="C">C. LLM 无状态，每轮「记忆」靠把历史塞回 context</button>
-          <button class="opt" data-key="D">D. system 段用户可以直接修改</button>
+      <!-- 题 4：判断 -->
+      <div class="q" data-type="judge" data-answer="wrong" data-explain="LLM 是无状态的（stateless），每轮「记忆」靠把历史内容再次塞回 context 来实现，模型本身不存历史。">
+        <p class="q-text">4. 判断：「LLM 是有状态的，会自己记住历史对话」。</p>
+        <div class="judge-opts">
+          <button class="judge-opt" data-key="right">✓ 对</button>
+          <button class="judge-opt" data-key="wrong">× 错</button>
         </div>
+        <div class="feedback"></div>
+      </div>
+
+      <!-- 题 5：填空 -->
+      <div class="q" data-type="fill" data-answer="不" data-hint="中文一个字" data-explain="RAG 不真正扩大模型窗口，而是用检索把最相关的片段塞进当前 context。">
+        <p class="q-text">5. 填空：RAG 真正扩大了模型的上下文窗口吗？答：<u>&nbsp;&nbsp;&nbsp;</u>（填「是 / 不」）。</p>
+        <input type="text" class="fill-input" placeholder="输入一个字" autocomplete="off">
+        <button class="fill-submit">提交</button>
+        <div class="feedback"></div>
+      </div>
+
+      <!-- 题 6：填空 -->
+      <div class="q" data-type="fill" data-answer="开头" data-hint="中文，两个字" data-explain="Lost in the Middle：相关信息放在 context 开头或结尾，比放中间表现更好。">
+        <p class="q-text">6. 填空：Lost in the Middle 发现——相关信息放 <u>&nbsp;&nbsp;&nbsp;</u> 或结尾，比放中间表现更好。</p>
+        <input type="text" class="fill-input" placeholder="输入两个字" autocomplete="off">
+        <button class="fill-submit">提交</button>
         <div class="feedback"></div>
       </div>
     </div>
@@ -413,6 +435,7 @@
       });
       h2.appendChild(btn);
     });
+    // === 2) 多样化自测题：选择 / 判断 / 填空 ===
     var quiz = document.getElementById('quiz');
     if (!quiz) return;
     var scoreEl = document.getElementById('quiz-score');
@@ -421,45 +444,88 @@
     function renderScore(){
       if (scoreEl){
         scoreEl.textContent = (answered >= total)
-          ? ('✓ 全部答对！得分 ' + answered + ' / ' + total)
-          : ('进度：答对 ' + answered + ' / ' + total);
+          ? ('✓ 全部通关！得分 ' + answered + ' / ' + total)
+          : ('进度：通关 ' + answered + ' / ' + total);
       }
     }
-    quiz.querySelectorAll('.q').forEach(function(q){
+    function fbOk(q, msg){ var b = q.querySelector('.feedback'); b.textContent = '🎉 ' + msg; b.className = 'feedback show ok'; }
+    function fbNo(q, msg){ var b = q.querySelector('.feedback'); b.textContent = '💭 ' + msg; b.className = 'feedback show no'; }
+    function lockQ(q){ q.querySelectorAll('button, input').forEach(function(el){ el.disabled = true; }); }
+
+    // 题型 1：选择
+    quiz.querySelectorAll('.q[data-type="choice"]').forEach(function(q){
       var answer = q.getAttribute('data-answer');
       var explain = q.getAttribute('data-explain') || '';
       var opts = q.querySelectorAll('.opt');
-      var fb = q.querySelector('.feedback');
       var locked = false;
       opts.forEach(function(opt){
         opt.addEventListener('click', function(){
           if (locked) return;
           if (opt.getAttribute('data-key') === answer){
-            opt.classList.add('correct');
+            opt.classList.add('correct'); locked = true;
             opts.forEach(function(o){ o.disabled = true; });
-            fb.textContent = '🎉 正确！' + explain;
-            fb.className = 'feedback show ok';
-            locked = true; answered++; renderScore();
+            fbOk(q, explain); answered++; renderScore();
           } else {
             opt.classList.add('wrong'); opt.disabled = true;
-            fb.textContent = '💭 不对，再想想…';
-            fb.className = 'feedback show no';
+            fbNo(q, '不对，再想想…');
           }
         });
       });
     });
+
+    // 题型 2：判断
+    quiz.querySelectorAll('.q[data-type="judge"]').forEach(function(q){
+      var answer = q.getAttribute('data-answer');
+      var explain = q.getAttribute('data-explain') || '';
+      var opts = q.querySelectorAll('.judge-opt');
+      var locked = false;
+      opts.forEach(function(opt){
+        opt.addEventListener('click', function(){
+          if (locked) return;
+          if (opt.getAttribute('data-key') === answer){
+            opt.classList.add('right'); locked = true;
+            opts.forEach(function(o){ o.disabled = true; });
+            fbOk(q, explain); answered++; renderScore();
+          } else {
+            opt.classList.add('wrong'); opt.disabled = true;
+            fbNo(q, '不对，再想想…');
+          }
+        });
+      });
+    });
+
+    // 题型 3：填空
+    quiz.querySelectorAll('.q[data-type="fill"]').forEach(function(q){
+      var answer = q.getAttribute('data-answer').trim().toLowerCase();
+      var explain = q.getAttribute('data-explain') || '';
+      var hint = q.getAttribute('data-hint') || '';
+      var input = q.querySelector('.fill-input');
+      var btn = q.querySelector('.fill-submit');
+      var locked = false;
+      function submit(){
+        if (locked) return;
+        var v = input.value.trim().toLowerCase();
+        if (!v){ fbNo(q, '先填个答案再提交'); return; }
+        if (v === answer){
+          input.classList.add('right'); locked = true;
+          fbOk(q, explain); answered++; renderScore(); lockQ(q);
+        } else {
+          input.classList.add('wrong');
+          fbNo(q, '不对，再试试（提示：' + hint + '）');
+          setTimeout(function(){ input.classList.remove('wrong'); input.focus(); input.select(); }, 900);
+        }
+      }
+      btn.addEventListener('click', submit);
+      input.addEventListener('keydown', function(e){ if (e.key === 'Enter') submit(); });
+    });
+
+    renderScore();
+
+    // 重新测验：刷新页面最干净
     var resetBtn = document.getElementById('quiz-reset');
     if (resetBtn){
-      resetBtn.addEventListener('click', function(){
-        answered = 0;
-        quiz.querySelectorAll('.q').forEach(function(q){
-          q.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('correct','wrong'); o.disabled = false; });
-          var fb = q.querySelector('.feedback'); fb.className = 'feedback'; fb.textContent = '';
-        });
-        renderScore();
-      });
+      resetBtn.addEventListener('click', function(){ location.reload(); });
     }
-    renderScore();
     document.querySelectorAll('.fc').forEach(function(c){
       c.addEventListener('click', function(){ c.classList.toggle('flipped'); });
     });

@@ -103,6 +103,23 @@
     #quiz-reset { margin-top: 4px; padding: 9px 20px; border: 1px solid var(--accent); border-radius: 8px; background: #fff; color: var(--accent); font-size: 0.9rem; cursor: pointer; }
     #quiz-reset:hover { background: var(--accent-bg); }
 
+    /* 题型 2：判断（对/错） */
+    .judge-opts { display: flex; gap: 10px; }
+    .judge-opt { flex: 1; padding: 12px 0; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .judge-opt:hover:not(:disabled) { border-color: var(--accent); }
+    .judge-opt.right { border-color: var(--good); background: #eaf6ec; color: #1c5b28; }
+    .judge-opt.wrong { border-color: var(--bad); background: #fbeae6; color: #8c2b17; }
+    .judge-opt:disabled { cursor: default; opacity: 0.8; }
+
+    /* 题型 3：填空（输入框 + 提交） */
+    .fill-input { width: 100%; padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.95rem; font-family: inherit; background: #fff; color: var(--text); }
+    .fill-input:focus { outline: none; border-color: var(--accent); }
+    .fill-input.right { border-color: var(--good); background: #eaf6ec; color: #1c5b28; font-weight: 600; }
+    .fill-input.wrong { border-color: var(--bad); background: #fbeae6; color: #8c2b17; }
+    .fill-submit { margin-top: 8px; padding: 8px 18px; border: 1px solid var(--accent); border-radius: 8px; background: #fff; color: var(--accent); font-size: 0.9rem; cursor: pointer; }
+    .fill-submit:hover:not(:disabled) { background: var(--accent-bg); }
+    .fill-submit:disabled { opacity: 0.6; cursor: default; }
+
     /* ===== 趣味互动 ===== */
     h2 { display: flex; align-items: center; gap: 10px; }
     .master-btn { font-size: 0.78rem; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--muted); cursor: pointer; font-weight: 400; }
@@ -294,12 +311,13 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
 
   <section id="self-test">
     <h2>07 · 自测题</h2>
-    <p class="meta">共 5 题。点击选项判断对错，选错可继续重选。</p>
+    <p class="meta">共 6 题，<b>3 种题型</b>（选择 / 判断 / 填空），各 2 道。错可重试。</p>
 
     <div class="quiz" id="quiz">
-      <div class="quiz-score" id="quiz-score">进度：答对 0 / 5</div>
+      <div class="quiz-score" id="quiz-score">进度：答对 0 / 6</div>
 
-      <div class="q" data-answer="B" data-explain="Skill 是带 YAML 元数据的目录，激活时把指令注入 context，不改模型权重。">
+      <!-- 题 1：选择 -->
+      <div class="q" data-type="choice" data-answer="B" data-explain="Skill 是带 YAML 元数据的目录，激活时把指令注入 context，不改模型权重。">
         <p class="q-text">1. Skill 的本质是什么？</p>
         <div class="opts">
           <button class="opt" data-key="A">A. 改了模型权重的微调</button>
@@ -310,7 +328,8 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
         <div class="feedback"></div>
       </div>
 
-      <div class="q" data-answer="A" data-explain="SKILL.md 的 YAML 至少要有 name 和 description 两个必填字段。">
+      <!-- 题 2：选择 -->
+      <div class="q" data-type="choice" data-answer="A" data-explain="SKILL.md 的 YAML 至少要有 name 和 description 两个必填字段。">
         <p class="q-text">2. SKILL.md 的 YAML frontmatter 至少要有什么字段？</p>
         <div class="opts">
           <button class="opt" data-key="A">A. name 和 description</button>
@@ -321,36 +340,39 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
         <div class="feedback"></div>
       </div>
 
-      <div class="q" data-answer="B" data-explain="Skill 是被加载的「说明」，决定模型怎么做；Tool 是被调用的「函数」，执行具体操作。">
-        <p class="q-text">3. Skill 和 Tool 的区别是？</p>
-        <div class="opts">
-          <button class="opt" data-key="A">A. 完全一样</button>
-          <button class="opt" data-key="B">B. Skill 是被加载的说明，Tool 是被调用的函数</button>
-          <button class="opt" data-key="C">C. Tool 是说明，Skill 是函数</button>
-          <button class="opt" data-key="D">D. 没有区别</button>
+      <!-- 题 3：判断 -->
+      <div class="q" data-type="judge" data-answer="right" data-explain="Skill 是被加载的「说明」，决定模型怎么想怎么做；Tool 是被调用的「函数」，执行具体操作。">
+        <p class="q-text">3. 判断：「Skill 是被加载的说明，Tool 是被调用的函数」。</p>
+        <div class="judge-opts">
+          <button class="judge-opt" data-key="right">✓ 对</button>
+          <button class="judge-opt" data-key="wrong">× 错</button>
         </div>
         <div class="feedback"></div>
       </div>
 
-      <div class="q" data-answer="B" data-explain="正文只在激活时注入，脚本执行不消耗 prompt token，references 按需读取。">
-        <p class="q-text">4. 为什么说 Skill「节省 context」？</p>
-        <div class="opts">
-          <button class="opt" data-key="A">A. 因为 Skill 不占任何 token</button>
-          <button class="opt" data-key="B">B. 因为正文只在激活时注入，脚本执行不耗 prompt token</button>
-          <button class="opt" data-key="C">C. 因为 Skill 改小了模型</button>
-          <button class="opt" data-key="D">D. 因为 Skill 不用大模型</button>
+      <!-- 题 4：判断 -->
+      <div class="q" data-type="judge" data-answer="wrong" data-explain="Skill ≠ Fine-tuning：Fine-tuning 改模型权重；Skill 只在当前 context 里追加文字，不动权重。">
+        <p class="q-text">4. 判断：「Skill 等价于 Fine-tuning，会修改模型权重」。</p>
+        <div class="judge-opts">
+          <button class="judge-opt" data-key="right">✓ 对</button>
+          <button class="judge-opt" data-key="wrong">× 错</button>
         </div>
         <div class="feedback"></div>
       </div>
 
-      <div class="q" data-answer="B" data-explain="Skill 不会修改模型权重，它只在当前 context 里追加文字。">
-        <p class="q-text">5. Skill 会修改模型权重吗？</p>
-        <div class="opts">
-          <button class="opt" data-key="A">A. 会，等价于微调（fine-tuning）</button>
-          <button class="opt" data-key="B">B. 不会，它只在 context 里追加文字</button>
-          <button class="opt" data-key="C">C. 会，但很少</button>
-          <button class="opt" data-key="D">D. 取决于 skill 大小</button>
-        </div>
+      <!-- 题 5：填空 -->
+      <div class="q" data-type="fill" data-answer="否" data-hint="中文一个字" data-explain="Skill 不会修改模型权重，它只在当前 context 里追加文字。">
+        <p class="q-text">5. 填空：Skill 会修改模型权重吗？答：<u>&nbsp;&nbsp;&nbsp;</u>（填「是 / 否」）。</p>
+        <input type="text" class="fill-input" placeholder="输入一个字" autocomplete="off">
+        <button class="fill-submit">提交</button>
+        <div class="feedback"></div>
+      </div>
+
+      <!-- 题 6：填空 -->
+      <div class="q" data-type="fill" data-answer="name" data-hint="英文字段名" data-explain="SKILL.md 的 YAML frontmatter 至少需要 name 和 description 两个字段，写出其中一个即可。">
+        <p class="q-text">6. 填空：SKILL.md 的 YAML 必填字段之一是 <u>&nbsp;&nbsp;&nbsp;</u>。</p>
+        <input type="text" class="fill-input" placeholder="输入英文字段名" autocomplete="off">
+        <button class="fill-submit">提交</button>
         <div class="feedback"></div>
       </div>
     </div>
@@ -413,6 +435,7 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
       });
       h2.appendChild(btn);
     });
+    // === 2) 多样化自测题：选择 / 判断 / 填空 ===
     var quiz = document.getElementById('quiz');
     if (!quiz) return;
     var scoreEl = document.getElementById('quiz-score');
@@ -421,45 +444,88 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
     function renderScore(){
       if (scoreEl){
         scoreEl.textContent = (answered >= total)
-          ? ('✓ 全部答对！得分 ' + answered + ' / ' + total)
-          : ('进度：答对 ' + answered + ' / ' + total);
+          ? ('✓ 全部通关！得分 ' + answered + ' / ' + total)
+          : ('进度：通关 ' + answered + ' / ' + total);
       }
     }
-    quiz.querySelectorAll('.q').forEach(function(q){
+    function fbOk(q, msg){ var b = q.querySelector('.feedback'); b.textContent = '🎉 ' + msg; b.className = 'feedback show ok'; }
+    function fbNo(q, msg){ var b = q.querySelector('.feedback'); b.textContent = '💭 ' + msg; b.className = 'feedback show no'; }
+    function lockQ(q){ q.querySelectorAll('button, input').forEach(function(el){ el.disabled = true; }); }
+
+    // 题型 1：选择
+    quiz.querySelectorAll('.q[data-type="choice"]').forEach(function(q){
       var answer = q.getAttribute('data-answer');
       var explain = q.getAttribute('data-explain') || '';
       var opts = q.querySelectorAll('.opt');
-      var fb = q.querySelector('.feedback');
       var locked = false;
       opts.forEach(function(opt){
         opt.addEventListener('click', function(){
           if (locked) return;
           if (opt.getAttribute('data-key') === answer){
-            opt.classList.add('correct');
+            opt.classList.add('correct'); locked = true;
             opts.forEach(function(o){ o.disabled = true; });
-            fb.textContent = '🎉 正确！' + explain;
-            fb.className = 'feedback show ok';
-            locked = true; answered++; renderScore();
+            fbOk(q, explain); answered++; renderScore();
           } else {
             opt.classList.add('wrong'); opt.disabled = true;
-            fb.textContent = '💭 不对，再想想…';
-            fb.className = 'feedback show no';
+            fbNo(q, '不对，再想想…');
           }
         });
       });
     });
+
+    // 题型 2：判断
+    quiz.querySelectorAll('.q[data-type="judge"]').forEach(function(q){
+      var answer = q.getAttribute('data-answer');
+      var explain = q.getAttribute('data-explain') || '';
+      var opts = q.querySelectorAll('.judge-opt');
+      var locked = false;
+      opts.forEach(function(opt){
+        opt.addEventListener('click', function(){
+          if (locked) return;
+          if (opt.getAttribute('data-key') === answer){
+            opt.classList.add('right'); locked = true;
+            opts.forEach(function(o){ o.disabled = true; });
+            fbOk(q, explain); answered++; renderScore();
+          } else {
+            opt.classList.add('wrong'); opt.disabled = true;
+            fbNo(q, '不对，再想想…');
+          }
+        });
+      });
+    });
+
+    // 题型 3：填空
+    quiz.querySelectorAll('.q[data-type="fill"]').forEach(function(q){
+      var answer = q.getAttribute('data-answer').trim().toLowerCase();
+      var explain = q.getAttribute('data-explain') || '';
+      var hint = q.getAttribute('data-hint') || '';
+      var input = q.querySelector('.fill-input');
+      var btn = q.querySelector('.fill-submit');
+      var locked = false;
+      function submit(){
+        if (locked) return;
+        var v = input.value.trim().toLowerCase();
+        if (!v){ fbNo(q, '先填个答案再提交'); return; }
+        if (v === answer){
+          input.classList.add('right'); locked = true;
+          fbOk(q, explain); answered++; renderScore(); lockQ(q);
+        } else {
+          input.classList.add('wrong');
+          fbNo(q, '不对，再试试（提示：' + hint + '）');
+          setTimeout(function(){ input.classList.remove('wrong'); input.focus(); input.select(); }, 900);
+        }
+      }
+      btn.addEventListener('click', submit);
+      input.addEventListener('keydown', function(e){ if (e.key === 'Enter') submit(); });
+    });
+
+    renderScore();
+
+    // 重新测验：刷新页面最干净
     var resetBtn = document.getElementById('quiz-reset');
     if (resetBtn){
-      resetBtn.addEventListener('click', function(){
-        answered = 0;
-        quiz.querySelectorAll('.q').forEach(function(q){
-          q.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('correct','wrong'); o.disabled = false; });
-          var fb = q.querySelector('.feedback'); fb.className = 'feedback'; fb.textContent = '';
-        });
-        renderScore();
-      });
+      resetBtn.addEventListener('click', function(){ location.reload(); });
     }
-    renderScore();
     document.querySelectorAll('.fc').forEach(function(c){
       c.addEventListener('click', function(){ c.classList.toggle('flipped'); });
     });
