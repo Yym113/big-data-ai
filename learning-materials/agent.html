@@ -102,6 +102,11 @@
     <p class="subtitle">概念学习资料 · 入门 · 由 concept-unpacker Skill 生成 · 经本人核查</p>
   </header>
 
+  <div class="progress-wrap">
+    <div class="progress-text" id="progress-text">学习进度：0 / 9 节</div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
   <nav>
     <h2>目录</h2>
     <ul>
@@ -229,6 +234,16 @@
     <h2>07 · 交互自测（点选项作答）</h2>
     <p class="meta">共 5 题。点击选项即时判断对错；选错可以继续选，直到答对。</p>
 
+    <h3>核心概念闪卡（点卡片翻面）</h3>
+    <div class="flashcards">
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Agent</div><div class="fc-face fc-back">能感知环境 + 做决定 + 动手做事的系统</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">Chatbot</div><div class="fc-face fc-back">只会对话、不动手的问答机器人</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">ReAct</div><div class="fc-face fc-back">推理(Reasoning)与行动(Acting)交替进行</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">LLM Agent</div><div class="fc-face fc-back">LLM 大脑 + 工具 + 记忆 + 规划 + 循环</div></div></div>
+      <div class="fc"><div class="fc-inner"><div class="fc-face fc-front">AIMA 定义</div><div class="fc-face fc-back">通过传感器感知环境、通过执行器作用于环境</div></div></div>
+    </div>
+    <p class="fc-tip">提示：点卡片看背面定义，再点翻回来。</p>
+
     <div class="quiz" id="quiz">
       <div class="quiz-score" id="quiz-score">进度：答对 0 / 5</div>
 
@@ -288,6 +303,20 @@
       </div>
     </div>
 
+    <h3>填空题（输入答案后提交）</h3>
+
+    <div class="fill" data-answers="感知环境|执行动作" data-std="感知环境并执行动作">
+      <p class="q-text">6. Agent 区别于 Chatbot 的关键，是它能 ____ 并 ____ 。</p>
+      <div class="fill-row"><input type="text" class="fill-input" placeholder="输入答案"><button class="fill-btn">提交</button></div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="fill" data-answers="Action|行动|动作" data-std="Action（行动）">
+      <p class="q-text">7. ReAct 范式中，Thought 之后接的是 ____，再之后是 Observation。</p>
+      <div class="fill-row"><input type="text" class="fill-input" placeholder="输入答案"><button class="fill-btn">提交</button></div>
+      <div class="feedback"></div>
+    </div>
+
     <button id="quiz-reset">重新测验</button>
   </section>
 
@@ -318,6 +347,7 @@
       生成者：concept-unpacker Skill · 由本人复核 · 学习资料 / 入门深度 · 适用 袁玉明 (Yym113) 的 big-data-ai 课程作业。
     </footer>
 </div>
+<button id="back-top" aria-label="回到顶部">↑</button>
 <style>
     section.collapsible h2{cursor:pointer;user-select:none}
     section.collapsible h2::after{content:" ▾";color:var(--muted);font-size:.8em}
@@ -341,6 +371,37 @@
     .feedback.no{background:#fbeae6;color:#8c2b17;border-left:3px solid #b5361e}
     #quiz-reset{margin-top:6px;padding:10px 22px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:.95rem;cursor:pointer;font-weight:600}
     #quiz-reset:hover{opacity:.9}
+
+    /* ===== 学习进度 ===== */
+    .progress-wrap{position:sticky;top:0;z-index:60;background:var(--bg);padding:10px 2px 8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+    .progress-text{font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:600}
+    .progress-track{height:8px;background:var(--border);border-radius:999px;overflow:hidden}
+    .progress-fill{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .35s}
+    .done-toggle{float:right;font-size:.78rem;padding:1px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--muted);cursor:pointer;transition:all .12s;font-weight:normal;line-height:1.7;margin-left:8px}
+    .done-toggle.done{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    /* ===== 闪卡 ===== */
+    .flashcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:14px 0 8px}
+    .fc{perspective:900px;height:150px;cursor:pointer}
+    .fc-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+    .fc.flipped .fc-inner{transform:rotateY(180deg)}
+    .fc-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;border-radius:10px;backface-visibility:hidden}
+    .fc-front{background:var(--accent);color:#fff;font-size:1.05rem;font-weight:600}
+    .fc-back{background:var(--accent-bg);color:var(--text);transform:rotateY(180deg);font-weight:500;font-size:.9rem;line-height:1.5}
+    .fc-tip{font-size:.8rem;color:var(--muted);text-align:center;margin:0 0 18px}
+
+    /* ===== 填空题 ===== */
+    .fill{border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:14px;background:#fff}
+    .fill-row{display:flex;gap:8px;margin-top:8px}
+    .fill-input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;color:var(--text)}
+    .fill-input:focus{outline:none;border-color:var(--accent)}
+    .fill-btn{padding:8px 18px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:.95rem;cursor:pointer;font-weight:600}
+    .fill-btn:hover{opacity:.9}
+
+    /* ===== 返回顶部 ===== */
+    #back-top{position:fixed;right:24px;bottom:24px;width:44px;height:44px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:opacity .25s;z-index:99}
+    #back-top.show{opacity:1;pointer-events:auto}
+    #back-top:hover{opacity:.9}
   </style>
   <script>
     (function(){
@@ -402,6 +463,70 @@
         });
       }
       renderScore();
+
+      // 学习进度 + 每节打勾
+      var KEY='learned-'+document.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g,'');
+      var sections=Array.prototype.slice.call(document.querySelectorAll('section')).filter(function(s){return s.querySelector('h2');});
+      var learned={};
+      try{learned=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){learned={};}
+      var fill=document.getElementById('progress-fill');
+      var ptext=document.getElementById('progress-text');
+      function updateProgress(){
+        var n=sections.filter(function(s){return learned[s.id];}).length;
+        var total=sections.length;
+        var pct=total?Math.round(n/total*100):0;
+        if(fill)fill.style.width=pct+'%';
+        if(ptext)ptext.textContent='学习进度：'+n+' / '+total+' 节'+(pct===100?' 🎉':'');
+      }
+      sections.forEach(function(s){
+        if(!s.id)s.id='sec-'+(Math.random()+'').slice(2,8);
+        var h2=s.querySelector('h2');
+        var btn=document.createElement('button');
+        btn.className='done-toggle'+(learned[s.id]?' done':'');
+        btn.textContent=learned[s.id]?'✓ 已学':'标记已学';
+        btn.addEventListener('click',function(e){
+          e.stopPropagation();
+          learned[s.id]=!learned[s.id];
+          btn.className='done-toggle'+(learned[s.id]?' done':'');
+          btn.textContent=learned[s.id]?'✓ 已学':'标记已学';
+          try{localStorage.setItem(KEY,JSON.stringify(learned));}catch(e){}
+          updateProgress();
+        });
+        h2.appendChild(btn);
+      });
+      updateProgress();
+
+      // 闪卡翻转
+      document.querySelectorAll('.fc').forEach(function(c){c.addEventListener('click',function(){c.classList.toggle('flipped');});});
+
+      // 填空题
+      document.querySelectorAll('.fill').forEach(function(f){
+        var input=f.querySelector('.fill-input');
+        var btn=f.querySelector('.fill-btn');
+        var fb=f.querySelector('.feedback');
+        var keys=(f.getAttribute('data-answers')||'').split('|').map(function(k){return k.trim();}).filter(Boolean);
+        var std=f.getAttribute('data-std')||'';
+        var done=false;
+        function check(){
+          if(done)return;
+          var val=(input.value||'').trim();
+          if(!val){fb.textContent='先输入答案再提交哦';fb.className='feedback show no';return;}
+          var hit=keys.some(function(k){return val.indexOf(k)>-1;});
+          if(hit){fb.textContent='✓ 正确！'+(std?('参考答案：'+std):'');fb.className='feedback show ok';done=true;input.disabled=true;btn.disabled=true;}
+          else{fb.textContent='✗ 还不完全对，再想想…';fb.className='feedback show no';}
+        }
+        btn.addEventListener('click',check);
+        input.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+      });
+
+      // 返回顶部
+      var bt=document.getElementById('back-top');
+      if(bt){
+        window.addEventListener('scroll',function(){
+          if(window.scrollY>400){bt.classList.add('show');}else{bt.classList.remove('show');}
+        });
+        bt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+      }
     })();
   </script>
 </body>
