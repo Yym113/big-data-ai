@@ -145,9 +145,45 @@
     .gen-out { margin-top: 8px; padding: 12px 16px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 0.92rem; line-height: 1.65; display: none; }
     .gen-out.show { display: block; animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+    /* ===== 结业证书 ===== */
+    .cert-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      display: none; align-items: center; justify-content: center;
+      z-index: 200;
+    }
+    .cert-modal.show { display: flex; animation: fadeIn 0.35s; }
+    .cert {
+      background: #fffbf2; border: 8px double var(--accent);
+      padding: 36px 48px; border-radius: 12px; max-width: 560px;
+      text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .cert h2 { color: var(--accent); border: none; padding: 0; margin: 0 0 8px; font-size: 1.8rem; }
+    .cert h2::after { content: none; }
+    .cert .cert-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 24px; }
+    .cert .cert-name { font-size: 1.4rem; font-weight: 600; margin: 18px 0; color: var(--text); }
+    .cert .cert-date { color: var(--muted); font-size: 0.88rem; margin-top: 20px; }
+    .cert-close {
+      position: absolute; top: 8px; right: 14px;
+      background: none; border: none; font-size: 1.5rem;
+      cursor: pointer; color: var(--muted); line-height: 1;
+    }
+    .cert-close:hover { color: var(--text); }
   </style>
 </head>
 <body>
+<div class="cert-modal" id="cert-modal">
+  <div class="cert">
+    <button class="cert-close" id="cert-close" aria-label="关闭">×</button>
+    <h2>🏆 结业证书</h2>
+    <p class="cert-sub">恭喜完成本概念学习</p>
+    <p>兹证明</p>
+    <p class="cert-name">袁玉明</p>
+    <p>已完成 <b>大模型的上下文（LLM Context）</b> 全部自测通关</p>
+    <p class="cert-date" id="cert-date"></p>
+  </div>
+</div>
 <div class="wrap">
   <header>
     <h1>大模型的上下文（LLM Context）</h1>
@@ -533,6 +569,25 @@
         genOut.innerHTML = pool[usedIdx[kind]];
         genOut.classList.add('show');
       });
+    });
+  // === 6) 结业证书：自测全对就弹 ===
+    var certShown = false;
+    function tryCheckCert(){
+      if (certShown) return;
+      if (answered >= total){
+        certShown = true;
+        var dateEl = document.getElementById('cert-date');
+        if (dateEl) dateEl.textContent = '签发日期：' + new Date().toLocaleDateString('zh-CN');
+        document.getElementById('cert-modal').classList.add('show');
+      }
+    }
+    setInterval(tryCheckCert, 400);
+
+    document.getElementById('cert-close').addEventListener('click', function(){
+      document.getElementById('cert-modal').classList.remove('show');
+    });
+    document.getElementById('cert-modal').addEventListener('click', function(e){
+      if (e.target === this) this.classList.remove('show');
     });
   })();
 </script>
