@@ -102,6 +102,25 @@
     .feedback.no { background: #fbeae6; color: #8c2b17; }
     #quiz-reset { margin-top: 4px; padding: 9px 20px; border: 1px solid var(--accent); border-radius: 8px; background: #fff; color: var(--accent); font-size: 0.9rem; cursor: pointer; }
     #quiz-reset:hover { background: var(--accent-bg); }
+
+    /* ===== 趣味互动 ===== */
+    /* 1) 每节"已掌握"打勾 */
+    h2 { display: flex; align-items: center; gap: 10px; }
+    .master-btn { font-size: 0.78rem; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; background: #fff; color: var(--muted); cursor: pointer; font-weight: 400; }
+    .master-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .master-btn.done { background: var(--accent); color: #fff; border-color: var(--accent); }
+    /* 2) 关键概念 hover 提示卡 */
+    .tip { border-bottom: 1.5px dotted var(--accent); cursor: help; position: relative; }
+    .tip:hover .tip-card { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+    .tip-card { position: absolute; left: 50%; top: 1.4em; transform: translate(-50%, -6px); background: #1a1a17; color: #fafaf7; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5; max-width: 280px; width: max-content; opacity: 0; pointer-events: none; transition: all 0.18s; z-index: 20; box-shadow: 0 4px 12px rgba(0,0,0,0.18); font-weight: 400; }
+    .tip-card::before { content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 5px solid #1a1a17; }
+    /* 3) 章节标题 click 折叠 */
+    section { overflow: hidden; transition: padding 0.2s; }
+    h2 { cursor: pointer; user-select: none; }
+    h2:hover { color: var(--accent); }
+    section.collapsed > *:not(h2) { display: none; }
+    section.collapsed h2::after { content: " ▸"; color: var(--muted); font-size: 0.8em; }
+    section:not(.collapsed) h2::after { content: " ▾"; color: var(--muted); font-size: 0.8em; }
   </style>
 </head>
 <body>
@@ -130,7 +149,7 @@
     <h2>01 · 个人理解</h2>
     <p>我对 Agent（智能体）的「人话版」定义：</p>
     <blockquote>
-      Agent = <b>能感知环境 + 能做决定 + 能动手做事</b> 的系统。它的目标不是「回答一个问题」，而是「把一件事做到底」。
+      Agent = <span class="tip">能感知环境<span class="tip-card">通过 sensors（传感器）收集信息，例如：摄像头读图、温度计读温</span></span> + <span class="tip">能做决定<span class="tip-card">policy / agent function 把"看到的事"映射到"该做的动作"</span></span> + <span class="tip">能动手做事<span class="tip-card">通过 actuators（执行器）改环境，例如：机械臂、API 调用、写文件</span></span> 的系统。它的目标不是「回答一个问题」，而是「把一件事做到底」。
     </blockquote>
     <p>如果只能记一句话：<b>Agent 是一套「感知 → 推理 → 行动 → 看反馈」的循环，不是一次性的 Q&amp;A</b>。把 LLM 放到这个循环的「推理」环节、给它工具（Tools）和记忆（Memory），就是当下最常见的 <b>LLM Agent</b>。</p>
   </section>
@@ -192,7 +211,7 @@
     </table>
 
     <h3>4.4 LLM Agent（当下最常见的形态）</h3>
-    <p>2022 年起 ReAct 范式成为主流（Yao 等人，arXiv:2210.03629）：</p>
+    <p>2022 年起 <span class="tip">ReAct<span class="tip-card">Yao et al., 2022, arXiv:2210.03629；Reasoning + Acting 交替</span></span> 范式成为主流：</p>
     <blockquote>
       ReAct = 把 <b>Reasoning（思考/CoT）</b> 和 <b>Acting（调用工具）</b> <b>交替进行</b>：
       <code>Thought 1 → Action 1 → Observation 1 → Thought 2 → Action 2 → …</code>
@@ -327,6 +346,38 @@
 </div>
 <script>
   (function(){
+    // === 1) 章节折叠：点 h2 收起/展开 ===
+    document.querySelectorAll('section').forEach(function(sec){
+      sec.classList.add('collapsed'); // 默认折叠
+      var h2 = sec.querySelector('h2');
+      if (!h2) return;
+      h2.addEventListener('click', function(e){
+        if (e.target.classList.contains('master-btn')) return;
+        sec.classList.toggle('collapsed');
+      });
+    });
+
+    // === 2) 每节"已掌握"打勾（localStorage 记忆） ===
+    var KEY = 'master-' + document.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g,'');
+    var mastered = {};
+    try { mastered = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) {}
+    document.querySelectorAll('section').forEach(function(sec){
+      var h2 = sec.querySelector('h2');
+      if (!h2 || !sec.id) return;
+      var btn = document.createElement('button');
+      btn.className = 'master-btn' + (mastered[sec.id] ? ' done' : '');
+      btn.textContent = mastered[sec.id] ? '✓ 已掌握' : '○ 已掌握';
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        mastered[sec.id] = !mastered[sec.id];
+        btn.className = 'master-btn' + (mastered[sec.id] ? ' done' : '');
+        btn.textContent = mastered[sec.id] ? '✓ 已掌握' : '○ 已掌握';
+        try { localStorage.setItem(KEY, JSON.stringify(mastered)); } catch(e) {}
+      });
+      h2.appendChild(btn);
+    });
+
+    // === 3) 选择题测验 ===
     var quiz = document.getElementById('quiz');
     if (!quiz) return;
     var scoreEl = document.getElementById('quiz-score');
