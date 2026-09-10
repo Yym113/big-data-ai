@@ -30,27 +30,21 @@
 big-data-ai/
 ├── .workbuddy/
 │   └── skills/
-│       ├── agent-skill-in-one-minute/   # 项目级 Skill · 1 分钟讲清 Agent Skill 是什么
 │       └── concept-unpacker/            # 项目级 Skill · 把任意概念拆成 8 段式中文学习包
 ├── learning-materials/                  # 由 concept-unpacker 生成的 3 份概念学习资料 + 关系图
 │   ├── agent.html
 │   ├── llm-context.html
 │   ├── skill.html
 │   └── concept-relationship.html
-├── notes/         # 课堂笔记与知识点总结
-├── assignments/   # 课程作业
-├── code/          # 示例代码与练习
-├── projects/      # 课程项目 / 大作业
-├── resources/     # 学习资料与参考链接
-├── agent-skill-in-one-minute.html  # 顶层 HTML 速成页副本
-└── README.md      # 本文件
+├── assignments/                         # 课程作业（作业 1 交付物在 learning-materials/）
+├── .gitignore
+└── README.md                            # 本文件
 ```
 
 ## 项目级 Skills（WorkBuddy 可调用）
 
 | Skill 名 | 路径 | 用途 |
 |---|---|---|
-| `agent-skill-in-one-minute` | `.workbuddy/skills/agent-skill-in-one-minute/SKILL.md` | 1 分钟讲清 Agent Skill 是什么（带分层测试） |
 | `concept-unpacker` | `.workbuddy/skills/concept-unpacker/SKILL.md` | 把任意陌生概念拆成 8 段式中文学习包（学习目标 / 结构化解释 / 边界辨析 / 自测 / 可核查来源 / 核查记录） |
 
 调用方式：在 WorkBuddy 里说「用 `concept-unpacker` 帮我学一下 `RAG`」即可；它会自动生成 `learning-materials/rag.html`，并附核查记录。
