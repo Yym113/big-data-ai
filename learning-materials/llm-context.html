@@ -144,6 +144,28 @@
     .gen-btn:hover { background: var(--accent-bg); }
     .gen-out { margin-top: 8px; padding: 12px 16px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 0.92rem; line-height: 1.65; display: none; }
     .gen-out.show { display: block; animation: fadeIn 0.3s; }
+    .mindmap { display: flex; align-items: stretch; gap: 0; margin: 20px 0; overflow-x: auto; padding: 8px 2px; }
+    .mm-root { flex: 0 0 auto; background: var(--accent); color: #fff; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 108px; text-align: center; font-weight: 700; font-size: 1.1rem; }
+    .mm-root small { font-weight: 400; font-size: 0.8rem; opacity: 0.92; margin-top: 2px; }
+    .mm-connector { flex: 0 0 auto; width: 26px; position: relative; }
+    .mm-connector::after { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--accent); }
+    .mm-branches { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-width: 0; }
+    .mm-node { border: 1.5px solid var(--accent); background: var(--accent-bg); border-radius: 10px; padding: 10px 14px; }
+    .mm-node b { color: var(--accent); display: block; margin-bottom: 2px; }
+    .mm-node span { font-size: 0.86rem; color: var(--text); line-height: 1.5; display: block; }
+    .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 20px 0; }
+    .flow-node { border: 1.5px solid var(--accent); background: #fff; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 92px; }
+    .flow-node b { color: var(--accent); display: block; font-size: 1rem; }
+    .flow-node span { font-size: 0.78rem; color: var(--muted); }
+    .flow-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+    .flow-back { color: var(--accent); font-size: 0.85rem; font-weight: 600; margin-left: 2px; }
+    .viz-block { margin: 16px 0 20px; }
+    .viz-title { margin: 0 0 10px; font-size: 0.95rem; color: var(--accent); font-weight: 700; }
+    .viz-caption { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 8px; }
+    .win-bar { display: flex; border: 1.5px solid var(--accent); border-radius: 10px; overflow: hidden; min-height: 54px; font-size: 0.76rem; }
+    .win-seg { display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 6px 4px; border-right: 1px solid rgba(255,255,255,0.6); }
+    .win-seg:last-child { border-right: none; }
+    .curve { border: 1.5px solid var(--accent); border-radius: 10px; background: var(--accent-bg); padding: 12px 12px 6px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
     /* ===== 结业证书 ===== */
@@ -191,6 +213,7 @@
   <nav>
     <h2>目录</h2>
     <ul>
+      <li><a href="#viz">📊 一图看懂</a></li>
       <li><a href="#intro">01 个人理解</a></li>
       <li><a href="#goals">02 学习目标</a></li>
       <li><a href="#questions">03 核心问题</a></li>
@@ -202,6 +225,34 @@
       <li><a href="#verify">09 核查记录</a></li>
     </ul>
   </nav>
+
+  <section id="viz">
+    <h2>📊 一图看懂 LLM Context</h2>
+    <p>不想读长文？先看这两张图，30 秒抓住全貌：</p>
+
+    <h3>知识全景（思维导图）</h3>
+    <div class="mindmap">
+      <div class="mm-root">Context<small>大模型上下文</small></div>
+      <div class="mm-connector"></div>
+      <div class="mm-branches">
+        <div class="mm-node"><b>组成</b><span>system 指令 + 对话历史 + 检索文档 + 工具结果 + 用户输入</span></div>
+        <div class="mm-node"><b>关键指标</b><span>token 是计量单位，context window 是长度上限</span></div>
+        <div class="mm-node"><b>工程手段</b><span>RAG 补全 / 摘要压缩 / 隔离 / 重排序</span></div>
+        <div class="mm-node"><b>陷阱</b><span>Lost in the Middle：中间信息容易被忽略</span></div>
+      </div>
+    </div>
+
+    <h3>核心机制（一轮对话的 Context 怎么拼出来）</h3>
+    <div class="flow">
+      <div class="flow-node"><b>用户提问</b><span>query 进来</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>检索 / 工具</b><span>RAG 取回文档</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>拼成 Context</b><span>system+历史+文档</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>模型生成</b><span>输出回答</span></div>
+    </div>
+  </section>
 
   <section id="intro">
     <h2>01 · 个人理解</h2>
@@ -273,6 +324,17 @@
       <li>GPT-4 / Claude 2：~100K</li>
       <li>Claude 3 / 后续 / Gemini 等：200K–1M+</li>
     </ul>
+    <div class="viz-block">
+      <div class="viz-title">一个 Context 长什么样（拼接示意图）</div>
+      <div class="win-bar">
+        <div class="win-seg" style="flex:2;background:#2f6b8a;">system 指令</div>
+        <div class="win-seg" style="flex:3;background:#4d88a6;">对话历史</div>
+        <div class="win-seg" style="flex:4;background:#6ba0bb;">检索文档</div>
+        <div class="win-seg" style="flex:2;background:#8db8cc;">工具结果</div>
+        <div class="win-seg" style="flex:2;background:#a8ccdb;">用户输入</div>
+      </div>
+      <div class="viz-caption">Context = 多个来源拼出来的 token 序列，总长受 window 上限约束</div>
+    </div>
     <p class="meta">窗口变大 ≠ 窗口变好用。Liu et al. 2023 的 <i>Lost in the <span class="tip">Middle<span class="tip-card">经验现象：相关信息在 context 中段时模型表现明显差于两端</span></span></i> 论文显示：把相关信息放在 context 的<b>开头或结尾</b>，模型表现明显<b>优于</b>放在<b>中间</b>。</p>
 
     <h3>4.5 「Lost in the Middle」—— 为什么信息摆放位置很重要</h3>
@@ -280,6 +342,27 @@
       论文：<i>Lost in the Middle: How Language Models Use Long Contexts</i>，Liu et al., 2023, arXiv:2307.03172。<br>
       核心发现：在多文档 QA / KV-retrieval 任务里，相关信息出现在 context 中段时，性能会显著下降；即使专为长 context 设计的模型也不能幸免。
     </blockquote>
+    <div class="viz-block">
+      <div class="viz-title">Lost in the Middle（U 型注意力曲线）</div>
+      <div class="curve">
+        <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+          <line x1="50" y1="165" x2="600" y2="165" stroke="#2f6b8a" stroke-width="2"/>
+          <line x1="50" y1="20" x2="50" y2="165" stroke="#2f6b8a" stroke-width="2"/>
+          <text x="50" y="182" text-anchor="middle" font-size="13" fill="#5a5a55">开头</text>
+          <text x="325" y="182" text-anchor="middle" font-size="13" fill="#5a5a55">中间</text>
+          <text x="600" y="182" text-anchor="middle" font-size="13" fill="#5a5a55">结尾</text>
+          <text x="44" y="18" text-anchor="end" font-size="12" fill="#5a5a55">表现 ↑</text>
+          <path d="M 50 40 C 150 40, 220 150, 325 155 C 430 150, 500 40, 600 40" fill="none" stroke="#2f6b8a" stroke-width="3.5"/>
+          <circle cx="50" cy="40" r="5" fill="#2f7d3a"/>
+          <circle cx="325" cy="155" r="5" fill="#b5361e"/>
+          <circle cx="600" cy="40" r="5" fill="#2f7d3a"/>
+          <text x="50" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#2f7d3a">好</text>
+          <text x="600" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#2f7d3a">好</text>
+          <text x="325" y="176" text-anchor="middle" font-size="12" font-weight="bold" fill="#b5361e">差</text>
+        </svg>
+      </div>
+      <div class="viz-caption">相关信息放在开头/结尾表现好，放在中间表现差</div>
+    </div>
     <p>工程意义：</p>
     <ul>
       <li>RAG 检索结果要<b>重排序</b>，让最相关的放在最前 / 最后</li>

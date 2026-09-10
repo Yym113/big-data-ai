@@ -174,6 +174,37 @@
     .gen-out { margin-top: 8px; padding: 12px 16px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 0.92rem; line-height: 1.65; display: none; }
     .gen-out.show { display: block; animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+    /* ===== 可视化：一图看懂 ===== */
+    .mindmap { display: flex; align-items: stretch; gap: 0; margin: 20px 0; overflow-x: auto; padding: 8px 2px; }
+    .mm-root { flex: 0 0 auto; background: var(--accent); color: #fff; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 108px; text-align: center; font-weight: 700; font-size: 1.1rem; }
+    .mm-root small { font-weight: 400; font-size: 0.8rem; opacity: 0.92; margin-top: 2px; }
+    .mm-connector { flex: 0 0 auto; width: 26px; position: relative; }
+    .mm-connector::after { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--accent); }
+    .mm-branches { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-width: 0; }
+    .mm-node { border: 1.5px solid var(--accent); background: var(--accent-bg); border-radius: 10px; padding: 10px 14px; }
+    .mm-node b { color: var(--accent); display: block; margin-bottom: 2px; }
+    .mm-node span { font-size: 0.86rem; color: var(--text); line-height: 1.5; display: block; }
+    .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 20px 0; }
+    .flow-node { border: 1.5px solid var(--accent); background: #fff; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 92px; }
+    .flow-node b { color: var(--accent); display: block; font-size: 1rem; }
+    .flow-node span { font-size: 0.78rem; color: var(--muted); }
+    .flow-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+    .flow-back { color: var(--accent); font-size: 0.85rem; font-weight: 600; margin-left: 2px; }
+    .viz-block { margin: 16px 0 20px; }
+    .viz-title { margin: 0 0 10px; font-size: 0.95rem; color: var(--accent); font-weight: 700; }
+    .viz-caption { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 8px; }
+    .win-bar { display: flex; border: 1.5px solid var(--accent); border-radius: 10px; overflow: hidden; min-height: 54px; font-size: 0.76rem; }
+    .win-seg { display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 6px 4px; border-right: 1px solid rgba(255,255,255,0.6); }
+    .win-seg:last-child { border-right: none; }
+    .curve { border: 1.5px solid var(--accent); border-radius: 10px; background: var(--accent-bg); padding: 12px 12px 6px; }
+    .hub { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 14px 0; }
+    .hub-core { flex: 0 0 auto; background: var(--accent); color: #fff; border-radius: 50%; width: 96px; height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 0.9rem; padding: 8px; }
+    .hub-core small { font-weight: 400; font-size: 0.7rem; opacity: 0.9; }
+    .hub-items { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; flex: 1 1 auto; min-width: 220px; }
+    .hub-item { border: 1.5px solid var(--accent); background: var(--accent-bg); border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; }
+    .hub-item b { color: var(--accent); display: block; margin-bottom: 1px; }
+    .hub-item span { color: var(--text); }
   </style>
 </head>
 <body>
@@ -195,6 +226,7 @@
   <nav>
     <h2>目录</h2>
     <ul>
+      <li><a href="#viz">📊 一图看懂</a></li>
       <li><a href="#intro">01 个人理解</a></li>
       <li><a href="#goals">02 学习目标</a></li>
       <li><a href="#questions">03 核心问题</a></li>
@@ -206,6 +238,33 @@
       <li><a href="#verify">09 核查记录</a></li>
     </ul>
   </nav>
+
+  <section id="viz">
+    <h2>📊 一图看懂 Agent</h2>
+    <p>不想读长文？先看这两张图，30 秒抓住全貌：</p>
+
+    <h3>知识全景（思维导图）</h3>
+    <div class="mindmap">
+      <div class="mm-root">Agent<small>智能体</small></div>
+      <div class="mm-connector"></div>
+      <div class="mm-branches">
+        <div class="mm-node"><b>定义</b><span>感知 → 决策 → 行动（sensors → policy → actuators）</span></div>
+        <div class="mm-node"><b>组成</b><span>LLM 大脑 + 工具 Tools + 记忆 Memory + 规划 Planning</span></div>
+        <div class="mm-node"><b>工作方式</b><span>ReAct 循环：推理 ↔ 行动交替，边想边做</span></div>
+        <div class="mm-node"><b>类型</b><span>简单反射 → 基于模型 → 目标驱动 → 效用驱动 → 学习型</span></div>
+      </div>
+    </div>
+
+    <h3>核心机制（ReAct 循环）</h3>
+    <div class="flow">
+      <div class="flow-node"><b>Thought</b><span>思考：下一步干嘛？</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>Action</b><span>行动：调用工具 / 输出</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>Observation</b><span>观察：看结果反馈</span></div>
+      <div class="flow-back">↺ 循环直到任务完成</div>
+    </div>
+  </section>
 
   <section id="intro">
     <h2>01 · 个人理解</h2>
@@ -288,6 +347,18 @@
       <li><b>Planning（规划）</b>：把目标拆成可执行子步骤</li>
       <li><b>Loop controller（循环控制）</b>：决定什么时候停、什么时候换路径</li>
     </ul>
+    <div class="viz-block">
+      <div class="hub">
+        <div class="hub-core">LLM<small>大脑</small></div>
+        <div class="hub-items">
+          <div class="hub-item"><b>Tools 工具</b><span>搜索 / 文件 / API / 代码执行</span></div>
+          <div class="hub-item"><b>Memory 记忆</b><span>短程 context + 长程向量库</span></div>
+          <div class="hub-item"><b>Planning 规划</b><span>把目标拆成可执行子步骤</span></div>
+          <div class="hub-item"><b>Loop 循环控制</b><span>何时停、何时换路径</span></div>
+        </div>
+      </div>
+      <div class="viz-caption">现代 LLM Agent：以 LLM 为大脑，四周挂工具 / 记忆 / 规划 / 循环控制</div>
+    </div>
   </section>
 
   <section id="examples">

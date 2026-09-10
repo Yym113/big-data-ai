@@ -144,6 +144,28 @@
     .gen-btn:hover { background: var(--accent-bg); }
     .gen-out { margin-top: 8px; padding: 12px 16px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 0.92rem; line-height: 1.65; display: none; }
     .gen-out.show { display: block; animation: fadeIn 0.3s; }
+    .mindmap { display: flex; align-items: stretch; gap: 0; margin: 20px 0; overflow-x: auto; padding: 8px 2px; }
+    .mm-root { flex: 0 0 auto; background: var(--accent); color: #fff; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 108px; text-align: center; font-weight: 700; font-size: 1.1rem; }
+    .mm-root small { font-weight: 400; font-size: 0.8rem; opacity: 0.92; margin-top: 2px; }
+    .mm-connector { flex: 0 0 auto; width: 26px; position: relative; }
+    .mm-connector::after { content: ""; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: var(--accent); }
+    .mm-branches { display: flex; flex-direction: column; gap: 12px; flex: 1 1 auto; min-width: 0; }
+    .mm-node { border: 1.5px solid var(--accent); background: var(--accent-bg); border-radius: 10px; padding: 10px 14px; }
+    .mm-node b { color: var(--accent); display: block; margin-bottom: 2px; }
+    .mm-node span { font-size: 0.86rem; color: var(--text); line-height: 1.5; display: block; }
+    .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 20px 0; }
+    .flow-node { border: 1.5px solid var(--accent); background: #fff; border-radius: 10px; padding: 12px 16px; text-align: center; min-width: 92px; }
+    .flow-node b { color: var(--accent); display: block; font-size: 1rem; }
+    .flow-node span { font-size: 0.78rem; color: var(--muted); }
+    .flow-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+    .flow-back { color: var(--accent); font-size: 0.85rem; font-weight: 600; margin-left: 2px; }
+    .viz-block { margin: 16px 0 20px; }
+    .viz-title { margin: 0 0 10px; font-size: 0.95rem; color: var(--accent); font-weight: 700; }
+    .viz-caption { color: var(--muted); font-size: 0.8rem; text-align: center; margin-top: 8px; }
+    .win-bar { display: flex; border: 1.5px solid var(--accent); border-radius: 10px; overflow: hidden; min-height: 54px; font-size: 0.76rem; }
+    .win-seg { display: flex; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 6px 4px; border-right: 1px solid rgba(255,255,255,0.6); }
+    .win-seg:last-child { border-right: none; }
+    .curve { border: 1.5px solid var(--accent); border-radius: 10px; background: var(--accent-bg); padding: 12px 12px 6px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
     /* ===== 结业证书 ===== */
@@ -191,6 +213,7 @@
   <nav>
     <h2>目录</h2>
     <ul>
+      <li><a href="#viz">📊 一图看懂</a></li>
       <li><a href="#intro">01 个人理解</a></li>
       <li><a href="#goals">02 学习目标</a></li>
       <li><a href="#questions">03 核心问题</a></li>
@@ -202,6 +225,34 @@
       <li><a href="#verify">09 核查记录</a></li>
     </ul>
   </nav>
+
+  <section id="viz">
+    <h2>📊 一图看懂 Skill</h2>
+    <p>不想读长文？先看这两张图，30 秒抓住全貌：</p>
+
+    <h3>知识全景（思维导图）</h3>
+    <div class="mindmap">
+      <div class="mm-root">Skill<small>可复用技能包</small></div>
+      <div class="mm-connector"></div>
+      <div class="mm-branches">
+        <div class="mm-node"><b>定义</b><span>含指令 + 脚本 + 资源的文件夹，Claude 需要时加载</span></div>
+        <div class="mm-node"><b>结构</b><span>SKILL.md（必填）+ scripts/ + references/ + assets/</span></div>
+        <div class="mm-node"><b>激活机制</b><span>命中 description → 注入 context（不改权重）</span></div>
+        <div class="mm-node"><b>相邻概念</b><span>Prompt / Tool / MCP 各有边界</span></div>
+      </div>
+    </div>
+
+    <h3>核心机制（激活流程）</h3>
+    <div class="flow">
+      <div class="flow-node"><b>用户请求</b><span>命中关键词</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>扫描 description</b><span>匹配到 Skill</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>注入 SKILL.md</b><span>指令进 context</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node"><b>执行任务</b><span>脚本只回传结果</span></div>
+    </div>
+  </section>
 
   <section id="intro">
     <h2>01 · 个人理解</h2>
@@ -295,6 +346,23 @@ description: 读取 PDF 并生成要点摘要。当用户提到 PDF / 论文 / �
       <li>scripts/<b>执行</b>时不进 context（只把 stdout 注入），只有结果消耗 token</li>
       <li>references/ 是按需加载（不预先读全文）</li>
     </ol>
+    <div class="viz-block">
+      <div class="viz-title">为什么 Skill 省 context？</div>
+      <div style="text-align:left;margin-bottom:4px;color:var(--muted);font-size:0.8rem;">❌ 没有 Skill：所有指令预先全塞进 context</div>
+      <div class="win-bar" style="min-height:38px;">
+        <div class="win-seg" style="flex:1;background:#b5361e;">Skill A</div>
+        <div class="win-seg" style="flex:1;background:#b5361e;">Skill B</div>
+        <div class="win-seg" style="flex:1;background:#b5361e;">Skill C</div>
+        <div class="win-seg" style="flex:1;background:#b5361e;">Skill D</div>
+        <div class="win-seg" style="flex:1;background:#b5361e;">Skill E</div>
+      </div>
+      <div style="text-align:left;margin:10px 0 4px;color:var(--muted);font-size:0.8rem;">✅ 有 Skill：只注入命中的那一个</div>
+      <div class="win-bar" style="min-height:38px;">
+        <div class="win-seg" style="flex:1;background:#2f6b8a;">Skill C（命中）</div>
+        <div class="win-seg" style="flex:4;background:#e2e0d8;color:#5a5a55;">空余 context 留给任务本身</div>
+      </div>
+      <div class="viz-caption">按需加载：省下的 context 空间用来装任务数据，而不是闲置说明书</div>
+    </div>
     <p>所以 Skill 的「Efficient」特质来自：<b>指令只在需要时进 context，而不是预先全塞进去</b>。</p>
   </section>
 
