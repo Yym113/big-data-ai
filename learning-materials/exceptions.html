@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>异常处理与调试 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>异常处理与调试</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 10 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景（新闻传播学）</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1. 个人理解（先说人话）</h2>
+    <p>
+      零基础同学最怕的东西就是那一大段红字报错。看到 <code>Traceback (most recent call last):</code>
+      就想关掉窗口。但这一节想告诉你两件事：
+    </p>
+    <p>
+      <strong>第一，那一大段红字不是「你完了」，它是一份地图。</strong>
+      它精确地告诉你：哪一行出错、调用链是什么、错误类型是什么。
+      读懂它，比读懂代码还重要——因为代码是你写的，你大概记得；报错信息是你没见过的，它才是新信息。
+    </p>
+    <p>
+      <strong>第二，异常处理不是「让报错消失」，而是「让报错在你能控制的地方发生」。</strong>
+      新手最常见的做法是把整个程序包进 <code>try: ... except: pass</code>，
+      这样报错确实消失了——但你的程序也变成了一台「什么都说好的机器」：
+      数据读失败它不说、账号登不上它不说、抓了 0 条它也不说，
+      最后你拿着一个空结果去交差，还以为一切正常。
+    </p>
+    <blockquote class="warn">
+      记住一句话：<strong><code>except: pass</code> 是给自己埋的雷。</strong>
+      今天你把错误吞了，明天你会花三小时找一个本可以在三秒内被报错告诉你的问题。
+    </blockquote>
+    <p>
+      官方文档对这一点的表述是：<code>Exception</code> 可以被用作通配符，「捕获（几乎）一切」，
+      但「好的做法是，尽可能具体地说明我们打算处理的异常类型，并允许任何意外的异常传播下去」。
+    </p>
+  </section>
+
+  <section id="s2">
+    <h2>2. 学习目标</h2>
+    <p>学完这一份，你应该能做到：</p>
+    <ul>
+      <li>能区分<strong>语法错误</strong>（SyntaxError，程序根本没开始跑）和<strong>异常</strong>（程序跑到一半崩了）。</li>
+      <li>能<strong>从下往上</strong>读 Traceback：最后一行是「什么错」，上面是「在哪出错」，再往上是「谁调用了它」。</li>
+      <li>能默写 <code>try / except / else / finally</code> 四件套，并说清每一部分分别在什么时候执行。</li>
+      <li>能看懂并说出 10 种以上常见异常的中文含义（<code>TypeError</code>、<code>ValueError</code>、<code>KeyError</code>、<code>IndexError</code>、<code>FileNotFoundError</code>、<code>ModuleNotFoundError</code> 等）。</li>
+      <li>能解释为什么 <code>except: pass</code> 是坏习惯，并知道该怎么改（具体异常 + 记录日志 + 必要时 <code>raise</code>）。</li>
+      <li>能说出 <code>finally</code> 的核心性质：<strong>不论是否发生异常都会执行</strong>，以及它适合做什么（释放资源）。</li>
+      <li>会用 <code>raise</code> 主动抛异常、用 <code>raise ... from exc</code> 保留异常链。</li>
+      <li>知道可以自定义异常类，且应该从 <code>Exception</code> 派生。</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <h2>3. 核心问题清单</h2>
+    <ol>
+      <li>语法错误和异常有什么区别？为什么说「语法错误程序根本没跑起来」？</li>
+      <li>Traceback 那一大段，应该从哪一行开始读？为什么它写「most recent call last」？</li>
+      <li><code>Traceback</code> 里箭头 <code>^^^^</code> 指向的位置一定就是错的地方吗？</li>
+      <li><code>try</code> 子句里如果抛了异常，剩余的语句还会执行吗？</li>
+      <li>多个 <code>except</code> 子句，会有几个被执行？匹配顺序重要吗？</li>
+      <li><code>else</code> 子句是干什么的？「不加也行」为什么官方说加了更好？</li>
+      <li><code>finally</code> 到底在什么时候执行？它和 <code>except</code> 谁先谁后？</li>
+      <li>为什么 <code>except: pass</code> 危险？如果我就是想「出错就跳过」该怎么办？</li>
+      <li><code>except Exception</code> 和裸 <code>except:</code> 差在哪？</li>
+      <li><code>KeyboardInterrupt</code> 和 <code>SystemExit</code> 为什么不该被捕获？</li>
+      <li>函数里 <code>try</code> 调用了另一个函数，那个函数里出的错，外面的 <code>except</code> 能接住吗？</li>
+      <li><code>raise</code> 单独一句（不带参数）是什么意思？</li>
+      <li>「异常链」是什么？<code>raise ... from exc</code> 和 <code>from None</code> 各解决什么问题？</li>
+      <li>自定义异常为什么要从 <code>Exception</code> 而不是 <code>BaseException</code> 派生？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4. 结构化解释</h2>
+
+    <h3>4.1 定义：错误分两种</h3>
+    <p>官方教程《错误和异常》开头就分了类：</p>
+    <blockquote>
+      错误可（至少）被分为两种：<em>语法错误</em> 和 <em>异常</em>。
+      <span class="meta">——引自 Python 官方教程《错误和异常》开头</span>
+    </blockquote>
+    <p><strong>语法错误（SyntaxError，又称解析错误）：</strong>程序连「开始执行」这一步都没走到。</p>
+    <pre><code>&gt;&gt;&gt; while True print('Hello world')
+  File "&lt;stdin&gt;", line 1
+    while True print('Hello world')
+               ^^^^^
+SyntaxError: invalid syntax</code></pre>
+    <p>官方对这段报错有一段非常值得记住的说明：</p>
+    <blockquote>
+      解析器会重复出错的行并显示指向检测到错误的位置的小箭头。
+      <strong>请注意这并不一定是需要被修复的位置。</strong>
+      在这个例子中，错误在 <code>print()</code> 上被检测到，原因则是在它之前缺少一个冒号（<code>':'</code>）。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.1 节</span>
+    </blockquote>
+    <p>
+      这一句解释了新手最大的困惑之一：「它指着 <code>print</code>，但 <code>print</code> 明明没错啊！」
+      因为解析器是<strong>读到那儿才发现前面不对</strong>。所以看到 SyntaxError，
+      眼睛要往回看，尤其看看上一行结尾是不是少了冒号、括号是不是没配平。
+    </p>
+    <p><strong>异常（Exception）：</strong>语法没问题，程序跑起来了，跑到某一步崩了。</p>
+    <pre><code>&gt;&gt;&gt; 10 * (1/0)
+Traceback (most recent call last):
+  File "&lt;stdin&gt;", line 1, in &lt;module&gt;
+    10 * (1/0)
+          ~^~
+ZeroDivisionError: division by zero</code></pre>
+    <p>官方对此的说明：</p>
+    <blockquote>
+      错误信息的最后一行说明程序遇到了什么类型的错误。……此行其余部分根据异常类型，结合出错原因，说明错误细节。
+      <br>
+      错误信息开头用堆栈回溯形式展示发生异常的语境。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.2 节</span>
+    </blockquote>
+
+    <h3>4.2 最小模型：Traceback 是一份「事故调查报告」</h3>
+    <p>
+      把 Traceback 想象成一份交通事故报告。它记录的是「事故是怎么一步步发生的」：
+    </p>
+    <ul>
+      <li><strong>最后一行</strong> = 结论：出了什么事故（异常类型 : 具体原因）。</li>
+      <li><strong>最下面的 File 行</strong> = 事故现场：最后出错的那一行代码在哪个文件第几行。</li>
+      <li><strong>上面的 File 行</strong> = 事故经过：是谁把程序执行带到这一步的。</li>
+    </ul>
+    <pre><code>Traceback (most recent call last):
+  File "report.py", line 12, in &lt;module&gt;      ← 第 3 步：module（主程序）第 12 行调用了
+    summarize(data)
+  File "report.py", line 6, in summarize       ← 第 2 步：summarize 函数第 6 行调用了
+    total = sum(int(x) for x in data)
+  File "report.py", line 6, in &lt;genexpr&gt;       ← 第 1 步：这里真正炸了
+    total = sum(int(x) for x in data)
+ValueError: invalid literal for int() with base 10: '暂无'   ← 结论</code></pre>
+    <p><strong>读法：从最后一行开始，往上找第一个「你写的代码」。</strong></p>
+    <p>
+      「most recent call last」的意思是「最近一次调用在最后」，
+      也就是<strong>越往下越接近事故发生的那一刻</strong>。所以从下往上读，才是从结果倒推到原因。
+      新手常犯的错是从上往下读，结果读到的是「程序一开始的地方」，跟问题无关。
+    </p>
+    <table>
+      <thead>
+        <tr><th>现实类比</th><th>Traceback 里对应什么</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>事故结论：追尾</td><td><code>ValueError: ...</code>（异常类型 + 原因）</td></tr>
+        <tr><td>事故现场：某路口</td><td>最下面那个 <code>File "x.py", line N</code></td></tr>
+        <tr><td>行车记录：怎么开到这个路口的</td><td>上面那些 <code>File</code> 行（调用链）</td></tr>
+        <tr><td>地面标线指示的碰撞点</td><td><code>^^^^</code> 小箭头</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      实用技巧：Traceback 很长时，用<strong>手指压住屏幕最下面</strong>，从那一行往上读，
+      找到第一个文件名是<strong>你自己写的文件</strong>（不是 Python 库里的文件）的那一行。那儿就是你的战场。
+    </blockquote>
+
+    <h3>4.3 关键机制一：try 语句的工作原理</h3>
+    <p>官方给出了非常清晰的四步说明：</p>
+    <blockquote>
+      <ul>
+        <li>首先，执行 <em>try 子句</em>（<code>try</code> 和 <code>except</code> 关键字之间的（多行）语句）。</li>
+        <li>如果没有触发异常，则跳过 <em>except 子句</em>，<code>try</code> 语句执行完毕。</li>
+        <li>如果在执行 <em>try 子句</em>时发生了异常，则<strong>跳过该子句中剩下的部分</strong>。如果异常的类型与 <code>except</code> 关键字后指定的异常相匹配，则会执行 <em>except 子句</em>，然后跳到 try/except 代码块之后继续执行。</li>
+        <li>如果发生的异常与 <em>except 子句</em>中指定的异常不匹配，则它会被传递到外层的 <code>try</code> 语句中；如果没有找到处理器，则它是一个 <em>未处理异常</em> 且执行将停止并输出一条错误消息。</li>
+      </ul>
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.3 节</span>
+    </blockquote>
+    <p>官方给的第一个例子（要求用户持续输入直到输入有效整数）：</p>
+    <pre><code>while True:
+    try:
+        x = int(input("Please enter a number: "))
+        break
+    except ValueError:
+        print("Oops!  That was no valid number.  Try again...")</code></pre>
+    <p>
+      注意第二点「跳过该子句中剩下的部分」——
+      这意味着如果 <code>try</code> 里有三行，第二行抛异常了，<strong>第三行永远不会执行</strong>，直接跳到 <code>except</code>。
+      很多新手以为 <code>try</code> 里的代码「出错了就重试」，不是的，是把剩下的跳过去。
+    </p>
+
+    <h3>4.4 关键机制二：多个 except 与匹配顺序</h3>
+    <p>官方原文：</p>
+    <blockquote>
+      一条 <code>try</code> 语句可以有多个 <em>except 子句</em>，以便为不同的异常指定处理器。
+      但<strong>最多只有一个处理器会被执行</strong>。处理器只处理对应 <em>try 子句</em> 中发生的异常，
+      而不处理同一 <code>try</code> 子句内其他处理器中的异常。
+      <br><br>
+      一个 <code>except</code> 子句中的类匹配的异常将是该类本身的实例或其所派生的类的实例
+      （但反过来则不可以 --- 列出派生类的 <em>except 子句</em> 不会匹配其基类的实例）。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.3 节</span>
+    </blockquote>
+    <p>官方给的顺序影响结果的例子：</p>
+    <pre><code>class B(Exception):
+    pass
+
+class C(B):
+    pass
+
+class D(C):
+    pass
+
+for cls in [B, C, D]:
+    try:
+        raise cls()
+    except D:
+        print("D")
+    except C:
+        print("C")
+    except B:
+        print("B")</code></pre>
+    <p>官方说明：上面的代码将依次打印 <code>B, C, D</code>；</p>
+    <blockquote class="warn">
+      请注意如果颠倒 <em>except 子句</em> 的顺序（把 <code>except B</code> 放在最前），
+      则会输出 <code>B, B, B</code> --- 即触发了第一个匹配的 <em>except 子句</em>。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.3 节</span>
+    </blockquote>
+    <p>
+      <strong>实践结论：把具体的异常写前面，笼统的写后面。</strong>
+      <code>FileNotFoundError</code> 要写在 <code>OSError</code> 前面，
+      <code>ModuleNotFoundError</code> 要写在 <code>ImportError</code> 前面，
+      <code>Exception</code> 放最后兜底。
+    </p>
+    <p>绑定异常实例、以及官方推荐的「打印后重新抛出」模式：</p>
+    <pre><code>import sys
+
+try:
+    f = open('myfile.txt')
+    s = f.readline()
+    i = int(s.strip())
+except OSError as err:
+    print("OS error:", err)
+except ValueError:
+    print("Could not convert data to an integer.")
+except Exception as err:
+    print(f"Unexpected {err=}, {type(err)=}")
+    raise</code></pre>
+    <p>
+      这一段是官方给出的「最常见的处理模式」。注意最后两行：
+      兜底的 <code>except Exception</code> <strong>不是吞掉</strong>，而是打印出来然后 <code>raise</code> 继续往上抛。
+      这才是「记录 + 不掩盖」的正确姿势。
+    </p>
+    <p>关于异常实例的属性，官方还有一个例子：</p>
+    <pre><code>&gt;&gt;&gt; try:
+...     raise Exception('spam', 'eggs')
+... except Exception as inst:
+...     print(type(inst))    # 异常的类型
+...     print(inst.args)     # 参数保存在 .args 中
+...     print(inst)          # __str__ 允许 args 被直接打印
+...     x, y = inst.args     # 解包 args
+...     print('x =', x)
+...     print('y =', y)</code></pre>
+
+    <h3>4.5 关键机制三：else 子句</h3>
+    <p>官方说明：</p>
+    <blockquote>
+      <code>try</code> ... <code>except</code> 语句具有可选的 <em>else 子句</em>，
+      该子句如果存在，它必须放在所有 <em>except 子句</em> 之后。
+      它适用于 <em>try 子句</em> 没有引发异常但又必须要执行的代码。
+      <br><br>
+      使用 <code>else</code> 子句比向 <code>try</code> 子句添加额外的代码要好，
+      可以避免意外捕获非 <code>try</code> ... <code>except</code> 语句保护的代码触发的异常。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.3 节</span>
+    </blockquote>
+    <p>官方示例：</p>
+    <pre><code>for arg in sys.argv[1:]:
+    try:
+        f = open(arg, 'r')
+    except OSError:
+        print('cannot open', arg)
+    else:
+        print(arg, 'has', len(f.readlines()), 'lines')
+        f.close()</code></pre>
+    <p>
+      为什么 <code>else</code> 比「把代码都塞进 try」好？看这个对比：
+    </p>
+    <pre><code># ❌ 把处理逻辑也放进 try：如果 process() 里出 ValueError，会被下面的 except 吞掉
+try:
+    f = open("data.csv")
+    result = process(f.read())     # 这里的 ValueError 也会被当成「打开文件失败」
+except OSError:
+    print("打开文件失败")
+    print("打开失败")
+
+# ✅ 用 else：try 里只放「可能失败的那一件事」
+try:
+    f = open("data.csv")
+except OSError:
+    print("打开文件失败")
+else:
+    result = process(f.read())     # 这里的异常不会被上面的 except 收走
+    f.close()</code></pre>
+    <p>
+      一句话记忆：<strong><code>try</code> 里只放「你明确知道可能抛什么异常」的代码，
+      其余的都放 <code>else</code>。</strong> 这样 <code>except</code> 才不会误伤。
+    </p>
+
+    <h3>4.6 关键机制四：finally 与清理操作</h3>
+    <p>官方对 <code>finally</code> 的定义非常明确：</p>
+    <blockquote>
+      <code>try</code> 语句还有一个可选子句，用于定义在所有情况下都必须要执行的清理操作。
+      <br><br>
+      如果存在 <code>finally</code> 子句，则 <code>finally</code> 子句是 <code>try</code> 语句结束前执行的最后一项任务。
+      <strong>不论 <code>try</code> 语句是否触发异常，都会执行 <code>finally</code> 子句。</strong>
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.7 节</span>
+    </blockquote>
+    <p>官方给出了几种「比较复杂的情景」，逐条列在这里，因为它们解释了几乎所有关于 <code>finally</code> 的困惑：</p>
+    <ul>
+      <li>如果 <code>try</code> 子句触发了异常，某个 <code>except</code> 应处理它；如果没人处理，会在 <code>finally</code> 执行后<strong>被重新触发</strong>。</li>
+      <li><code>except</code> 或 <code>else</code> 子句执行期间也会触发异常，同样会在 <code>finally</code> 之后被重新触发。</li>
+      <li>如果 <code>finally</code> 里执行了 <code>break</code>、<code>continue</code> 或 <code>return</code>，异常不会被重新引发——
+          官方说「这可能会引起混淆，因此不鼓励使用」，从 3.14 起编译器会发出 <code>SyntaxWarning</code>（PEP 765）。</li>
+      <li>如果 <code>try</code> 里遇到 <code>break</code>/<code>continue</code>/<code>return</code>，<code>finally</code> 会在这些语句<strong>之前</strong>执行。</li>
+      <li>如果 <code>finally</code> 里有 <code>return</code>，返回值将是 <code>finally</code> 里的那个 <code>return</code>，而不是 <code>try</code> 里的——
+          官方同样说「这可能会引起混淆，因此不提倡使用」。</li>
+    </ul>
+    <p>官方那个经典示例：</p>
+    <pre><code>&gt;&gt;&gt; def bool_return():
+...     try:
+...         return True
+...     finally:
+...         return False
+...
+&gt;&gt;&gt; bool_return()
+False</code></pre>
+    <p>以及 <code>divide</code> 那个例子，把四种情况跑了一遍：</p>
+    <pre><code>def divide(x, y):
+    try:
+        result = x / y
+    except ZeroDivisionError:
+        print("division by zero!")
+    else:
+        print("result is", result)
+    finally:
+        print("executing finally clause")
+
+divide(2, 1)      # result is 2.0 / executing finally clause
+divide(2, 0)      # division by zero! / executing finally clause
+divide("2", "1")  # executing finally clause，然后抛 TypeError</code></pre>
+    <p>
+      注意 <code>divide("2", "1")</code>：<code>except ZeroDivisionError</code> 接不住 <code>TypeError</code>，
+      所以程序先打印了 <code>finally</code> 那句话，然后让 <code>TypeError</code> 冒出去。
+      这就是「<code>finally</code> 一定执行，异常该冒还是冒」的实证。
+    </p>
+    <p>官方对 <code>finally</code> 的用途总结：</p>
+    <blockquote class="ok">
+      在实际应用程序中，<code>finally</code> 子句对于释放外部资源（例如文件或者网络连接）非常有用，
+      无论是否成功使用资源。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.7 节</span>
+    </blockquote>
+    <p>
+      而在 Python 里，这件事有更好的写法——<code>with</code>。
+      官方在 8.8 节「预定义的清理操作」说得很直白：
+    </p>
+    <blockquote>
+      语句执行完毕后，即使在处理行时遇到问题，都会关闭文件 <code>f</code>。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.8 节</span>
+    </blockquote>
+    <pre><code># 手动管理：啰嗦，且容易漏
+f = open("news.txt")
+try:
+    for line in f:
+        print(line, end="")
+finally:
+    f.close()
+
+# with：一样的效果，一行搞定
+with open("news.txt") as f:
+    for line in f:
+        print(line, end="")</code></pre>
+    <p>
+      所以实践结论是：<strong>能用 <code>with</code> 就用 <code>with</code>；真的没有 <code>with</code> 支持时才用 <code>finally</code>。</strong>
+    </p>
+
+    <h3>4.7 关键机制五：raise 与异常链</h3>
+    <p>官方的 <code>raise</code> 说明：</p>
+    <blockquote>
+      <code>raise</code> 唯一的参数就是要触发的异常。这个参数必须是异常实例或异常类（派生自 <code>BaseException</code> 类，例如 <code>Exception</code> 或其子类）。
+      如果传递的是异常类，将通过调用没有参数的构造函数来隐式实例化。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.4 节</span>
+    </blockquote>
+    <pre><code>raise ValueError          # 等价于 raise ValueError()
+raise ValueError("年龄不能是负数")   # 带上说明信息（推荐）
+
+# 只想「标记一下」但不想处理，用不带参数的 raise 重新抛出
+try:
+    raise NameError('HiThere')
+except NameError:
+    print('An exception flew by!')
+    raise        # 原样再抛出去</code></pre>
+    <p><strong>异常链</strong>——这是很多人不知道但很有用的一块。官方说明：</p>
+    <blockquote>
+      如果一个未处理的异常发生在 <code>except</code> 部分内，它将会有被处理的异常附加到它上面，并包括在错误信息中。
+      <br><br>
+      为了表明一个异常是另一个异常的直接后果，<code>raise</code> 语句允许一个可选的 <code>from</code> 子句。
+      转换异常时，这种方式很有用。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.5 节</span>
+    </blockquote>
+    <pre><code>def func():
+    raise ConnectionError
+
+try:
+    func()
+except ConnectionError as exc:
+    raise RuntimeError('Failed to open database') from exc</code></pre>
+    <p>这样 Traceback 会明确告诉你两件事的因果关系：</p>
+    <pre><code>ConnectionError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  ...
+RuntimeError: Failed to open database</code></pre>
+    <p>还有 <code>from None</code>，用来主动切断这条链：</p>
+    <pre><code>try:
+    open('database.sqlite')
+except OSError:
+    raise RuntimeError from None
+# Traceback 里只剩 RuntimeError，不再显示那个 FileNotFoundError</code></pre>
+    <p>
+      <strong>什么时候用哪个？</strong>
+      写库 / 写给别人用的模块时，<code>raise ... from exc</code> 能让使用者看到完整因果；
+      而当你把「底层技术细节」转换成「面向业务的错误」且不想暴露细节时，才用 <code>from None</code>。
+    </p>
+
+    <h3>4.8 关键机制六：自定义异常</h3>
+    <p>官方的说法：</p>
+    <blockquote>
+      程序可以通过创建新的异常类命名自己的异常。不论是以直接还是间接的方式，异常都应从 <code>Exception</code> 类派生。
+      <br><br>
+      异常类可以被定义成能做其他类所能做的任何事，但通常应当保持简单，
+      它往往只提供一些属性，允许相应的异常处理程序提取有关错误的信息。
+      <br><br>
+      大多数异常命名都以"Error"结尾，类似标准异常的命名。
+      <span class="meta">——引自 Python 官方教程《错误和异常》8.6 节</span>
+    </blockquote>
+    <p>在 <code>exceptions</code> 模块文档的前言里还有一句很关键的提醒：</p>
+    <blockquote class="warn">
+      鼓励程序员从 <code>Exception</code> 类或其子类派生新异常，而<strong>不是</strong>从 <code>BaseException</code> 派生。
+      <span class="meta">——引自 Python 标准库 <code>exceptions</code> 模块文档前言</span>
+    </blockquote>
+    <p>为什么？因为 <code>BaseException</code> 下面挂了 <code>SystemExit</code>、<code>KeyboardInterrupt</code>、<code>GeneratorExit</code> 这三个「控制流信号」。
+    它们不是错误，而是「程序该退出了」的通知。如果你从 <code>BaseException</code> 派生，
+    那些「<code>except Exception</code> 兜底」的代码就接不住你的异常，行为会很怪。</p>
+    <p>实践里最简写法：</p>
+    <pre><code>class DataFormatError(Exception):
+    """当输入数据的列名不符合预期时抛出。"""
+    pass
+
+class FetchError(Exception):
+    def __init__(self, url, status_code):
+        self.url = url
+        self.status_code = status_code
+        super().__init__(f"{url} 返回 {status_code}")
+
+try:
+    raise FetchError("https://example.com/news", 503)
+except FetchError as e:
+    print(e.status_code, e.url)</code></pre>
+    <blockquote class="warn">
+      类名一律用英文。上面的写法在 Python 里语法合法，也很直观，
+      但中文标识符在团队协作、日志检索、和第三方库混用时会有麻烦。
+      <strong>建议类名用英文</strong>（如 <code>FetchError</code>、<code>SchemaError</code>），
+      异常信息用中文（如 <code>raise FetchError("页面返回 503")</code>）。
+    </blockquote>
+
+    <h3>4.9 关键机制七：常见异常类型对照表</h3>
+    <p>下表按「你会在什么时候见到它」组织。定义措辞以官方 <code>exceptions</code> 模块文档为准。</p>
+    <table>
+      <thead>
+        <tr><th>异常</th><th>官方定义（节译 / 引言）</th><th>你会在什么时候见到它</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>Exception</code></td>
+          <td>所有内置的非系统退出类异常的基类；所有用户自定义异常也应从它派生</td>
+          <td>兜底 <code>except</code> 的默认选择</td>
+        </tr>
+        <tr>
+          <td><code>SyntaxError</code></td>
+          <td>解析器遇到语法错误时抛出</td>
+          <td>少冒号、少括号、少逗号</td>
+        </tr>
+        <tr>
+          <td><code>IndentationError</code></td>
+          <td>与不正确缩进有关的语法错误的基类（<code>SyntaxError</code> 的子类）</td>
+          <td>缩进乱了</td>
+        </tr>
+        <tr>
+          <td><code>TabError</code></td>
+          <td>缩进中 Tab 和空格混用不一致时抛出（<code>IndentationError</code> 的子类）</td>
+          <td>从网页或 Word 复制代码</td>
+        </tr>
+        <tr>
+          <td><code>NameError</code></td>
+          <td>找不到局部或全局名称时抛出（仅适用于未限定名称）</td>
+          <td>变量名拼错、变量还没赋值</td>
+        </tr>
+        <tr>
+          <td><code>UnboundLocalError</code></td>
+          <td>引用了函数或方法里的局部变量，但该变量尚未绑定任何值（<code>NameError</code> 的子类）</td>
+          <td>函数里给变量赋值了，又想在赋值前读它</td>
+        </tr>
+        <tr>
+          <td><code>TypeError</code></td>
+          <td>对类型不合适的对象应用了操作或函数</td>
+          <td><code>"1" + 1</code>、参数个数不对</td>
+        </tr>
+        <tr>
+          <td><code>ValueError</code></td>
+          <td>操作或函数收到了类型正确但值不合适的参数</td>
+          <td><code>int("暂无")</code>、<code>int("12abc")</code></td>
+        </tr>
+        <tr>
+          <td><code>AttributeError</code></td>
+          <td>属性引用或赋值失败时抛出</td>
+          <td><code>"abc".push</code>、对象没有这个方法</td>
+        </tr>
+        <tr>
+          <td><code>IndexError</code></td>
+          <td>序列下标超出范围时抛出（切片下标会被静默截断到有效范围；下标不是整数则抛 <code>TypeError</code>）</td>
+          <td><code>[1,2,3][10]</code></td>
+        </tr>
+        <tr>
+          <td><code>KeyError</code></td>
+          <td>在现有键的集合中找不到映射（字典）键时抛出</td>
+          <td><code>d["不存在的键"]</code></td>
+        </tr>
+        <tr>
+          <td><code>ZeroDivisionError</code></td>
+          <td>除法或取模运算的第二个参数为零时抛出</td>
+          <td><code>1/0</code>、算占比时分母为 0</td>
+        </tr>
+        <tr>
+          <td><code>FileNotFoundError</code></td>
+          <td>请求的文件或目录不存在时抛出（对应 <code>errno</code> 的 <code>ENOENT</code>）</td>
+          <td>路径写错、换个电脑跑</td>
+        </tr>
+        <tr>
+          <td><code>PermissionError</code></td>
+          <td>在没有足够访问权限的情况下尝试运行操作时抛出（如文件系统权限；对应 <code>EACCES</code>、<code>EPERM</code>）</td>
+          <td>文件被 Excel 占用、无写权限</td>
+        </tr>
+        <tr>
+          <td><code>ModuleNotFoundError</code></td>
+          <td><code>ImportError</code> 的子类，<code>import</code> 找不到模块时抛出</td>
+          <td>没装包、装到了别的虚拟环境</td>
+        </tr>
+        <tr>
+          <td><code>ImportError</code></td>
+          <td><code>import</code> 语句加载模块出问题时抛出；<code>from ... import</code> 的名字找不到时也抛</td>
+          <td>包名拼错、包内部缺依赖</td>
+        </tr>
+        <tr>
+          <td><code>UnicodeDecodeError</code></td>
+          <td>解码期间发生 Unicode 相关错误时抛出（<code>UnicodeError</code> 的子类，而 <code>UnicodeError</code> 是 <code>ValueError</code> 的子类）</td>
+          <td>用错编码读中文文件</td>
+        </tr>
+        <tr>
+          <td><code>StopIteration</code></td>
+          <td>由内置函数 <code>next()</code> 和迭代器的 <code>__next__()</code> 方法抛出，表示迭代器不再产生更多项目</td>
+          <td>手动驱动迭代器时；生成器里不该主动抛它</td>
+        </tr>
+        <tr>
+          <td><code>RecursionError</code></td>
+          <td>解释器检测到超过最大递归深度时抛出（<code>RuntimeError</code> 的子类）</td>
+          <td>递归忘了写终止条件</td>
+        </tr>
+        <tr>
+          <td><code>RuntimeError</code></td>
+          <td>检测到不属于任何其它类别的错误时抛出</td>
+          <td>各种「不属于别的类别」的运行时问题</td>
+        </tr>
+        <tr>
+          <td><code>KeyboardInterrupt</code></td>
+          <td>用户按下中断键（通常是 <code>Control</code>-<code>C</code>）时抛出；它继承自 <code>BaseException</code>，以免被捕获 <code>Exception</code> 的代码意外捕获而导致解释器无法退出</td>
+          <td>你按了 Ctrl+C</td>
+        </tr>
+        <tr>
+          <td><code>AssertionError</code></td>
+          <td><code>assert</code> 语句失败时抛出</td>
+          <td>自检断言不成立</td>
+        </tr>
+        <tr>
+          <td><code>OSError</code></td>
+          <td>系统函数返回系统相关错误时抛出，包括「文件不存在」或「磁盘已满」等 I/O 失败</td>
+          <td>文件系统的各种问题；是 <code>FileNotFoundError</code>、<code>PermissionError</code> 的父类</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>官方 <code>TypeError</code> 与 <code>ValueError</code> 的分工，有一段很精辟的说明值得单独抄下来：</p>
+    <blockquote class="ok">
+      传入错误类型的参数（例如在期望 <code>int</code> 时传入了 <code>list</code>）应当导致 <code>TypeError</code>，
+      而传入错误值的参数（例如超出预期边界的数字）应当导致 <code>ValueError</code>。
+      <span class="meta">——引自 Python 标准库 <code>exceptions</code> 模块文档 <code>TypeError</code> 条目</span>
+    </blockquote>
+    <p><strong>类型不对 → <code>TypeError</code>；类型对但值不对 → <code>ValueError</code>。</strong> 这一句能解决八成的选择困难。</p>
+
+    <h3>4.10 关键机制八：继承层次结构</h3>
+    <p>把下面这棵树记住主干，前面表格里的所有「为什么接不住/接住了」就都能推理出来：</p>
+    <pre><code>BaseException
+ ├── BaseExceptionGroup
+ ├── GeneratorExit
+ ├── KeyboardInterrupt          ← 直接继承 BaseException
+ ├── SystemExit                 ← 直接继承 BaseException
+ └── Exception
+      ├── ArithmeticError
+      │    ├── FloatingPointError
+      │    ├── OverflowError
+      │    └── ZeroDivisionError
+      ├── AssertionError
+      ├── AttributeError
+      ├── EOFError
+      ├── ImportError
+      │    └── ModuleNotFoundError
+      ├── LookupError
+      │    ├── IndexError
+      │    └── KeyError
+      ├── NameError
+      │    └── UnboundLocalError
+      ├── OSError
+      │    ├── FileNotFoundError
+      │    ├── PermissionError
+      │    └── ...
+      ├── RuntimeError
+      │    ├── NotImplementedError
+      │    └── RecursionError
+      ├── StopIteration
+      ├── SyntaxError
+      │    └── IndentationError
+      │         └── TabError
+      ├── TypeError
+      └── ValueError
+           └── UnicodeError
+                ├── UnicodeDecodeError
+                └── UnicodeEncodeError</code></pre>
+    <p class="meta">依据 Python 标准库 <code>exceptions</code> 模块文档「异常层次结构」一节整理，为便于阅读省略了部分节点。</p>
+    <p>三个可以直接从树上看出来的结论：</p>
+    <ul>
+      <li><code>except OSError</code> 能接住 <code>FileNotFoundError</code> 和 <code>PermissionError</code>（它们是子类）。</li>
+      <li><code>except Exception</code> <strong>接不住</strong> <code>KeyboardInterrupt</code>（它不挂在 <code>Exception</code> 下面）。这是故意设计的。</li>
+      <li><code>except ValueError</code> 能接住 <code>UnicodeDecodeError</code>——因为 <code>UnicodeError</code> 是 <code>ValueError</code> 的子类。这一点很多人不知道。</li>
+    </ul>
+
+    <h3>4.11 可运行代码：完整对错对比</h3>
+
+    <p><strong>坑 1：裸 <code>except</code> + <code>pass</code>（最严重）</strong></p>
+    <pre><code># ❌ 灾难级写法：任何错误都被吞掉，包括 Ctrl+C
+def read_data(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return f.read()
+    except:
+        pass          # 什么都没发生，返回 None
+
+# 结果：路径写错、编码不对、权限不够……全都静默变成 None
+# 你在下游处理 None 时才崩，而那里离真正的原因已经很远了
+
+# ✅ 只捕你知道会出什么问题，并且如实记录
+import logging
+
+def read_data(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        logging.error("文件不存在：%s", path)
+        raise                       # 抛给调用者决定怎么办
+    except UnicodeDecodeError as e:
+        logging.error("编码不对：%s（%s）", path, e)
+        raise</code></pre>
+
+    <p><strong>坑 2：<code>except Exception</code> vs 裸 <code>except:</code></strong></p>
+    <pre><code># ❌ 裸 except：连 KeyboardInterrupt / SystemExit 都抓，Ctrl+C 按不死
+try:
+    长循环()
+except:
+    print("出错了")
+
+# ✅ except Exception：不抓 KeyboardInterrupt / SystemExit
+try:
+    长循环()
+except Exception as e:
+    print(f"出错了：{e!r}")</code></pre>
+    <p>
+      官方在 <code>KeyboardInterrupt</code> 条目里解释了为什么它继承自 <code>BaseException</code>：
+      「以免被捕获 <code>Exception</code> 的代码意外捕获而导致解释器无法退出」。
+      所以裸 <code>except:</code> 的后果很具体：<strong>你的程序会变得按 Ctrl+C 也停不掉。</strong>
+    </p>
+
+    <p><strong>坑 3：except 顺序颠倒导致接错</strong></p>
+    <pre><code># ❌ OSError 写在前面：FileNotFoundError 永远轮不到自己的处理器
+try:
+    read_data("不存在的文件.csv")
+except OSError:
+    print("文件系统问题")        # 被这里接走了
+except FileNotFoundError:
+    print("文件不存在")          # 死代码，永不执行
+
+# ✅ 具体的写前面
+try:
+    read_data("不存在的文件.csv")
+except FileNotFoundError:
+    print("文件不存在")
+except PermissionError:
+    print("没有权限")
+except OSError:
+    print("其它文件系统问题")</code></pre>
+
+    <p><strong>坑 4：把处理逻辑塞进 try，被 except 误伤</strong></p>
+    <pre><code># ❌ 分母为 0 的错误也被算成「数据格式不对」
+try:
+    rows = 读CSV("a.csv")
+    ratio = len(rows) / 0
+except ValueError:
+    print("数据格式不对")     # 会在这里报错？不，ZeroDivisionError 接不住，直接崩
+
+# 更糟的是这种：业务逻辑的 ValueError 被当成「读文件失败」
+try:
+    rows = 读CSV("a.csv")
+    title = rows[0][0].strip()
+    if int(title) &lt; 0:        # 这里的 ValueError 会被下面的 except 吞掉
+        pass
+except ValueError:
+    print("读文件失败")       # 误导性极强的错误信息
+
+# ✅ try 里只放可能失败的那一件事
+try:
+    rows = 读CSV("a.csv")
+except ValueError:
+    print("读文件失败")
+else:
+    title = rows[0][0].strip()
+    # 后续逻辑放在 else 里，异常语义清晰</code></pre>
+
+    <p><strong>坑 5：finally 里有 return（会吃掉异常）</strong></p>
+    <pre><code># ❌ finally 里 return，异常被静默吞掉
+def lookup_score(name):
+    try:
+        return db[name]
+    finally:
+        return -1       # 无论发生什么，永远返回 -1；KeyError 也不见了！
+
+print(lookup_score("不存在"))   # -1，你完全不知道出了问题
+
+# ✅ finally 只做清理，不做返回
+def lookup_score(name):
+    try:
+        return db[name]
+    finally:
+        print(f"[日志] 查询 {name} 完成")    # 只做记录/清理</code></pre>
+    <p>
+      官方对这个行为的原话是：「如果一个 <code>finally</code> 子句包含一个 <code>return</code> 语句，
+      返回的值将是来自 <code>finally</code> 子句的 <code>return</code> 语句，而不是来自 <code>try</code> 子句的 <code>return</code> 语句。
+      这可能会引起混淆，因此不提倡使用。」
+    </p>
+
+    <p><strong>坑 6：用 try/except 代替本该有的判断</strong></p>
+    <pre><code># ❌ 用异常来控制正常流程：读 10000 个字典的键，抛 9999 次异常，很慢
+for row in rows:
+    try:
+        v = row["来源"]
+    except KeyError:
+        v = "未知"
+
+# ✅ 用 .get() 表达「可能没有」的语义，更快也更清楚
+for row in rows:
+    v = row.get("来源", "未知")</code></pre>
+    <p>
+      原则：<strong>异常是给「意外情况」用的，不是给「预期内的情况」用的。</strong>
+      键可能不存在，这是预期内的，用 <code>.get()</code>；文件可能读不到，这是意外，用 <code>try</code>。
+    </p>
+
+    <p><strong>坑 7：记不住异常类型时盲目试错</strong></p>
+    <pre><code># ❌ 一排 except 猜类型，看到哪个生效就留哪个
+try:
+    x = int("12abc")
+except ValueError:
+    print("A")
+except TypeError:
+    print("B")
+except Exception:
+    print("C")
+
+# ✅ 在 REPL 里跑一次，让 Python 告诉你答案
+# &gt;&gt;&gt; int("12abc")
+# ValueError: invalid literal for int() with base 10: '12abc'
+# 然后就精确地写 except ValueError</code></pre>
+
+    <p><strong>坑 8：主动 raise 时丢掉原始信息</strong></p>
+    <pre><code># ❌ 重新抛一个不含原因的新异常，原始现场全丢了
+try:
+    fetch(url)
+except Exception:
+    raise RuntimeError("抓取失败")     # 为什么失败？不知道了
+
+# ✅ 用 from 保留因果链
+try:
+    fetch(url)
+except Exception as exc:
+    raise RuntimeError(f"抓取失败：{url}") from exc
+
+# 如果确实不想暴露底层细节（比如给外部用户看），显式切断
+try:
+    fetch(url)
+except Exception:
+    raise RuntimeError("服务暂时不可用") from None</code></pre>
+
+    <p><strong>坑 9：自定义异常从 BaseException 派生</strong></p>
+    <pre><code># ❌ 从 BaseException 派生：except Exception 接不住它
+class MyError(BaseException):
+    pass
+
+try:
+    raise MyError()
+except Exception:
+    print("接不住")     # 不会执行，程序直接崩
+
+# ✅ 从 Exception 派生
+class MyError(Exception):
+    pass</code></pre>
+
+    <p><strong>坑 10：完整四件套的正确用法</strong></p>
+    <pre><code>import csv
+import logging
+
+def read_clue_table(path):
+    """四件套都在的例子：try 只做可能失败的事，else 做后续，finally 记录。"""
+    f = None
+    try:
+        f = open(path, encoding="utf-8-sig", newline="")
+    except FileNotFoundError:
+        logging.error("文件不存在：%s", path)
+        raise
+    else:
+        # 只有打开成功才走到这里
+        rows = list(csv.DictReader(f))
+        return rows
+    finally:
+        # 不论成功失败都执行：这里手动关（实际项目请直接用 with）
+        if f is not None:
+            f.close()</code></pre>
+  </section>
+
+  <section id="s5">
+    <h2>5. 应用场景（新闻传播学）</h2>
+
+    <h3>场景一：批量抓取稿件时，让「个别失败」不影响整体，但要留下记录</h3>
+    <p>
+      真实场景：你要抓 200 个页面的标题做一个监测。现实是——有的页面 404，有的超时，
+      有的返回的内容结构变了。你不可能因为第 37 个页面失败就放弃后面 163 个。
+      但你也<strong>绝不能</strong>把失败悄悄吞掉，因为「抓到了 163 条」和「有 37 条失败了」
+      必须在报告里说清楚。
+    </p>
+    <pre><code>import logging
+from urllib.request import urlopen
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+
+class FetchError(Exception):
+    """抓取过程中的可预期失败（网络/状态码/结构变化）。"""
+    def __init__(self, url, reason):
+        self.url = url
+        self.reason = reason
+        super().__init__(f"{url} —— {reason}")
+
+
+def fetch_title(url):
+    try:
+        with urlopen(url, timeout=10) as resp:
+            html = resp.read().decode("utf-8", errors="replace")
+    except TimeoutError as exc:
+        raise FetchError(url, "超时") from exc
+    except OSError as exc:
+        raise FetchError(url, f"网络错误：{exc}") from exc
+
+    # 结构可能变了，用一个明确的检查代替「裸 except」
+    if "&lt;title&gt;" not in html:
+        raise FetchError(url, "页面结构不符合预期")
+    return html.split("&lt;title&gt;")[1].split("&lt;/title&gt;")[0]
+
+
+url_list = [f"https://example.com/news/{i}" for i in range(1, 201)]
+
+ok, failed = [], []
+for url in url_list:
+    try:
+        title = fetch_title(url)
+    except FetchError as exc:
+        failed.append((url, exc.reason))
+        logging.warning("抓取失败：%s", exc)     # 留痕，但不中断
+    else:
+        ok.append((url, title))
+
+print(f"成功 {len(ok)} 条，失败 {len(failed)} 条")
+# 把失败清单也写出来，交报告时一起附上
+for url, reason in failed[:5]:
+    print("  ", url, "→", reason)</code></pre>
+    <p>这段代码体现了几个原则：</p>
+    <ul>
+      <li><strong>只捕能预期的异常</strong>：<code>TimeoutError</code>、<code>OSError</code>、以及自己定义的 <code>FetchError</code>。程序里真出了 bug（比如 <code>TypeError</code>）应该直接崩，让你看见。</li>
+      <li><strong>用自定义异常统一语义</strong>：外部调用者只需要 <code>except FetchError</code>，不用知道底层是超时还是 404。</li>
+      <li><strong><code>from exc</code> 保留因果</strong>：日志里能看到「超时」是怎么导致「抓取失败」的。</li>
+      <li><strong>失败要计数、要留痕、要能交差</strong>：这是新闻工作的职业要求，也是异常处理真正的价值。</li>
+    </ul>
+
+    <h3>场景二：给编辑部写一个「报纸版面文本清洗」脚本，坏行跳过但要报告</h3>
+    <p>
+      排版系统导出的文本常常不干净：有的行日期格式不对，有的行字数异常，
+      有的行干脆是空行。你要清洗出干净数据，同时又得知道「丢了多少、为什么丢」——
+      否则领导问「怎么少了 12 条」你答不上来。
+    </p>
+    <pre><code>import re
+import logging
+from dataclasses import dataclass, field
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+
+class RowFormatError(Exception):
+    """单行数据不符合约定格式。"""
+    def __init__(self, line_no, reason, raw):
+        self.line_no = line_no
+        self.reason = reason
+        self.raw = raw
+        super().__init__(f"第 {line_no} 行：{reason}")
+
+
+date_pattern = re.compile(r"^(\d{4})-(\d{2})-(\d{2})$")
+
+@dataclass
+class CleanStats:
+    ok: int = 0
+    failures: list = field(default_factory=list)     # [(line_no, reason)]
+
+    def add_failure(self, line_no, reason):
+        self.failures.append((line_no, reason))
+
+
+def parse_row(line_no, raw):
+    """把一行 'YYYY-MM-DD 正文' 解析成 (日期, 正文)。坏行主动抛异常。"""
+    raw = raw.rstrip("\n")
+    if not raw.strip():
+        raise RowFormatError(line_no, "空行", raw)
+
+    parts = raw.split(" ", 1)
+    if len(parts) != 2:
+        raise RowFormatError(line_no, "缺少正文字段", raw)
+
+    date_str, body = parts
+    if not date_pattern.match(date_str):
+        raise RowFormatError(line_no, f"日期格式不对：{date_str!r}", raw)
+
+    if len(body) &lt; 5:
+        raise RowFormatError(line_no, f"正文过短（{len(body)} 字）", raw)
+
+    return date_str, body
+
+
+def clean_file(path):
+    stats = CleanStats()
+    cleaned = []
+
+    with open(path, encoding="utf-8") as f:
+        for line_no, raw in enumerate(f, start=1):
+            try:
+                cleaned.append(parse_row(line_no, raw))
+            except RowFormatError as exc:
+                stats.add_failure(exc.line_no, exc.reason)
+                logging.info("跳过 %s", exc)      # 预期内的坏数据：记录后跳过
+            else:
+                stats.ok += 1
+            # 没有 finally：这里不需要释放资源，with 已经负责了
+
+    return cleaned, stats
+
+
+cleaned, stats = clean_file("版面文本.txt")
+print(f"清洗完成：成功 {stats.ok} 行，跳过 {len(stats.failures)} 行")
+if stats.failures:
+    print("跳过原因汇总：")
+    reason_counts = {}
+    for _, reason in stats.failures:
+        reason_counts[reason] = reason_counts.get(reason, 0) + 1
+    for reason, n in sorted(reason_counts.items(), key=lambda kv: -kv[1]):
+        print(f"  {reason}: {n} 行")</code></pre>
+    <p>这个脚本的设计要点：</p>
+    <ul>
+      <li><strong>坏行用 <code>raise</code> 表达，不返回 <code>None</code></strong>：因为「解析失败」和「解析出空值」是两件不同的事，用异常区分得更清楚，也不会在下游悄悄传播 <code>None</code>。</li>
+      <li><strong>捕获的是自定义异常，不是 <code>ValueError</code> 或 <code>Exception</code></strong>：这样如果代码里真出了别的 bug（比如变量名写错），它会正常崩出来被你发现。</li>
+      <li><strong>跳过也留痕</strong>：<code>logging.info</code> + 统计对象，最后能给出「跳过原因汇总」，这才是可交付的清洗脚本。</li>
+      <li><strong>该用 <code>with</code> 的地方别用 <code>finally</code></strong>：文件资源交给 <code>with</code> 管，<code>finally</code> 在这里没有存在必要。</li>
+    </ul>
+  </section>
+
+  <section id="s6">
+    <h2>6. 概念辨析</h2>
+
+    <h3>辨析 1：语法错误 vs 异常</h3>
+    <pre><code># 语法错误：程序根本不会开始执行，整个文件都跑不了
+while True print("hi")
+# SyntaxError: invalid syntax
+
+# 异常：程序跑起来了，跑到某一步才崩
+def f():
+    return 1 / 0
+f()
+# ZeroDivisionError: division by zero</code></pre>
+    <p>
+      关键区别：<strong>语法错误不能用 <code>try</code> 捕获</strong>（除了用 <code>compile()</code> / <code>exec()</code> 动态执行代码的场景）。
+      因为它发生在「编译」阶段，比 <code>try</code> 还早。所以你不可能用 <code>try</code> 兜住一个少写了冒号的程序——
+      唯一办法是改正它。
+    </p>
+
+    <h3>辨析 2：<code>except: pass</code> vs <code>except Exception as e: 记录 + 处理</code></h3>
+    <pre><code># ❌ 吞掉一切，包括 Ctrl+C
+try:
+    危险操作()
+except:
+    pass
+
+# ✅ 精确捕获 + 记录 + 明确后续动作
+import logging
+try:
+    危险操作()
+except (TimeoutError, ConnectionError) as e:
+    logging.warning("网络问题，本次跳过：%s", e)
+    # 明确的下一个动作：跳过、重试、或用默认值</code></pre>
+    <p>
+      <code>except: pass</code> 有三个问题：① 它捕获 <code>KeyboardInterrupt</code>，让程序无法用 Ctrl+C 停止；
+      ② 它让所有错误信息永久消失，事后无从排查；
+      ③ 它把「预期内的失败」和「代码 bug」混为一谈。
+      真正想「出错就跳过」时，应该<strong>明确写出跳过哪类错误，并留下记录</strong>。
+    </p>
+
+    <h3>辨析 3：<code>try</code> 里塞得越多越好？</h3>
+    <pre><code># ❌ try 太长：任何位置的 ValueError 都会被误判成「读文件失败」
+try:
+    rows = 读CSV("a.csv")
+    avg = sum(int(r["值"]) for r in rows) / len(rows)
+    title = rows[0]["标题"].strip()
+except ValueError:
+    print("读取数据失败")     # 这三个位置都可能抛 ValueError，含义完全不同
+
+# ✅ try 只包住「一个可能失败的动作」
+try:
+    rows = 读CSV("a.csv")
+except (OSError, ValueError) as e:
+    print(f"读取数据失败：{e}")
+    raise
+
+avg = sum(int(r["值"]) for r in rows) / len(rows)   # 这里的错应该暴露出来
+title = rows[0]["标题"].strip()</code></pre>
+    <p>
+      判据：<strong>问自己「<code>except</code> 里的那句话，能不能准确描述 try 里任何一行的失败原因？」</strong>
+      如果不能，说明 <code>try</code> 太大了。官方的 <code>else</code> 子句就是为了解决这个而存在的。
+    </p>
+
+    <h3>辨析 4：<code>finally</code> vs <code>with</code></h3>
+    <pre><code># finally 版本：能用，但啰嗦
+f = open("news.txt", encoding="utf-8")
+try:
+    data = f.read()
+finally:
+    f.close()
+
+# with 版本：官方推荐，一行搞定，异常安全
+with open("news.txt", encoding="utf-8") as f:
+    data = f.read()</code></pre>
+    <p>
+      <code>with</code> 本质上是 <code>try/finally</code> 的语法糖（官方称之为「预定义的清理操作」）。
+      凡是支持 <code>with</code> 的对象（文件、锁、数据库连接、<code>csv</code> 的 reader 等），
+      都优先用 <code>with</code>。只有对象不支持 <code>with</code>、或需要跨函数生命周期管理时，才手动用 <code>finally</code>。
+    </p>
+
+    <h3>辨析 5：<code>raise ... from exc</code> vs <code>raise</code> 新异常</h3>
+    <pre><code># ❌ 丢掉原因
+try:
+    open("数据库.sqlite")
+except OSError:
+    raise RuntimeError("无法打开数据库")
+
+# ✅ 保留因果链
+try:
+    open("数据库.sqlite")
+except OSError as exc:
+    raise RuntimeError("无法打开数据库") from exc
+
+# ✅ 明确切断因果（不想暴露底层细节时）
+try:
+    open("数据库.sqlite")
+except OSError:
+    raise RuntimeError("服务暂时不可用") from None</code></pre>
+    <p>
+      三者的 Traceback 长度和清晰度差别很大。
+      第一种你会看到「During handling of the above exception, another exception occurred」这种隐式链（因为异常发生在 <code>except</code> 块里，Python 会自动链接），
+      但语义上不够明确；第二种用 <code>from</code> 明确表达「直接原因」；
+      第三种则完全隐藏底层细节——适合面向外部用户的接口。
+    </p>
+
+    <h3>辨析 6：`assert` vs `if ... raise`</h3>
+    <pre><code># assert：只用于「开发期自检」，可以被 python -O 关掉
+def ratio(part, total):
+    assert total &gt; 0, "总数必须为正"
+    return part / total
+
+# if + raise：用于「运行期必须成立的校验」
+def ratio(part, total):
+    if total &lt;= 0:
+        raise ValueError(f"总数必须为正，实际是 {total}")
+    return part / total</code></pre>
+    <p>
+      区别在于：<code>assert</code> 用 <code>python -O</code> 运行时会被<strong>整个删掉</strong>，
+      所以绝对不能用它做「数据校验」——那等于在生产环境里没有校验。
+      <code>assert</code> 只适合写「这一步按我的推理不可能是这样」的断言，或者写测试。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7. 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：</b>看到下面这段报错，你应该从哪一行开始读？第一步该做什么？
+      <pre><code>Traceback (most recent call last):
+  File "main.py", line 30, in &lt;module&gt;
+    run()
+  File "main.py", line 22, in run
+    report = build_report(rows)
+  File "main.py", line 15, in build_report
+    total = sum(int(r["阅读量"]) for r in rows)
+ValueError: invalid literal for int() with base 10: '1.2万'</code></pre>
+      <div class="ans">
+        从<strong>最后一行</strong>开始读，再往上找第一个「我自己写的文件」的行。
+        这里结论是 <code>ValueError: invalid literal for int() with base 10: '1.2万'</code>；
+        现场在 <code>main.py</code> 第 15 行，试图把 <code>'1.2万'</code> 转成整数。
+        第一步应该是想清楚：这个字段里出现了「1.2万」这种非纯数字格式，
+        需要在转换前先做清洗（比如把「万」乘 10000），而不是去改 <code>build_report</code> 的调用。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：</b><code>try</code> 子句里有 5 行代码，第 3 行抛了异常且被 <code>except</code> 接住。第 4、5 行会执行吗？
+      <div class="ans">
+        不会。官方说明：「如果在执行 try 子句时发生了异常，则<strong>跳过该子句中剩下的部分</strong>」。
+        会直接跳到 <code>except</code> 子句，然后继续执行 try/except 代码块之后的语句。
+        这也是为什么不要在一个 <code>try</code> 里塞太多行——出错时后面的都不执行，你得自己去想「哪些已经做了、哪些没做」。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：</b>下面两个 <code>except</code> 的顺序会有什么影响？为什么？
+      <pre><code># A
+except OSError:
+    ...
+except FileNotFoundError:
+    ...
+
+# B
+except FileNotFoundError:
+    ...
+except OSError:
+    ...</code></pre>
+      <div class="ans">
+        A 里的 <code>except FileNotFoundError</code> 是<strong>死代码</strong>，永远不会执行。
+        因为 <code>FileNotFoundError</code> 是 <code>OSError</code> 的子类，官方说「匹配的异常将是该类本身的实例或其所派生的类的实例」，
+        所以 <code>except OSError</code> 会先接住它。
+        B 是正确的顺序：具体的写前面，笼统的写后面。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：</b><code>finally</code> 子句在什么情况下<strong>不会</strong>执行？
+      <div class="ans">
+        官方定义是「不论 try 语句是否触发异常，都会执行」，实际中几乎没有「不会执行」的情况。
+        唯一需要提防的是「<code>finally</code> 里有 <code>return</code>/<code>break</code>/<code>continue</code>」——
+        它不是不执行，而是它会<strong>吃掉正在传播的异常</strong>，导致你以为是别的问题。
+        官方明确说这种写法「可能会引起混淆，因此不鼓励使用」，3.14 起会发 <code>SyntaxWarning</code>。
+        所以真正的结论是：<strong>不要在 finally 里写 return。</strong>
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：</b>同事说「我在代码外面包了一层 <code>try: ... except: pass</code>，现在不报错了」。你怎么看？
+      <div class="ans">
+        报错消失不等于问题解决。三个具体后果：① 它连 <code>KeyboardInterrupt</code> 都捕获，Ctrl+C 停不掉程序；
+        ② 所有错误信息永久丢失，出问题时无从排查；③ 后续代码拿到 <code>None</code> 或空结果，会在离原因很远的地方崩，更难查。
+        应该改成：精确列出预期异常、用 <code>logging</code> 记录、明确「接下来怎么办」（跳过/重试/用默认值/向上抛）。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：</b>下面这个函数的返回值是什么？为什么？
+      <pre><code>def f():
+    try:
+        return "正常"
+    finally:
+        return "finally"</code></pre>
+      <div class="ans">
+        返回 <code>"finally"</code>。官方原话：「如果一个 <code>finally</code> 子句包含一个 <code>return</code> 语句，
+        返回的值将是来自 <code>finally</code> 子句的 <code>return</code> 语句，而不是来自 <code>try</code> 子句的 <code>return</code> 语句。」
+        官方还补了一句「这可能会引起混淆，因此不提倡使用」。
+        实践规则：<code>finally</code> 只做清理和记录，不要写 <code>return</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：</b><code>except Exception</code> 为什么接不住 <code>KeyboardInterrupt</code>？这是设计缺陷吗？
+      <div class="ans">
+        不是缺陷，是刻意设计。官方在 <code>KeyboardInterrupt</code> 条目里写明：
+        「该异常继承自 <code>BaseException</code>，以免被捕获 <code>Exception</code> 的代码意外捕获而导致解释器无法退出」。
+        <code>SystemExit</code>（由 <code>sys.exit()</code> 引发）和 <code>GeneratorExit</code> 同样是直接继承 <code>BaseException</code>。
+        这三个都不是「错误」，而是「控制流信号」，所以它们<b>不该</b>被普通的错误处理逻辑拦下来。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8. 可核查参考来源</h2>
+    <table>
+      <thead>
+        <tr><th>来源</th><th>URL</th><th>用到的内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Python 官方教程《8. 错误和异常》</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/errors.html">docs.python.org/zh-cn/3/tutorial/errors.html</a></td>
+          <td>错误分为语法错误与异常；SyntaxError 的「箭头位置不一定是需要修复的位置」；Traceback「最后一行说明异常类型」；8.3 节 <code>try</code> 工作原理四步与「跳过该子句中剩下的部分」；多个 <code>except</code> 只执行一个、匹配顺序与 <code>B/C/D</code> 示例；异常实例 <code>args</code> 与官方「打印后 <code>raise</code>」模式；<code>else</code> 子句的存在理由；8.5 节异常链与 <code>raise ... from exc</code> / <code>from None</code>；8.6 节自定义异常应派生自 <code>Exception</code>；8.7 节 <code>finally</code> 的全部规则（含 <code>return</code> 覆盖与 PEP 765）、<code>divide</code> 示例、<code>bool_return</code> 示例、「finally 对释放外部资源非常有用」；8.8 节 <code>with</code> 与文件自动关闭</td>
+        </tr>
+        <tr>
+          <td>Python 标准库《内置异常》<code>exceptions</code> 模块</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/exceptions.html">docs.python.org/zh-cn/3/library/exceptions.html</a></td>
+          <td>异常继承层次结构（<code>BaseException</code> → <code>Exception</code> → 各子类）；<code>Exception</code>「所有内置的非系统退出类异常的基类，所有用户自定义异常也应派生自它」；<code>TypeError</code> 与 <code>ValueError</code> 的分工原文（「传入错误类型的参数……传入错误值的参数……」）；<code>AttributeError</code> / <code>EOFError</code> / <code>ImportError</code> / <code>ModuleNotFoundError</code> / <code>IndexError</code>（含「切片下标会被静默截断」）/ <code>KeyError</code> / <code>KeyboardInterrupt</code>（含继承自 <code>BaseException</code> 的原因）/ <code>NameError</code> / <code>UnboundLocalError</code> / <code>OSError</code> / <code>FileNotFoundError</code> / <code>PermissionError</code> / <code>RecursionError</code> / <code>StopIteration</code> / <code>SyntaxError</code> / <code>IndentationError</code> / <code>TabError</code> / <code>UnicodeError</code> / <code>UnicodeDecodeError</code> / <code>ZeroDivisionError</code> / <code>AssertionError</code> / <code>RuntimeError</code> / <code>NotImplementedError</code> / <code>MemoryError</code> 的官方定义；前言中「鼓励从 <code>Exception</code> 派生而不要从 <code>BaseException</code> 派生」；<code>__context__</code> / <code>__cause__</code> 与 <code>raise ... from ...</code> 的说明；<code>ExceptionGroup</code>（3.11 新增）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      以上 2 条来源在撰写前均已通过 WebFetch 实际抓取页面内容，页面均返回成功。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9. 核查记录</h2>
+    <table>
+      <thead>
+        <tr><th>核查项</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2 条来源 URL 可访问性</td><td>✅ 已核</td><td>撰写前均实际抓取成功</td></tr>
+        <tr><td>语法错误与异常的区分</td><td>✅ 已核（直接引用）</td><td>《错误和异常》开头「错误可（至少）被分为两种」</td></tr>
+        <tr><td>SyntaxError 箭头位置可能不是错误位置</td><td>✅ 已核（直接引用）</td><td>8.1 节原文，含 <code>while True print(...)</code> 示例</td></tr>
+        <tr><td>Traceback 最后一行说明异常类型</td><td>✅ 已核（直接引用）</td><td>8.2 节；「错误信息开头用堆栈回溯形式展示发生异常的语境」</td></tr>
+        <tr><td><code>try</code> 工作原理四步</td><td>✅ 已核（直接引用）</td><td>8.3 节四条要点，含「跳过该子句中剩下的部分」</td></tr>
+        <tr><td>多个 <code>except</code> 最多一个执行 / 顺序影响结果</td><td>✅ 已核（直接引用）</td><td>8.3 节 <code>B/C/D</code> 示例与「颠倒顺序则输出 B, B, B」</td></tr>
+        <tr><td>异常实例 <code>.args</code> 与官方处理模式</td><td>✅ 已核（直接引用）</td><td>8.3 节两段示例代码</td></tr>
+        <tr><td><code>else</code> 子句的存在理由</td><td>✅ 已核（直接引用）</td><td>8.3 节「可以避免意外捕获非 try ... except 语句保护的代码触发的异常」</td></tr>
+        <tr><td><code>finally</code> 的所有规则</td><td>✅ 已核（直接引用）</td><td>8.7 节五个要点逐条对应，含 <code>return</code> 覆盖、<code>break/continue</code> 抑制异常、PEP 765 的 <code>SyntaxWarning</code>、「对释放外部资源非常有用」</td></tr>
+        <tr><td><code>bool_return()</code> 返回 <code>False</code></td><td>✅ 已核（官方示例）</td><td>8.7 节原文示例</td></tr>
+        <tr><td><code>divide("2","1")</code> 先执行 finally 再抛 TypeError</td><td>✅ 已核（官方示例）</td><td>8.7 节原文示例与说明</td></tr>
+        <tr><td><code>with</code> 关闭文件（即使是处理行时遇到问题）</td><td>✅ 已核（直接引用）</td><td>8.8 节原文</td></tr>
+        <tr><td><code>raise</code> 参数规则与「隐式实例化」</td><td>✅ 已核（直接引用）</td><td>8.4 节，含 <code>raise ValueError</code> 示例</td></tr>
+        <tr><td>异常链与 <code>from exc</code> / <code>from None</code></td><td>✅ 已核（直接引用）</td><td>8.5 节全部示例（含 <code>ConnectionError → RuntimeError</code> 与 <code>from None</code>）</td></tr>
+        <tr><td>自定义异常派生规则</td><td>✅ 已核（直接引用）</td><td>8.6 节「异常都应从 <code>Exception</code> 类派生」；<code>exceptions</code> 前言「鼓励……不是从 <code>BaseException</code> 派生」</td></tr>
+        <tr><td>异常继承层次结构</td><td>✅ 已核</td><td>依据 <code>exceptions</code> 文档层次结构整理；为篇幅删除部分节点，主干与父子关系未改</td></tr>
+        <tr><td>表中 20+ 个异常的官方定义</td><td>✅ 已核</td><td>逐条对照 <code>exceptions</code> 文档条目；文中为中文节译，关键句已尽量保留原文措辞</td></tr>
+        <tr><td><code>TypeError</code> vs <code>ValueError</code> 分工</td><td>✅ 已核（直接引用）</td><td><code>TypeError</code> 条目末段原文</td></tr>
+        <tr><td><code>KeyboardInterrupt</code> 继承自 <code>BaseException</code> 的原因</td><td>✅ 已核（直接引用）</td><td>「以免被捕获 <code>Exception</code> 的代码意外捕获而导致解释器无法退出」</td></tr>
+        <tr><td><code>IndexError</code> 条目中「切片下标会被静默截断」</td><td>✅ 已核（直接引用）</td><td><code>exceptions</code> 文档 <code>IndexError</code> 条目</td></tr>
+        <tr><td><code>except: pass</code> 的具体害处（Ctrl+C 停不掉、丢失信息、混淆语义）</td><td>⚠ 部分核</td><td>「裸 except 会捕获 <code>KeyboardInterrupt</code>」有官方依据（<code>KeyboardInterrupt</code> 条目的继承说明 + 捕获 <code>Exception</code> 的行为定义）；但「Ctrl+C 停不掉程序」的具体现象描述属于推论与经验，非官方明文结论</td></tr>
+        <tr><td><code>assert</code> 会被 <code>python -O</code> 移除</td><td>⚠ 未在本页来源中核到</td><td>这是 <code>assert</code> 语句的已知行为，但不在本次抓取的两个页面正文中，故未作为官方引用；如需引用请另查 <code>assert</code> 语句文档</td></tr>
+        <tr><td>「几乎每个新手都会写 <code>except: pass</code>」等经验性表述</td><td>⚠ 非官方</td><td>属于教学经验描述，不是官方结论，已在文中以「实践结论」「经验」措辞标注</td></tr>
+        <tr><td>标识符命名规范</td><td>✅ 已核</td><td>文中代码统一使用英文类名/函数名，符合 PEP 8 命名约定（<a href="https://peps.python.org/pep-0008/">peps.python.org/pep-0008/</a>）；异常类以 <code>Error</code> 结尾、函数用小写加下划线</td></tr>
+        <tr><td>文中第 4.11 节与第 5 节全部代码</td><td>⚠ 未实测运行</td><td>代码按 Python 3.12 / 3.14 语法的官方示例风格编写，逻辑已逐段检查；但本文件生成环境未实际执行。第 5 节示例中 <code>urllib.request.urlopen</code> 的行为依赖网络环境，未实测</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      诚实说明：本文件关于 <code>try/except/else/finally</code>、<code>raise</code>、异常链、异常类定义与继承关系的部分，
+      全部基于官方教程 8.1–8.8 节与 <code>exceptions</code> 模块文档的实际抓取内容，
+      原文措辞（含引号内的句子、示例代码、版本变更说明）均可对照核实。
+      <br><br>
+      但有三类内容需要你留意：① 「新手常见坑」的具体描述是我的教学归纳，不是官方结论；
+      ② <code>assert</code> 与 <code>-O</code> 的关系未在本次来源中覆盖，如需引用请另查；
+      ③ 第 4.11 节与第 5 节的代码未在本机实际运行，建议你在自己的环境里跑一遍，
+      尤其是第 5 节的网络抓取示例。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <a href="index.html">概念目录</a> ·
+      <a href="python-learning-map.html">学习地图</a> ·
+      <a href="https://github.com/Yym113/big-data-ai">GitHub 仓库</a>
+    </p>
+    <p>生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

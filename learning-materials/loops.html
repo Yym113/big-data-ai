@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>循环 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>循环</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 6 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      循环就是<b>把同一件事重复做 N 遍</b>。你处理一批新闻，不可能一条一条手写代码 —— 写一次，让它自己跑完。
+    </p>
+    <pre><code>titles = ["AI 重塑新闻业", "算法推荐争议", "县级融媒体"]
+
+for t in titles:
+    print(t)</code></pre>
+    <p>
+      Python 的 <code>for</code> 和 C、Java 的 <code>for</code> <b>长得像但不一样</b>。官方文档专门强调过这一点：
+      它是「在列表或字符串等任意序列的元素上迭代，按它们在序列中出现的顺序」，<b>不是</b>「从 0 数到 n」。
+    </p>
+    <p>
+      所以你写循环时脑子里想的应该是：<b>「对每一条新闻，做这些事」</b>，而不是「i 从 0 开始，每次加 1，直到 10」。
+      后者要用 <code>range()</code> 显式写出来。
+    </p>
+    <pre><code># 「对每一条新闻做」—— 直接遍历元素（推荐）
+for t in titles:
+    print(len(t))
+
+# 「重复 5 次」—— 用 range
+for i in range(5):
+    print("第", i + 1, "次")</code></pre>
+    <p>
+      最容易栽的地方是 <code>range</code>：<b><code>range(5)</code> 给你 0、1、2、3、4，一共 5 个数，不包含 5。</b>
+      官方原话是「生成的序列绝不会包括给定的终止值」。
+    </p>
+    <blockquote>
+      一句话记住：<b>区间永远左闭右开。</b>切片是这样，<code>range</code> 也是这样。
+      <code>range(1, 6)</code> 是 1 到 5，五个数。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>用 <code>for ... in ...</code> 遍历列表、字典、字符串，并说清它和「数数循环」的区别；</li>
+      <li>用 <code>range(start, stop, step)</code> 生成数列，并解释为什么 <code>range(5)</code> 里没有 5；</li>
+      <li>用 <code>enumerate()</code> 同时拿到索引和值，用 <code>zip()</code> 同步遍历两个序列；</li>
+      <li>区分 <code>break</code>（跳出整个循环）与 <code>continue</code>（跳过本次）；</li>
+      <li>说出为什么不能在遍历列表时删元素，并给出两种正确写法；</li>
+      <li>认识 <code>for ... else</code> 的语义（以及为什么很少用它），知道 <code>while</code> 什么时候该用。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li><code>for</code> 到底在遍历什么？为什么 Python 的 <code>for</code> 和 C 的不一样？</li>
+      <li><code>range(5)</code> 里为什么没有 5？<code>range(1, 6)</code> 有几个数？</li>
+      <li>想同时拿到「第几条」和「内容」怎么办？为什么不用 <code>range(len(...))</code>？</li>
+      <li>想同时遍历两个列表怎么办？长度不一样会怎样？</li>
+      <li><code>break</code> 和 <code>continue</code> 有什么区别？</li>
+      <li>为什么在循环里删列表元素会漏删？怎么删才对？</li>
+      <li><code>for ... else</code> 是什么？<code>else</code> 到底属于谁？</li>
+      <li><code>while</code> 和 <code>for</code> 该用哪个？<code>while True</code> 怎么写才安全？</li>
+      <li>循环里改字典、改集合会怎样？</li>
+      <li>嵌套循环里的 <code>break</code> 会跳出几层？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>循环</b>：重复执行一段代码。Python 有两种 ——
+      <code>for</code>（在序列/可迭代对象上迭代）和 <code>while</code>（条件为真时反复执行）。
+    </p>
+    <p>
+      官方文档对 <code>for</code> 的定位（原文）：
+      <i>「Python 的 <code>for</code> 语句不迭代算术递增数值（如 Pascal），或是给予用户定义迭代步骤和结束条件的能力（如 C），
+      而是在列表或字符串等任意序列的元素上迭代，按它们在序列中出现的顺序。」</i>
+    </p>
+
+    <h3>4.2 最小模型：指针从头走到尾</h3>
+    <pre><code>words = ['cat', 'window', 'defenestrate']
+
+for w in words:
+    print(w, len(w))
+# cat 3
+# window 6
+# defenestrate 12</code></pre>
+    <p>
+      <code>for w in words</code> 做三件事：从第一个元素开始，把每个元素依次贴到名字 <code>w</code> 上，执行循环体；
+      走到末尾自动结束。<b>你不需要管「下一个是第几个」。</b>
+    </p>
+    <pre><code># 循环结束后，循环变量还留着最后一个值
+for w in words:
+    pass
+print(w)        # 'defenestrate'
+
+# 如果循环一次都没执行（遍历空列表），循环变量根本不会被创建
+for x in []:
+    pass
+print(x)        # NameError: name 'x' is not defined</code></pre>
+    <blockquote class="warn">
+      <b>循环变量会「泄漏」到循环外面</b>，而且空列表会让它根本不存在。
+      不要依赖循环外的 <code>w</code> 有值，这是个隐蔽的 bug 来源。
+    </blockquote>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><code>for x in 一堆东西</code></td><td>把一叠稿子一张张翻过去</td><td>翻完自动停，不用数</td></tr>
+        <tr><td><code>range(5)</code></td><td>从 0 开始数 5 张</td><td>数到 0,1,2,3,4 就停 —— 不含 5</td></tr>
+        <tr><td><code>enumerate()</code></td><td>翻稿子时顺手报个编号</td><td>同时给出序号和内容</td></tr>
+        <tr><td><code>zip()</code></td><td>两条清单并排对着一行行看</td><td>短的走完就停</td></tr>
+        <tr><td><code>break</code></td><td>翻到要找的就合上文件夹走人</td><td>跳出整个循环</td></tr>
+        <tr><td><code>continue</code></td><td>这张不要，直接翻下一张</td><td>跳过本次剩余部分</td></tr>
+        <tr><td><code>while</code></td><td>「还有下一页就继续翻」</td><td>条件为真就继续，不知道要翻几页时用</td></tr>
+        <tr><td><code>for...else</code></td><td>翻完了都没找到 → 执行 <code>else</code></td><td>语义是「没有 break 过」</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 <code>range()</code>：唯一需要记住的「不含尾」</h3>
+    <p>
+      官方文档：<i>「生成的序列绝不会包括给定的终止值；<code>range(10)</code> 生成 10 个值。」</i>
+      并且指出 <code>range()</code> 返回的对象「在很多方面和列表的行为一样，但其实它和列表不一样……
+      并没有真正生成过一个含有全部项的列表，从而节省了空间」。
+    </p>
+    <pre><code>list(range(5))          # [0, 1, 2, 3, 4]
+list(range(5, 10))      # [5, 6, 7, 8, 9]
+list(range(0, 10, 3))   # [0, 3, 6, 9]
+list(range(-10, -100, -30))   # [-10, -40, -70]   负步长
+list(range(0))          # []
+list(range(1, 0))       # []
+list(range(5, 5))       # []  起止相同 → 空
+
+# range 只存 start/stop/step 三个值，不占内存
+import sys
+sys.getsizeof(range(1000000))   # 48 字节左右，和 range(10) 一样
+sys.getsizeof(list(range(1000000)))  # 约 8 MB
+
+# range 支持索引、切片、in
+r = range(0, 20, 2)
+r[5]        # 10
+11 in r     # False
+r[:5]       # range(0, 10, 2)
+r[-1]       # 18</code></pre>
+    <blockquote class="warn">
+      <b><code>range()</code> 的参数必须是整数</b>（官方原文：「参数必须是整数……如果 <code>step</code> 为零，<code>ValueError</code> 会被引发」）。
+      <code>range(2.5)</code> 抛 <code>TypeError</code>；<code>range(0, 10, 0)</code> 抛 <code>ValueError</code>。
+    </blockquote>
+    <pre><code># 常见误用
+for i in range(len(titles)):
+    print(titles[i])          # 能跑，但不 Pythonic
+
+for t in titles:              # ✅ 直接遍历元素
+    print(t)
+
+for i, t in enumerate(titles):   # ✅ 需要索引时用 enumerate
+    print(i, t)</code></pre>
+
+    <h3>4.5 <code>enumerate()</code> 与 <code>zip()</code></h3>
+    <p>
+      官方「循环的技巧」一节的原话：<i>「在序列中循环时，用 <code>enumerate()</code> 函数可以同时取出位置索引和对应的值」</i>、
+      <i>「同时循环两个或多个序列时，用 <code>zip()</code> 函数可以将其内的元素一一匹配」</i>。
+    </p>
+    <pre><code># enumerate
+for i, v in enumerate(['tic', 'tac', 'toe']):
+    print(i, v)
+# 0 tic
+# 1 tac
+# 2 toe
+
+# 从 1 开始编号（做报表时常用）
+for i, v in enumerate(['tic', 'tac', 'toe'], start=1):
+    print(i, v)
+
+# zip
+questions = ['name', 'quest', 'favorite color']
+answers = ['lancelot', 'the holy grail', 'blue']
+for q, a in zip(questions, answers):
+    print(f'What is your {q}?  It is {a}.')
+
+# zip 以最短的为准
+list(zip([1, 2, 3], "ab"))     # [(1, 'a'), (2, 'b')]   第三个被丢掉
+
+# zip 还能转置矩阵
+matrix = [[1, 2, 3], [4, 5, 6]]
+list(zip(*matrix))             # [(1, 4), (2, 5), (3, 6)]</code></pre>
+    <pre><code># 官方还给了三种「按指定顺序循环」的写法
+basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
+
+for f in sorted(basket):              # 排序后遍历，不改原列表
+    print(f)
+
+for f in sorted(set(basket)):         # 去重 + 排序
+    print(f)
+
+for i in reversed(range(1, 10, 2)):   # 逆序
+    print(i)
+# 9 7 5 3 1</code></pre>
+
+    <h3>4.6 <code>break</code> 与 <code>continue</code></h3>
+    <p>
+      官方定义：<i>「<code>break</code> 语句将跳出最近的一层 <code>for</code> 或 <code>while</code> 循环」</i>、
+      <i>「<code>continue</code> 语句将继续执行循环的下一次迭代」</i>。
+    </p>
+    <pre><code># break：找到就停
+for n in range(2, 10):
+    for x in range(2, n):
+        if n % x == 0:
+            print(f"{n} equals {x} * {n//x}")
+            break              # 只跳出内层！
+# 4 equals 2 * 2
+# 6 equals 2 * 3
+# 8 equals 2 * 4
+# 9 equals 3 * 3
+
+# continue：跳过本次剩余语句
+for num in range(2, 10):
+    if num % 2 == 0:
+        print(f"Found an even number {num}")
+        continue               # 不再执行下面的 print
+    print(f"Found an odd number {num}")</code></pre>
+    <blockquote class="warn">
+      <b><code>break</code> 只跳出「最近的一层」循环。</b>
+      双层嵌套里要跳出两层，得用标志变量、把内层抽成函数用 <code>return</code>，或者
+      <code>for ... else</code> 的变通写法。这是新手写双重循环时最常见的误解。
+    </blockquote>
+
+    <h3>4.7 循环里不能改列表（最重要的坑）</h3>
+    <p>
+      官方教程原话：<i>「很难正确地在迭代多项集的同时修改多项集的内容。更简单的方法是迭代多项集的副本或者创建新的多项集。」</i>
+    </p>
+    <pre><code>nums = [1, 2, 2, 3, 2, 4]
+
+# ❌ 边遍历边删
+for n in nums:
+    if n == 2:
+        nums.remove(n)
+print(nums)          # [1, 2, 3, 4]   ← 还剩一个 2！
+
+# 为什么：删掉一个之后，后面元素整体前移，
+# 迭代器却已经"走过"那个位置，于是漏看了紧接着的那个 2</code></pre>
+    <p>官方给出的官方思路是「迭代副本」或「创建新多项集」。三种可行写法：</p>
+    <pre><code># ✅ 方案一：创建新列表（官方教程推荐，最清晰）
+nums = [1, 2, 2, 3, 2, 4]
+nums = [n for n in nums if n != 2]
+print(nums)          # [1, 3, 4]
+
+# ✅ 方案二：整体切片替换（官方 FAQ 给出的写法，原地改）
+nums = [1, 2, 2, 3, 2, 4]
+nums[:] = [n for n in nums if n != 2]
+
+# ✅ 方案三：倒着遍历删除（索引不会错位）
+nums = [1, 2, 2, 3, 2, 4]
+for i in range(len(nums) - 1, -1, -1):
+    if nums[i] == 2:
+        del nums[i]
+print(nums)          # [1, 3, 4]</code></pre>
+    <pre><code># 官方「过滤异常值」示例：不在循环里删，而是收集到新列表
+import math
+raw_data = [56.2, float('NaN'), 51.7, 55.3, 52.5, float('NaN'), 47.8]
+filtered_data = []
+for value in raw_data:
+    if not math.isnan(value):
+        filtered_data.append(value)
+print(filtered_data)
+# [56.2, 51.7, 55.3, 52.5, 47.8]</code></pre>
+
+    <h3>4.8 遍历字典时的修改（官方给了两种标准答案）</h3>
+    <pre><code>users = {'Hans': 'active', 'Éléonore': 'inactive', '景太郎': 'active'}
+
+# ❌ 直接删：RuntimeError: dictionary changed size during iteration
+for user in users:
+    if users[user] == 'inactive':
+        del users[user]
+
+# ✅ 策略一（官方示例）：迭代副本
+for user, status in users.copy().items():
+    if status == 'inactive':
+        del users[user]
+print(users)   # {'Hans': 'active', '景太郎': 'active'}
+
+# ✅ 策略二（官方示例）：创建新字典
+users = {'Hans': 'active', 'Éléonore': 'inactive', '景太郎': 'active'}
+active_users = {}
+for user, status in users.items():
+    if status == 'active':
+        active_users[user] = status
+print(active_users)</code></pre>
+    <p class="meta">
+      <b>改值是允许的</b>（<code>users[u] = "new"</code>），<b>改键的数量才报错</b>（增、删键）。
+      这个区别很多人搞混。
+    </p>
+
+    <h3>4.9 <code>while</code> 与 <code>for ... else</code></h3>
+    <pre><code># while：不知道要循环几次时用
+attempts = 0
+while attempts &lt; 3:
+    attempts += 1
+    print("第", attempts, "次尝试")
+
+# while True + break：必须先想好退出条件，否则死循环
+while True:
+    line = input("输入内容（q 退出）：")
+    if line == "q":
+        break
+    print("你输入了：", line)
+
+# 官方给出的 pass 用法：无限等待键盘中断
+while True:
+    pass   # 按 Ctrl+C 中断</code></pre>
+    <pre><code># for ... else：循环「没有 break 过」才执行 else
+# 官方示例：找质数
+for n in range(2, 10):
+    for x in range(2, n):
+        if n % x == 0:
+            print(n, 'equals', x, '*', n//x)
+            break
+    else:
+        # 循环到底未找到一个因数
+        print(n, 'is a prime number')
+# 2 is a prime number
+# 3 is a prime number
+# 4 equals 2 * 2
+# 5 is a prime number
+# ...</code></pre>
+    <blockquote class="warn">
+      官方在这里专门加了一句提醒：<i>「（对，这是正确的代码。 仔细看：其中 <code>else</code> 子句属于 <code>for</code> 循环，
+      而<b>不属于</b> <code>if</code> 语句。）」</i>
+      因为 <code>else</code> 的缩进和 <code>for</code> 对齐 —— 这个视觉陷阱让很多人第一次读错。
+    </blockquote>
+    <p>官方对 <code>else</code> 语义的解释（原文）：</p>
+    <blockquote>
+      「当配合循环使用时，<code>else</code> 子句更像是 <code>try</code> 语句的 <code>else</code> 子句而不像 <code>if</code> 语句的相应子句：
+      一个 <code>try</code> 语句的 <code>else</code> 子句会在未发生异常时运行，而一个循环的 <code>else</code> 子句会在<b>未发生 <code>break</code> 时</b>运行。」
+    </blockquote>
+    <p class="meta">
+      入门阶段<b>读得懂就行，不建议写</b>。同样的逻辑用「找到就 <code>return</code>」的函数或标志变量写出来，可读性好得多。
+    </p>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：批量处理新闻列表并汇总统计</h3>
+    <pre><code>articles = [
+    {"标题": "AI 写稿工具上线",   "浏览": 12800, "来源": "科技日报", "字数": 1200},
+    {"标题": "县级融媒体三周年", "浏览": 3400,  "来源": "新闻战线", "字数": 860},
+    {"标题": "算法推荐争议调查", "浏览": 21000, "来源": "科技日报", "字数": 3400},
+    {"标题": "AI 版权第一案",    "浏览": 9600,  "来源": "法治日报", "字数": 2100},
+]
+
+total_views = 0
+total_words = 0
+by_source = {}
+
+for i, a in enumerate(articles, start=1):
+    views = a.get("浏览", 0)
+    words = a.get("字数", 0)
+    src = a.get("来源", "未标注")
+
+    total_views += views                       # 累加器
+    total_words += words
+
+    by_source.setdefault(src, []).append(views)
+
+    print(f"{i:&gt;2}. {a['标题']:&lt;10} {views:&gt;6} 浏览  {words:&gt;5} 字")
+
+print(f"\n总浏览 {total_views}，平均 {total_views / len(articles):.0f}")
+print(f"总字数 {total_words}，平均每篇 {total_words // len(articles)} 字")
+
+# 按来源汇总
+for src, views in sorted(by_source.items(), key=lambda kv: -sum(kv[1])):
+    print(f"{src}: {len(views)} 篇，合计 {sum(views)}")</code></pre>
+    <pre><code>输出示例：
+ 1. AI 写稿工具上线 12800 浏览   1200 字
+ 2. 县级融媒体三周年  3400 浏览    860 字
+ 3. 算法推荐争议调查 21000 浏览   3400 字
+ 4. AI 版权第一案     9600 浏览   2100 字
+
+总浏览 46800，平均 11700
+总字数 7560，平均每篇 1890 字
+科技日报: 2 篇，合计 33800
+法治日报: 1 篇，合计 9600
+新闻战线: 1 篇，合计 3400</code></pre>
+    <blockquote class="ok">
+      <b>「累加器四步法」</b>：开变量 <code>total = 0</code> → 循环 → <code>if</code> 或取值 → <code>total += x</code>。
+      统计浏览量、字数、条数，全是这个骨架。看熟它，后面 pandas 的 <code>groupby</code> 就是它的自动化版本。
+    </blockquote>
+
+    <h3>场景二：从新闻全文中提取所有疑似关键词</h3>
+    <pre><code>ARTICLES = [
+    "AI 正在重塑新闻业。AI 写稿、AI 剪辑都已落地。",
+    "关于算法推荐争议的深度报道，涉及算法透明度问题。",
+    "生成式 AI 的版权问题：AI 训练数据从哪里来？",
+]
+
+KEYWORDS = ["AI", "算法", "版权", "融媒体"]
+
+# 1. 逐篇扫描，记录每篇命中的关键词
+for i, text in enumerate(ARTICLES, start=1):
+    hits = []
+    for kw in KEYWORDS:
+        if kw in text:                 # 命中就记录
+            hits.append(kw)
+    if hits:
+        print(f"第 {i} 篇命中：{', '.join(hits)}")
+    else:
+        continue                       # 没命中就跳过，不打印
+
+# 2. 全局词频统计
+freq = {}
+for text in ARTICLES:
+    for kw in KEYWORDS:
+        count = text.count(kw)
+        if count == 0:
+            continue                   # 没出现的不记录，保持字典干净
+        freq[kw] = freq.get(kw, 0) + count
+
+for kw, c in sorted(freq.items(), key=lambda kv: -kv[1]):
+    print(f"{kw}: {c} 次")
+
+# 3. 找到第一条提及"版权"的报道就停下（break 的典型用法）
+for i, text in enumerate(ARTICLES, start=1):
+    if "版权" in text:
+        print(f"首次提及版权的报道是第 {i} 篇")
+        break
+else:
+    print("没有报道提及版权")     # 循环没 break 才会执行</code></pre>
+    <p class="meta">
+      注意最后那段 <code>for ... else</code>：<b>找到了就 <code>break</code> 并打印，没找到就走到 <code>else</code></b>。
+      这是 <code>else</code> 子句最自然的用法 —— 只是入门阶段不建议主动写，读得懂即可。
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：<code>break</code> vs <code>continue</code></h3>
+    <pre><code># break：整个循环结束
+for i in range(5):
+    if i == 3:
+        break
+    print(i)
+# 0 1 2
+
+# continue：只跳过本次，继续下一轮
+for i in range(5):
+    if i == 3:
+        continue
+    print(i)
+# 0 1 2 4</code></pre>
+    <table>
+      <thead><tr><th></th><th>作用范围</th><th>典型场景</th></tr></thead>
+      <tbody>
+        <tr><td><code>break</code></td><td>跳出<b>最近一层</b>整个循环</td><td>找到目标就停；遇到致命错误就放弃</td></tr>
+        <tr><td><code>continue</code></td><td>只跳过<b>本次</b>剩余语句</td><td>过滤掉不满足条件的项，继续处理后面的</td></tr>
+        <tr><td><code>return</code></td><td>直接结束<b>整个函数</b></td><td>在函数里「找到了就直接返回」，比 break 更彻底</td></tr>
+      </tbody>
+    </table>
+
+    <h3>辨析 2：<code>for i in range(len(a))</code> vs <code>for i, v in enumerate(a)</code></h3>
+    <pre><code>titles = ["A", "B", "C"]
+
+# ❌ 能跑，但绕了一圈
+for i in range(len(titles)):
+    print(i, titles[i])
+
+# ✅ 官方推荐：enumerate 直接给出索引和值
+for i, v in enumerate(titles):
+    print(i, v)
+
+# ✅ 如果不需要索引，就不要索引
+for v in titles:
+    print(v)</code></pre>
+    <p class="meta">
+      官方在讲 <code>range()</code> 时说过：<i>「要按索引迭代序列，可以组合使用 <code>range()</code> 和 <code>len()</code> …
+      不过大多数情况下 <code>enumerate()</code> 函数很方便。」</i>
+    </p>
+
+    <h3>辨析 3：循环里删元素 —— 三种写法的差别</h3>
+    <pre><code>nums = [1, 2, 2, 3, 2, 4]
+
+# ❌ 漏删
+for n in nums:
+    if n == 2:
+        nums.remove(n)
+print(nums)        # [1, 2, 3, 4]
+
+# ✅ 列表推导式（生成新列表，nums 指向新对象）
+nums = [1, 2, 2, 3, 2, 4]
+nums = [n for n in nums if n != 2]
+
+# ✅ 切片赋值（原地改，其他指向该列表的变量也能看到变化）
+nums = [1, 2, 2, 3, 2, 4]
+other = nums
+nums[:] = [n for n in nums if n != 2]
+print(other)       # [1, 3, 4]   ← other 也变了，因为是同一个列表
+
+# ✅ 倒删（原地改，不需要额外内存）
+nums = [1, 2, 2, 3, 2, 4]
+for i in range(len(nums) - 1, -1, -1):
+    if nums[i] == 2:
+        del nums[i]</code></pre>
+    <blockquote class="warn">
+      <b><code>nums = [...]</code> 和 <code>nums[:] = [...]</code> 的区别很重要：</b>
+      前者让 <code>nums</code> 指向一个新列表（别人手上那份没变），后者改的是原来那个列表（所有引用它的人都会看到变化）。
+      官方 FAQ 把「<code>mylist[:] = (x for x in mylist if keep_condition)</code>」列为推荐的删除多个条目写法。
+    </blockquote>
+
+    <h3>辨析 4：<code>for</code> 的 <code>else</code> 属于循环，不属于 <code>if</code></h3>
+    <pre><code>for n in range(2, 5):
+    for x in range(2, n):
+        if n % x == 0:
+            print(n, "不是质数")
+            break
+    else:
+        print(n, "是质数")     # ← 这个 else 对齐的是内层 for，不是 if
+
+# 输出：
+# 2 是质数
+# 3 是质数
+# 4 不是质数
+
+# 等价的、更好读的写法
+def is_prime(n):
+    for x in range(2, n):
+        if n % x == 0:
+            return False
+    return True</code></pre>
+    <p class="meta">
+      官方建议的读法：把循环的 <code>else</code> 理解成「循环内的 if 全都失败了」——
+      相当于一系列 <code>if/if/if</code> 之后接一个 <code>else</code>。
+    </p>
+
+    <h3>辨析 5：<code>while</code> 忘了让条件变化 = 死循环</h3>
+    <pre><code># ❌ 死循环
+i = 0
+while i &lt; 5:
+    print(i)            # i 永远不变
+
+# ✅ 记得推进
+i = 0
+while i &lt; 5:
+    print(i)
+    i += 1              # 关键这一行
+
+# ✅ 用 for 替代（更不容易写错）
+for i in range(5):
+    print(i)
+
+# while True + break 的写法要保证 break 必然可达
+while True:
+    line = input("&gt; ")
+    if not line:        # 空了就退出
+        break</code></pre>
+    <blockquote class="warn">
+      <b>能用 <code>for</code> 就别用 <code>while</code>。</b>
+      <code>for</code> 的结束条件是自动的，不会忘；<code>while</code> 需要你自己维护状态，忘一次就是死循环
+      （在 Notebook 里表现为一直在跑，只能强制中断）。
+    </blockquote>
+
+    <h3>辨析 6：<code>zip()</code> 以最短为准，静默丢数据</h3>
+    <pre><code>titles = ["A", "B", "C"]
+views = [100, 200]
+
+list(zip(titles, views))
+# [('A', 100), ('B', 200)]   ← "C" 被悄悄丢掉了！不报错，不警告
+
+# 想发现长度不一致，先检查
+if len(titles) != len(views):
+    print(f"警告：标题 {len(titles)} 条，浏览量 {len(views)} 条，不匹配")
+
+# 想保留最长，用 zip_longest
+from itertools import zip_longest
+list(zip_longest(titles, views, fillvalue=None))
+# [('A', 100), ('B', 200), ('C', None)]</code></pre>
+    <p class="meta">
+      合并两个来源的数据（标题列表 + 浏览量列表）时，<b>一定要先核对长度</b>。
+      这是数据合并时最隐蔽的一类错误 —— 不报错，只是少数了几条。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：<code>list(range(5))</code> 得到什么？<code>list(range(1, 6))</code> 呢？</b>
+      <div class="ans">
+        <code>[0, 1, 2, 3, 4]</code> 和 <code>[1, 2, 3, 4, 5]</code>。
+        官方原文：「生成的序列绝不会包括给定的终止值」。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：想同时拿到索引和元素，最推荐的写法是什么？</b>
+      <div class="ans">
+        <code>for i, v in enumerate(seq):</code>。官方「循环的技巧」一节明确说 <code>enumerate()</code>
+        「可以同时取出位置索引和对应的值」。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：<code>break</code> 和 <code>continue</code> 有什么区别？</b>
+      <div class="ans">
+        <code>break</code> 跳出最近一层整个循环；<code>continue</code> 只跳过本次迭代剩下的语句，进入下一轮。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：为什么 <code>for n in nums: nums.remove(n)</code> 会漏删？</b>
+      <div class="ans">
+        删除元素后后面的项整体前移，但迭代器已经走过那个位置，导致紧跟其后的重复元素被跳过。
+        官方建议「迭代多项集的副本或者创建新的多项集」，实用做法是 <code>nums = [n for n in nums if 条件]</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>for ... else</code> 里的 <code>else</code> 什么时候执行？</b>
+      <div class="ans">
+        循环<b>未被 <code>break</code> 终止</b>时执行（自然结束才执行）。
+        官方指出它更像 <code>try</code> 的 <code>else</code>（未发生异常时运行），而不像 <code>if</code> 的 <code>else</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>zip([1,2,3], "ab")</code> 的结果是什么？</b>
+      <div class="ans">
+        <code>[(1, 'a'), (2, 'b')]</code>。<code>zip</code> 以最短的序列为准，多余的元素被静默丢弃，不会报错。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：<code>for x in []: pass</code> 之后 <code>print(x)</code> 会怎样？</b>
+      <div class="ans">
+        抛 <code>NameError: name 'x' is not defined</code>。循环体一次都没执行，循环变量从未被赋值。
+        循环变量只在真正迭代过之后才存在。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 更多控制流工具（4.2 for / 4.3 range / 4.4 break continue / 4.5 循环的 else / 4.6 pass）</td>
+          <td>Python <code>for</code> 与 C/Pascal 的区别原文、「很难正确地在迭代多项集的同时修改多项集的内容」及两种官方策略、<code>range</code> 不含终止值与 <code>range</code> 对象节省空间的说明、<code>break</code> / <code>continue</code> 定义与官方示例、循环 <code>else</code> 子句的完整解释（含「<code>else</code> 属于 <code>for</code> 而不属于 <code>if</code>」提醒）、<code>pass</code> 的用法</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/controlflow.html">docs.python.org/zh-cn/3/tutorial/controlflow.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型（range 对象）</td>
+          <td><code>range</code> 构造参数规则（整数、step 为零抛 <code>ValueError</code>）、正负步长下 <code>r[i] = start + step*i</code> 与「不包含 stop」的形式化规则、<code>range</code> 示例列表、<code>range</code> 只存 start/stop/step 因而内存恒定、切片与成员测试示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#typesseq-range">docs.python.org/zh-cn/3/library/stdtypes.html#typesseq-range</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 数据结构（5.5 字典 / 5.6 循环的技巧）</td>
+          <td><code>items()</code> 遍历字典、<code>enumerate()</code> 取索引与值、<code>zip()</code> 一一匹配、<code>reversed()</code> 逆序、<code>sorted()</code> 按序循环、<code>sorted(set(...))</code> 去重后遍历、过滤 NaN 的「创建新列表」官方示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/datastructures.html">docs.python.org/zh-cn/3/tutorial/datastructures.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题（如何从列表移除多个条目）</td>
+          <td>切片替换写法 <code>mylist[:] = filter(...)</code> / <code>mylist[:] = (x for x in mylist if ...)</code>、列表推导式「可能是最快的」结论</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置函数（enumerate / zip / sorted / reversed）</td>
+          <td><code>enumerate(iterable, start=0)</code> 的 start 参数、<code>zip</code> 以最短为准的行为、<code>sorted</code> 与 <code>reversed</code> 的返回类型</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/functions.html">docs.python.org/zh-cn/3/library/functions.html</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版），均通过 WebFetch 实际抓取页面内容后使用</td></tr>
+        <tr><td><code>range</code> 不含终止值</td><td>已核。教程原文「生成的序列绝不会包括给定的终止值；<code>range(10)</code> 生成 10 个值」；stdtypes 原文给出形式化规则 <code>r[i] = start + step*i</code> 且正步长约束为 <code>r[i] &lt; stop</code></td></tr>
+        <tr><td><code>break</code> / <code>continue</code> 定义</td><td>已核。原文：「<code>break</code> 语句将跳出最近的一层 <code>for</code> 或 <code>while</code> 循环」、「<code>continue</code> 语句将继续执行循环的下一次迭代」，示例代码取自官方</td></tr>
+        <tr><td>循环中修改多项集</td><td>已核。教程原文「很难正确地在迭代多项集的同时修改多项集的内容。更简单的方法是迭代多项集的副本或者创建新的多项集。」；FAQ 给出 <code>mylist[:] = [...]</code> 写法</td></tr>
+        <tr><td>循环的 <code>else</code> 子句</td><td>已核。原文包含「如果循环在未执行 <code>break</code> 的情况下结束，<code>else</code> 子句将会执行」、与 <code>try</code> 的 <code>else</code> 的类比、以及「其中 <code>else</code> 子句属于 <code>for</code> 循环，而不属于 <code>if</code> 语句」提醒</td></tr>
+        <tr><td><code>enumerate</code> / <code>zip</code> 用法</td><td>已核。教程「循环的技巧」原文：「用 <code>enumerate()</code> 函数可以同时取出位置索引和对应的值」、「用 <code>zip()</code> 函数可以将其内的元素一一匹配」，示例照录</td></tr>
+        <tr><td><code>enumerate(start=1)</code>、<code>zip_longest</code></td><td><b>未逐条对照官方原文</b>。这两个特性在本份抓取到的页面中未出现具体说明，属依据 Python 通用语义补写，建议自行在 <code>help(enumerate)</code> / <code>itertools</code> 文档中确认</td></tr>
+        <tr><td><code>RuntimeError: dictionary changed size during iteration</code></td><td><b>未在抓取到的页面中核到该报错文本</b>。官方只给了「迭代副本 / 创建新多项集」的策略，报错措辞为依据通用语义补写</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；新闻类示例数据为虚构；<code>sys.getsizeof</code> 的字节数、各段输出结果未在本机实际运行验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、新闻场景、自测题由 AI 撰写；
+      <code>range</code> 语义、<code>break</code>/<code>continue</code> 定义、循环中修改多项集的官方建议、
+      循环 <code>else</code> 子句、<code>enumerate</code>/<code>zip</code> 用法，均逐条对照官方文档原文核验；
+      未核到与部分核到的条目已在上表逐条列出。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>循环</b> · Python 概念学习资料 第 6 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

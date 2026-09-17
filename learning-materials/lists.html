@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>列表 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>列表</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 3 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      列表就是<b>一个能装很多东西的抽屉，而且有编号</b>。你要取第 3 个，就说「第 3 个」，不用给每个东西起名字。
+    </p>
+    <pre><code>titles = [
+    "AI 重塑新闻业",
+    "短视频平台算法争议",
+    "县级融媒体的三年",
+]</code></pre>
+    <p>
+      它和字符串最大的区别是：<b>列表可以改。</b>字符串是印好的报纸，列表是白板 ——
+      能擦、能加、能删、能排序，而且<b>改完之后还是同一个列表，不是新建的</b>。
+    </p>
+    <pre><code>titles.append("第四个标题")
+print(len(titles))       # 4  ← 同一个列表变长了</code></pre>
+    <p>
+      正因为它能改，就埋了 Python 里最有名的一个坑：
+      <b><code>b = a</code> 不会复制列表，只是给同一个抽屉贴了第二张标签</b>。
+      你改 <code>b</code>，<code>a</code> 也变 —— 因为它们本来就是同一个东西。
+    </p>
+    <pre><code>a = [1, 2, 3]
+b = a              # 不是复制！a 和 b 指向同一个列表
+b.append(4)
+print(a)           # [1, 2, 3, 4]  ← a 也变了
+
+c = a[:]           # 这才是复制（切片整份或者用 a.copy()）
+c.append(5)
+print(a)           # [1, 2, 3, 4]  ← 这次 a 没变</code></pre>
+    <blockquote>
+      一句话记住：<b>列表能改，赋值不复制。</b>记住这两条，你就躲开了列表 90% 的坑。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>用索引、切片、负索引取出列表中的任意元素或片段，并说清切片「不含尾部」；</li>
+      <li>熟练使用 <code>append</code> / <code>extend</code> / <code>insert</code> / <code>remove</code> / <code>pop</code> / <code>clear</code> / <code>index</code> / <code>count</code>，并知道哪些返回 <code>None</code>；</li>
+      <li>区分 <code>list.sort()</code>（原地排序，返回 <code>None</code>）与 <code>sorted()</code>（返回新列表），并会用 <code>key=</code> 排序；</li>
+      <li>解释 <code>b = a</code> 与 <code>b = a[:]</code> 的区别，并说明什么时候必须显式复制；</li>
+      <li>识别并避免 <code>[[None] * 2] * 3</code> 这类「共享同一个内层列表」的多维列表陷阱；</li>
+      <li>说出在循环里删列表元素为什么危险，并给出正确写法。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li>列表怎么创建？<code>[]</code>、<code>list()</code>、列表推导式分别在什么场景用？</li>
+      <li>怎么取出第 N 个元素？负索引是什么意思？</li>
+      <li>切片为什么「不含尾部」？<code>a[1:3]</code> 到底是几个元素？</li>
+      <li>增删改查分别用哪个方法？哪个方法返回 <code>None</code>？</li>
+      <li><code>remove</code> 和 <code>pop</code> 有什么区别？该用哪个？</li>
+      <li><code>sort()</code> 为什么返回 <code>None</code>？怎么按自定义规则排序？</li>
+      <li><code>b = a</code> 之后改 <code>b</code>，为什么 <code>a</code> 也变了？怎么才能真正复制？</li>
+      <li><code>[[]] * 3</code> 为什么会产生三个「连在一起」的空列表？</li>
+      <li>为什么不能在 <code>for</code> 循环里删列表元素？替代方案是什么？</li>
+      <li>列表能装不同类型的东西吗？什么时候这会变成麻烦？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>列表（<code>list</code>）</b>：<b>可变序列</b>。官方文档的说法是「通常用来存储同类项的集合」。
+      和字符串相比，它多了一层「能被修改」的能力，也多了一堆修改方法。
+    </p>
+    <p>官方列出的四种构造方式：</p>
+    <pre><code>[]                    # 空列表
+[a, b, c]             # 直接列举
+[x for x in iterable] # 列表推导式
+list(iterable)        # 类型构造器，例如 list("abc") → ['a','b','c']</code></pre>
+
+    <h3>4.2 最小模型：一排带编号的格子</h3>
+    <pre><code>titles = ["AI 重塑新闻业", "算法争议", "县级融媒体"]
+# 索引:        0               1            2
+# 负索引:     -3              -2           -1
+# 长度 len(titles) = 3</code></pre>
+    <p>
+      索引和切片规则与字符串完全一样（都是序列）：从 <code>i</code> 到 <code>j</code> 的切片是「索引 <code>k</code> 满足
+      <code>i &lt;= k &lt; j</code> 的所有项」。
+    </p>
+    <pre><code>nums = [0, 1, 2, 3, 4, 5]
+
+nums[2:5]    # [2, 3, 4]   ← 不含索引 5
+nums[:3]     # [0, 1, 2]
+nums[3:]     # [3, 4, 5]
+nums[:]      # [0, 1, 2, 3, 4, 5]   ← 浅拷贝，最常用的复制写法
+nums[::2]    # [0, 2, 4]
+nums[::-1]   # [5, 4, 3, 2, 1, 0]   ← 反转
+nums[-2:]    # [4, 5]               ← 最后两个
+
+# 切片还能赋值（字符串做不到！）
+nums[1:3] = [88, 99]
+print(nums)  # [0, 88, 99, 3, 4, 5]</code></pre>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>列表</td><td>带编号的抽屉柜</td><td>按编号取，不用给每个东西起名字</td></tr>
+        <tr><td>索引 <code>a[i]</code></td><td>拉开第 i 个抽屉</td><td>从 0 开始；<code>-1</code> 是最后一个</td></tr>
+        <tr><td>切片 <code>a[i:j]</code></td><td>一次拉开 i 到 j 前一个抽屉</td><td>尾部不含（<code>i &lt;= k &lt; j</code>）</td></tr>
+        <tr><td><code>append</code></td><td>往抽屉柜最后加一格</td><td>原地操作，返回 <code>None</code></td></tr>
+        <tr><td><code>sort()</code></td><td>把柜子里的东西重新码一遍</td><td><b>原地</b>排序，返回 <code>None</code></td></tr>
+        <tr><td><code>b = a</code></td><td>同一个柜子贴两张标签</td><td>改一处两处都变；不是复制</td></tr>
+        <tr><td><code>b = a[:]</code></td><td>照原样买了一个新柜子</td><td>两边独立；但里面的东西还是共享的（浅拷贝）</td></tr>
+        <tr><td><code>[[None]*2]*3</code></td><td>三张标签贴在同一个抽屉上</td><td>往任意一层放东西，三层都变</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 核心方法一览（含返回值）</h3>
+    <table>
+      <thead><tr><th>方法</th><th>作用</th><th>返回值</th><th>等价写法（官方给出）</th></tr></thead>
+      <tbody>
+        <tr><td><code>append(x)</code></td><td>末尾加一项</td><td><b><code>None</code></b></td><td><code>a[len(a):] = [x]</code></td></tr>
+        <tr><td><code>extend(it)</code></td><td>把可迭代对象的所有项追加进来</td><td><b><code>None</code></b></td><td><code>a[len(a):] = it</code></td></tr>
+        <tr><td><code>insert(i, x)</code></td><td>在位置 i 插入</td><td><b><code>None</code></b></td><td><code>a[i:i] = [x]</code></td></tr>
+        <tr><td><code>remove(x)</code></td><td>删除<b>第一个</b>值为 x 的项</td><td><b><code>None</code></b></td><td>找不到抛 <code>ValueError</code></td></tr>
+        <tr><td><code>pop([i])</code></td><td>删除并<b>返回</b>位置 i 的项（默认最后一个）</td><td>被删的那一项</td><td>空列表或越界抛 <code>IndexError</code></td></tr>
+        <tr><td><code>clear()</code></td><td>清空</td><td><b><code>None</code></b></td><td><code>del a[:]</code></td></tr>
+        <tr><td><code>index(x[,s[,e]])</code></td><td>返回 x 首次出现的索引</td><td>索引</td><td>找不到抛 <code>ValueError</code></td></tr>
+        <tr><td><code>count(x)</code></td><td>统计 x 出现次数</td><td>次数</td><td>—</td></tr>
+        <tr><td><code>sort(*, key, reverse)</code></td><td><b>原地</b>排序</td><td><b><code>None</code></b></td><td>见辨析 3</td></tr>
+        <tr><td><code>reverse()</code></td><td><b>原地</b>翻转</td><td><b><code>None</code></b></td><td>官方明确：it returns <code>None</code></td></tr>
+        <tr><td><code>copy()</code></td><td>浅拷贝</td><td>新列表</td><td><code>a[:]</code></td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      官方教程专门强调过这件事：<i>「你可能已经注意到 <code>insert</code>, <code>remove</code> 或 <code>sort</code> 等仅修改列表的方法都不会打印返回值 ——
+      它们返回默认值 <code>None</code>。这是适用于 Python 中所有可变数据结构的设计原则。」</i>
+    </blockquote>
+    <pre><code>nums = [3, 1, 2]
+sorted_nums = nums.sort()          # ❌ 经典错误
+print(sorted_nums)                 # None ← 不是排序后的列表！
+
+nums.sort()                        # ✅ 原地排序，不要接返回值
+print(nums)                        # [1, 2, 3]
+
+# 想要一个新的排序结果，用内置函数 sorted()
+new = sorted([3, 1, 2])            # ✅ 返回新列表
+print(new)                         # [1, 2, 3]</code></pre>
+
+    <h3>4.5 <code>sort()</code> 与 <code>key=</code></h3>
+    <p>
+      官方说明：<code>sort()</code> 是<b>原地</b>排序，只使用项之间的 <code>&lt;</code> 比较；
+      接受两个<b>仅限关键字</b>参数 —— <code>key</code>（单参数函数，用于从每个元素中提取比较键）和 <code>reverse</code>。
+      并且它<b>保证稳定</b>：不改变比较结果相等的元素的相对顺序。
+    </p>
+    <pre><code># 按浏览量从大到小排序新闻
+news = [
+    {"标题": "AI 写稿", "浏览": 12800},
+    {"标题": "县级融媒体", "浏览": 3400},
+    {"标题": "算法争议", "浏览": 21000},
+]
+
+news.sort(key=lambda n: n["浏览"], reverse=True)
+for n in news:
+    print(n["标题"], n["浏览"])
+# 算法争议 21000
+# AI 写稿 12800
+# 县级融媒体 3400
+
+# 按标题长度排序
+titles = ["AI 写稿", "县级融媒体的三年", "算法"]
+titles.sort(key=len)
+print(titles)     # ['算法', 'AI 写稿', '县级融媒体的三年']
+
+# 稳定性：先按浏览量排，再按来源排，同来源内部仍保持浏览量的顺序
+news.sort(key=lambda n: n["浏览"], reverse=True)
+news.sort(key=lambda n: n.get("来源", ""))</code></pre>
+    <blockquote class="warn">
+      官方还提醒：<b>并非所有数据都能排序或比较</b>。例如 <code>[None, 'hello', 10]</code> 不可排序，
+      因为整数不能与字符串比较、<code>None</code> 不能与其他类型比较。用 <code>sort()</code> 排一个混了
+      <code>None</code> 或混合类型的列表会直接抛 <code>TypeError</code>。
+    </blockquote>
+
+    <h3>4.6 赋值不复制：最重要的一个机制</h3>
+    <pre><code>a = [1, 2, 3]
+b = a              # 同一个对象，两个名字
+
+b.append(4)
+print(a)           # [1, 2, 3, 4]
+print(a is b)      # True  ← 完全同一个对象
+
+# 官方 FAQ 的说法：
+# 「变量只是指向对象的一个名称。执行 y = x 并不会创建列表的副本。」</code></pre>
+    <p>官方 FAQ 给出一张判断表，值得记下来：</p>
+    <table>
+      <thead><tr><th>写法</th><th>是否改变原对象</th></tr></thead>
+      <tbody>
+        <tr><td><code>y.append(10)</code> / <code>y.sort()</code></td><td><b>改变</b>原对象（原地操作）</td></tr>
+        <tr><td><code>y = y + [10]</code> / <code>sorted(y)</code></td><td><b>不改</b>原对象，创建新对象</td></tr>
+        <tr><td><code>a_list += [1, 2, 3]</code></td><td><b>改变</b>原列表（等价于 <code>extend</code>）</td></tr>
+        <tr><td><code>some_tuple += (1, 2, 3)</code></td><td>元组不可变，创建新对象</td></tr>
+      </tbody>
+    </table>
+    <pre><code># 想要真正独立的副本，三种写法（都只是浅拷贝）
+b = a[:]
+b = a.copy()
+b = list(a)
+
+# 嵌套结构必须用 deepcopy，否则内层还是共享的
+import copy
+deep = copy.deepcopy(a)</code></pre>
+
+    <h3>4.7 多维列表的经典陷阱：<code>[[None] * 2] * 3</code></h3>
+    <p>
+      官方文档在讲 <code>s * n</code> 时专门用一段警告这件事：
+      <b>序列中的项不会被复制，而是被多次引用。</b>
+    </p>
+    <pre><code># ❌ 错误写法
+lists = [[]] * 3
+print(lists)              # [[], [], []]
+lists[0].append(3)
+print(lists)              # [[3], [3], [3]]   ← 一行改，三行全变
+
+# 原因：[[], [], []] 里的三个 [] 是同一个空列表的三个引用
+
+# ✅ 正确写法：用列表推导式，每次都新建
+lists = [[] for _ in range(3)]
+lists[0].append(3)
+lists[1].append(5)
+lists[2].append(7)
+print(lists)              # [[3], [5], [7]]</code></pre>
+    <pre><code># 做二维表格（比如 3 行 2 列的计数矩阵）时
+rows, cols = 3, 2
+
+bad = [[0] * cols] * rows          # ❌ 三行其实是同一行
+bad[0][0] = 1
+print(bad)                         # [[1, 0], [1, 0], [1, 0]]  全变了
+
+good = [[0] * cols for _ in range(rows)]   # ✅
+good[0][0] = 1
+print(good)                        # [[1, 0], [0, 0], [0, 0]]
+
+# 注意：内层 [0] * cols 是安全的，因为 0 是不可变的
+# 危险只发生在内层的元素本身可变时 —— 比如 [[]] * 3</code></pre>
+    <p class="meta">
+      官方 FAQ「如何创建多维列表」条目明确写了：<code>[[None]*2]*3</code> 是<b>错误</b>的（引用共享），
+      应使用列表推导式 <code>[[None]*w for i in range(h)]</code>。
+    </p>
+
+    <h3>4.8 循环中修改列表：为什么危险</h3>
+    <p>
+      官方教程原话：<i>「很难正确地在迭代多项集的同时修改多项集的内容。更简单的方法是迭代多项集的副本或者创建新的多项集。」</i>
+    </p>
+    <pre><code># ❌ 错误：边遍历边删，会跳过元素
+nums = [1, 2, 2, 3, 2, 4]
+for n in nums:
+    if n == 2:
+        nums.remove(n)
+print(nums)          # [1, 2, 3, 4]  ← 少删了一个 2！
+
+# 原因：删除后后面的元素前移，迭代器却继续往后走，漏看了一个
+
+# ✅ 方案一：倒着删（索引不会错位）
+for i in range(len(nums) - 1, -1, -1):
+    if nums[i] == 2:
+        del nums[i]
+
+# ✅ 方案二（官方推荐）：创建新列表
+nums = [n for n in nums if n != 2]
+
+# ✅ 方案三：整体切片替换（官方 FAQ 给出的写法）
+nums[:] = [n for n in nums if n != 2]</code></pre>
+    <pre><code># 字典同理，官方教程给的写法是「迭代副本」
+users = {'Hans': 'active', 'Éléonore': 'inactive', '景太郎': 'active'}
+for user, status in users.copy().items():     # copy() 是关键
+    if status == 'inactive':
+        del users[user]
+print(users)   # {'Hans': 'active', '景太郎': 'active'}</code></pre>
+
+    <h3>4.9 列表当栈用（顺带认识队列）</h3>
+    <p>
+      官方教程指出：列表方法让「后进先出」的栈用起来非常容易 —— 入栈用 <code>append()</code>，出栈用 <code>pop()</code>。
+    </p>
+    <pre><code>stack = [3, 4, 5]
+stack.append(6)
+stack.append(7)
+stack.pop()      # 7  最后进的先出
+stack.pop()      # 6
+print(stack)     # [3, 4, 5]
+
+# 反过来当队列（先进先出）用列表是低效的 —— 官方明确说了：
+# 「在列表开头插入或弹出条目却很慢（因为所有其他元素都必须移动一位）」
+from collections import deque
+queue = deque(["Eric", "John", "Michael"])
+queue.append("Terry")
+queue.popleft()   # 'Eric'
+queue.popleft()   # 'John'
+print(queue)      # deque(['Michael', 'Terry'])</code></pre>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：把抓来的新闻列表做筛选、排序、去重</h3>
+    <pre><code>news = [
+    {"标题": "AI 写稿工具上线", "浏览": 12800, "来源": "科技日报"},
+    {"标题": "县级融媒体三周年", "浏览": 3400,  "来源": "新闻战线"},
+    {"标题": "算法推荐争议调查", "浏览": 21000, "来源": "科技日报"},
+    {"标题": "AI 版权第一案", "浏览": 9600,  "来源": "法治日报"},
+    {"标题": "短视频平台治理", "浏览": 21000, "来源": "新闻战线"},
+]
+
+# 1. 筛选浏览量过万的（创建新列表，不原地删）
+hot = [n for n in news if n["浏览"] >= 10000]
+print(len(hot))                     # 3
+
+# 2. 按浏览量降序、浏览量相同则按标题排
+hot.sort(key=lambda n: (-n["浏览"], n["标题"]))
+for n in hot:
+    print(f'{n["浏览"]:>6}  {n["标题"]}')
+#  21000  短视频平台治理
+#  21000  算法推荐争议调查
+#  12800  AI 写稿工具上线
+
+# 3. 统计有哪些来源（去重后排序）
+sources = sorted({n["来源"] for n in news})
+print(sources)                      # ['法治日报', '新闻战线', '科技日报']
+
+# 4. 追加新抓到的条目
+news.append({"标题": "AI 主播出镜", "浏览": 4200, "来源": "科技日报"})
+print(len(news))                    # 6
+
+# 5. 找出浏览量最高那条的下标
+views = [n["浏览"] for n in news]
+top_idx = views.index(max(views))
+print(news[top_idx]["标题"])</code></pre>
+    <p class="meta">
+      <code>key=lambda n: (-n["浏览"], n["标题"])</code> 用了元组比较：先比第一个，相同再比第二个。
+      <code>-n["浏览"]</code> 是为了让浏览量降序。这个技巧在排序新闻列表时非常常用。
+    </p>
+
+    <h3>场景二：清洗一批标题并做长度分布统计</h3>
+    <p>
+      标题长度是内容分析里常见的指标（比如「短视频标题是不是越来越短」）。用列表先做完清洗，再统计分布。
+    </p>
+    <pre><code>raw = [
+    "  AI 重塑新闻业 - XX新闻网  ",
+    "短视频平台算法争议调查｜独家",
+    "县级融媒体",
+    "  生成式 AI 的版权问题：训练数据从哪里来  ",
+    "算法",
+]
+
+def clean(t):
+    t = t.strip()
+    for sep in (" - ", "｜"):
+        if sep in t:
+            t = t.split(sep)[0]
+    return t.strip()
+
+cleaned = [clean(t) for t in raw]
+# ['AI 重塑新闻业', '短视频平台算法争议调查', '县级融媒体',
+#  '生成式 AI 的版权问题：训练数据从哪里来', '算法']
+
+lengths = [len(t) for t in cleaned]
+print("最短：", min(lengths), " 最长：", max(lengths))
+print("平均：", sum(lengths) / len(lengths))
+
+# 分桶统计：短（<=5）/ 中（6-15）/ 长（>15）
+buckets = {"短": 0, "中": 0, "长": 0}
+for L in lengths:
+    if L <= 5:
+        buckets["短"] += 1
+    elif L <= 15:
+        buckets["中"] += 1
+    else:
+        buckets["长"] += 1
+print(buckets)     # {'短': 2, '中': 1, '长': 2}
+
+# 挑出最长的 3 条（sorted 不动原列表）
+for t in sorted(cleaned, key=len, reverse=True)[:3]:
+    print(len(t), t)</code></pre>
+    <blockquote class="ok">
+      注意这里用的是 <code>sorted(cleaned, ...)</code> 而不是 <code>cleaned.sort(...)</code> ——
+      前者返回新列表、不动原数据，后者会把 <code>cleaned</code> 本身改掉。做探索性分析时优先用 <code>sorted()</code>，误伤概率更低。
+    </blockquote>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：<code>remove</code> vs <code>pop</code> vs <code>del</code></h3>
+    <table>
+      <thead><tr><th>写法</th><th>按什么删</th><th>返回值</th><th>找不到时</th></tr></thead>
+      <tbody>
+        <tr><td><code>a.remove(x)</code></td><td>按<b>值</b>删第一个匹配</td><td><code>None</code></td><td><code>ValueError</code></td></tr>
+        <tr><td><code>a.pop(i)</code></td><td>按<b>索引</b>删</td><td>被删的那个元素</td><td><code>IndexError</code></td></tr>
+        <tr><td><code>del a[i]</code></td><td>按<b>索引</b>删</td><td>无（是语句）</td><td><code>IndexError</code></td></tr>
+        <tr><td><code>a.clear()</code> / <code>del a[:]</code></td><td>全删</td><td><code>None</code></td><td>—</td></tr>
+      </tbody>
+    </table>
+    <pre><code>a = ["甲", "乙", "丙", "乙"]
+
+a.remove("乙")     # 只删第一个 "乙"
+print(a)           # ['甲', '丙', '乙']
+
+a.remove("丁")     # ValueError: list.remove(x): x not in list
+
+b = ["甲", "乙", "丙"]
+x = b.pop()        # 删并返回最后一个
+print(x, b)        # 丙 ['甲', '乙']
+y = b.pop(0)       # 删并返回第 0 个
+print(y, b)        # 甲 ['乙']
+
+c = ["甲", "乙", "丙"]
+del c[1]
+print(c)           # ['甲', '丙']</code></pre>
+    <blockquote>
+      <b>要「删掉并且还想拿到」就用 <code>pop</code>；只是想删掉就用 <code>del</code>；
+      只知道值不知道位置用 <code>remove</code></b>。<code>remove</code> 最容易踩的坑是「它只删第一个」——
+      列表里有多个重复值时，一次 <code>remove</code> 只干掉一个。
+    </blockquote>
+
+    <h3>辨析 2：<code>sort()</code> 返回 <code>None</code>，不是排序结果</h3>
+    <pre><code>nums = [3, 1, 2]
+
+# ❌ 最常见的错误
+nums = nums.sort()
+print(nums)          # None   ← 列表被改了，但返回的是 None，反手把它赋给了 nums
+
+# ✅
+nums = [3, 1, 2]
+nums.sort()          # 原地排
+# 或者
+nums = sorted([3, 1, 2])   # 新列表</code></pre>
+    <p class="meta">
+      同样的坑还有 <code>reverse()</code>（返回 <code>None</code>）、<code>append()</code>（返回 <code>None</code>）。
+      官方教程把它总结为：<b>仅修改列表的方法都返回 <code>None</code></b>，这是所有可变数据结构的设计原则。
+    </p>
+
+    <h3>辨析 3：<code>b = a</code> vs <code>b = a[:]</code></h3>
+    <pre><code>a = [1, 2, 3]
+
+b = a
+b.append(4)
+print(a, b)          # [1, 2, 3, 4] [1, 2, 3, 4]   一起变
+
+a = [1, 2, 3]
+c = a[:]
+c.append(4)
+print(a, c)          # [1, 2, 3] [1, 2, 3, 4]      独立了
+
+print(a is c)        # False  不同的对象
+print(a == c)        # False  内容也不同</code></pre>
+    <p>
+      <b>但 <code>a[:]</code> 只是浅拷贝。</b>如果列表里装的是列表，内层仍然共享：
+    </p>
+    <pre><code>a = [[1, 2], [3, 4]]
+b = a[:]              # 外层复制了
+b.append([5, 6])      # 这行不会影响 a ✅
+b[0].append(99)       # 这行会影响 a ❌
+print(a)              # [[1, 2, 99], [3, 4]]
+
+# 完全隔离要用 deepcopy
+import copy
+a = [[1, 2], [3, 4]]
+c = copy.deepcopy(a)
+c[0].append(99)
+print(a)              # [[1, 2], [3, 4]]   安全</code></pre>
+
+    <h3>辨析 4：<code>append</code> vs <code>extend</code> vs <code>+</code></h3>
+    <pre><code>a = [1, 2]
+
+a.append([3, 4])
+print(a)              # [1, 2, [3, 4]]   ← 整个列表当成一项塞进去
+
+a = [1, 2]
+a.extend([3, 4])
+print(a)              # [1, 2, 3, 4]     ← 拆开逐项追加
+
+a = [1, 2]
+a += [3, 4]
+print(a)              # [1, 2, 3, 4]     ← += 对列表等价于 extend（原地）
+
+a = [1, 2]
+a = a + [3, 4]
+print(a)              # [1, 2, 3, 4]     ← + 创建新列表，原对象不变</code></pre>
+    <blockquote class="warn">
+      <code>+=</code> 和 <code>+</code> 只差一个等号，行为却完全不同：
+      官方 FAQ 指出 <code>a_list += [1, 2, 3]</code> 会<b>修改</b>原列表（等同 <code>extend</code>），
+      而 <code>a = a + [1, 2, 3]</code> 是<b>创建新对象</b>。在有其他变量指向同一个列表时，这个区别会造成 bug。
+    </blockquote>
+
+    <h3>辨析 5：<code>append("abc")</code> vs <code>extend("abc")</code>（字符串是序列）</h3>
+    <pre><code>a = []
+a.append("abc")
+print(a)              # ['abc']          一项，内容是字符串
+
+a = []
+a.extend("abc")       # 字符串也是可迭代的！
+print(a)              # ['a', 'b', 'c']  被拆成了三个字符
+
+# 想追加一个字符串而不要拆开，用 append
+# 想按字符拆开，用 extend 或 list()</code></pre>
+
+    <h3>辨析 6：<code>list.sort(key=...)</code> 的 <code>key</code> 只能传函数名，不能直接传值</h3>
+    <pre><code>news = [{"浏览": 100}, {"浏览": 300}, {"浏览": 200}]
+
+# ❌ 想当然的写法
+news.sort(key=news["浏览"])       # TypeError: list indices must be integers...
+news.sort(key="浏览")              # 不报错，但比较的是所有元素都相同的字符串 —— 结果无意义
+
+# ✅ 用 lambda 提取键
+news.sort(key=lambda n: n["浏览"])
+print([n["浏览"] for n in news])   # [100, 200, 300]
+
+# ✅ key 也可以是内置函数名
+titles = ["aaa", "a", "aa"]
+titles.sort(key=len)               # [a, aa, aaa]</code></pre>
+    <p class="meta">
+      官方教程在讲 <code>lambda</code> 时给的正是一个 <code>sort(key=...)</code> 的例子：
+      <code>pairs.sort(key=lambda pair: pair[1])</code>。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：<code>a = [0,1,2,3,4,5]</code>，<code>a[1:3]</code> 是什么？为什么不是 3 个元素？</b>
+      <div class="ans">
+        <code>[1, 2]</code>。切片定义是「索引 <code>k</code> 满足 <code>i &lt;= k &lt; j</code>」，尾部不包含，
+        所以取的是索引 1 和 2。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：<code>nums = [3,1,2]</code>，执行 <code>nums = nums.sort()</code> 后 <code>nums</code> 是什么？</b>
+      <div class="ans">
+        <code>None</code>。<code>sort()</code> 原地排序并返回 <code>None</code>，赋值后原来的列表被丢弃了。
+        正确写法是 <code>nums.sort()</code>（不接返回值）或 <code>nums = sorted(nums)</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：<code>a = [1,2,3]; b = a; b.append(4)</code>，此时 <code>a</code> 是什么？为什么？</b>
+      <div class="ans">
+        <code>[1, 2, 3, 4]</code>。<code>b = a</code> 不复制数据，两个名字指向同一个列表对象。
+        官方 FAQ：「变量只是指向对象的一个名称。」想隔离要用 <code>a[:]</code> 或 <code>copy.deepcopy()</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>lists = [[]]*3; lists[0].append(1)</code> 的结果是什么？怎么改才对？</b>
+      <div class="ans">
+        结果是 <code>[[1], [1], [1]]</code> —— 三个元素是同一个列表对象的引用。
+        正确写法：<code>lists = [[] for _ in range(3)]</code>（官方 FAQ 推荐）。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>remove</code> 和 <code>pop</code> 的区别是什么？</b>
+      <div class="ans">
+        <code>remove(值)</code> 按值删第一个匹配项，返回 <code>None</code>，找不到抛 <code>ValueError</code>；
+        <code>pop(索引)</code> 按索引删，<b>返回被删的元素</b>，越界抛 <code>IndexError</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：为什么不能在 <code>for n in nums</code> 里直接 <code>nums.remove(n)</code>？</b>
+      <div class="ans">
+        删除会让后面的元素前移，但迭代器仍在按位置往后走，导致某些元素被跳过。
+        官方建议「迭代多项集的副本或者创建新的多项集」，实用写法是
+        <code>nums = [n for n in nums if 条件]</code> 或倒着遍历删除。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：<code>a.sort(key=len)</code> 里的 <code>key</code> 是干什么的？</b>
+      <div class="ans">
+        <code>key</code> 是一个单参数函数，用来从每个元素中提取「比较键」，排序时只比较这些键。
+        官方说明：每个元素的键只计算一次，然后用于整个排序过程。写法上通常配合 <code>lambda</code>：
+        <code>news.sort(key=lambda n: n["浏览"])</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 数据结构（5.1 列表详解）</td>
+          <td>全部列表方法的官方说明与示例、「仅修改列表的方法返回 <code>None</code>」设计原则、<code>[None,'hello',10]</code> 不可排序、栈与队列的写法、<code>deque</code> 推荐、列表推导式与嵌套推导式、<code>del</code> 语句</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/datastructures.html">docs.python.org/zh-cn/3/tutorial/datastructures.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型（序列类型与可变序列操作）</td>
+          <td>列表定义与四种构造方式、切片规则 <code>i &lt;= k &lt; j</code>、<code>sort()</code> 的 keyword-only 参数与稳定性保证、<code>* n</code> 引用共享的官方警告与 <code>[[]]*3</code> 示例、mutable sequence 方法表</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html">docs.python.org/zh-cn/3/library/stdtypes.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题（赋值不复制 / 多维列表 / 移除多个条目）</td>
+          <td>「<code>y = x</code> 并不会创建列表的副本」原文、可变与不可变操作的区分表、<code>+=</code> 与 <code>+</code> 行为差异、<code>[[None]*2]*3</code> 是错误写法、<code>mylist[:] = [...]</code> 的切片替换写法、如何复制对象</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 更多控制流工具（4.2 for 语句 / 4.9.6 Lambda）</td>
+          <td>「很难正确地在迭代多项集的同时修改多项集的内容」原文与两种正确策略、<code>sort(key=lambda ...)</code> 官方示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/controlflow.html">docs.python.org/zh-cn/3/tutorial/controlflow.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 更多控制流工具（4.3 range 函数）</td>
+          <td><code>range</code> 生成序列的规则与「绝不包含终止值」、倒序遍历的写法、<code>range()</code> 与 <code>len()</code> 配合按索引迭代（本份在倒删场景中使用）</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/controlflow.html#the-range-function">docs.python.org/zh-cn/3/tutorial/controlflow.html#the-range-function</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版），均通过 WebFetch 实际抓取页面内容后使用</td></tr>
+        <tr><td>列表方法清单</td><td>已核。逐条对照《5.1 列表详解》与 stdtypes 的可变序列方法表，返回值说明（<code>None</code> / <code>ValueError</code> / <code>IndexError</code>）与官方一致</td></tr>
+        <tr><td>「方法返回 None」设计原则</td><td>已核。官方原文：「你可能已经注意到 <code>insert</code>, <code>remove</code> 或 <code>sort</code> 等仅修改列表的方法都不会打印返回值 —— 它们返回默认值 <code>None</code>。这是适用于 Python 中所有可变数据结构的设计原则。」</td></tr>
+        <tr><td><code>sort()</code> 的 key / 稳定性</td><td>已核。原文包含 keyword-only 参数说明与「The <code>sort()</code> method is guaranteed to be stable.」</td></tr>
+        <tr><td><code>[[]]*3</code> 陷阱</td><td>已核。<code>[[], [], []]</code> 与 <code>[[] for i in range(3)]</code> 对比示例取自官方原文；FAQ 中「<code>[[None]*2]*3</code> 是错误写法」的结论亦为原文</td></tr>
+        <tr><td>循环中修改多项集</td><td>已核。教程原文：「很难正确地在迭代多项集的同时修改多项集的内容。更简单的方法是迭代多项集的副本或者创建新的多项集。」并附 <code>users.copy().items()</code> 官方示例</td></tr>
+        <tr><td>切片不含尾部</td><td>已核。原文：切片是索引 k 满足 <code>i &lt;= k &lt; j</code> 的序列</td></tr>
+        <tr><td>未核到 / 部分核</td><td>无未核来源。所有引用来源均已成功抓取（gzip 解压后为完整页面）</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；新闻类示例数据为虚构；报错类型（<code>TypeError</code> / <code>ValueError</code> / <code>IndexError</code>）与官方描述一致，但未在本机逐条运行验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、新闻场景、自测题由 AI 撰写；
+      列表方法清单与返回值、<code>sort</code> 语义、引用共享与多维列表陷阱、循环中修改的官方建议，均逐条对照官方文档原文核验。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>列表</b> · Python 概念学习资料 第 3 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>变量与数据类型 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>变量与数据类型</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 1 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      变量不是什么高深的玩意儿。<b>它就是一个贴了名字的盒子，你把数据放进去，之后用名字去找它。</b>
+    </p>
+    <pre><code>title = "AI 重塑新闻业"</code></pre>
+    <p>
+      这一行做了两件事：先造出一个盒子装着字符串 <code>"AI 重塑新闻业"</code>，再在盒子上贴一张写着 <code>title</code> 的标签。
+      以后你写 <code>title</code>，Python 就去这个盒子里把东西拿出来。
+    </p>
+    <p>
+      「数据类型」是这个盒子的<b>形状</b>。同样是「1」，写成 <code>1</code> 是一个能加减的数字，写成 <code>"1"</code> 是一段不能做算术的文字。
+      <b>盒子形状不对，东西就装不进去、也算不出来</b> —— 这是新手 90% 报错的真正原因。
+    </p>
+    <blockquote>
+      一句话记住：<b>变量是名字，类型是形状。</b>你后面处理新闻数据遇到的所有问题，本质上都是「我以为是 A 形状，实际是 B 形状」。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>说出变量赋值的本质，并解释「<code>=</code> 不是数学里的等于」；</li>
+      <li>识别 Python 四种最基本的类型（<code>int</code> / <code>float</code> / <code>str</code> / <code>bool</code>），看到一个字面量能说出它的类型；</li>
+      <li>用 <code>type()</code> 检查任意数据的类型，并解释为什么要检查；</li>
+      <li>在类型之间安全转换（<code>int()</code> / <code>float()</code> / <code>str()</code> / <code>bool()</code>），并知道什么情况下转换会失败；</li>
+      <li>遵守命名规则，写出不会踩坑的变量名。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li>变量到底是什么？为什么 <code>a = 1</code> 里的 <code>=</code> 不表示「相等」？</li>
+      <li>Python 需要提前声明类型吗？为什么同一个变量可以一会儿是数字一会儿是文字？</li>
+      <li>最基本的四种类型分别是什么，各自有什么用途？</li>
+      <li><code>type()</code> 有什么用，为什么老手老是打印它？</li>
+      <li>类型转换什么时候需要？哪些转换会失败、失败时是什么后果？</li>
+      <li>变量名怎么起？哪些名字不能用？</li>
+      <li>为什么 <code>"1" + 1</code> 会报错，而 <code>1 + 1.0</code> 不会？</li>
+      <li><code>bool</code> 是不是只是一种「真/假」？为什么它还能参与算术？</li>
+      <li>为什么 <code>0.1 + 0.2</code> 不等于 <code>0.3</code>？这是 Python 的问题吗？</li>
+      <li>把变量赋值给另一个变量，改一个另一个会变吗？（这个坑后面一定会踩）</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>变量</b>：指向某个对象的<b>名称</b>。在 Python 中，变量本身不「装有」数据，它只是指向内存里一个对象的名字（引用）。
+    </p>
+    <p>
+      <b>数据类型</b>：对象的类别，决定了这个对象支持哪些操作。例如 <code>str</code> 支持拼接和切片，<code>int</code> 支持加减乘除。
+    </p>
+
+    <h3>4.2 最小模型：赋值语句发生了什么</h3>
+    <pre><code>views = 12800
+# 1. 右侧先求值：造出一个整数对象 12800
+# 2. 左侧的名字 views 指向这个对象
+
+views = 13000
+# 名字 views 改指向一个新的整数对象 13000
+# 原来的 12800 对象没人指向了，之后被回收</code></pre>
+    <blockquote>
+      <b>关键点：<code>=</code> 是「贴标签」，不是「数学等于」。</b>
+      <code>a = a + 1</code> 在数学里是矛盾的，在 Python 里完全是合法操作 —— 因为它的意思是「让 <code>a</code> 这个标签改指向一个新算出来的值」。
+    </blockquote>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>变量</td><td>贴了名字的收纳盒</td><td>用名字取东西，不用记它放在第几排</td></tr>
+        <tr><td>数据类型</td><td>盒子的形状</td><td>方形盒子装不进圆形物体：<code>"abc" + 1</code> 就是这个错</td></tr>
+        <tr><td><code>type()</code></td><td>拿起盒子看一眼形状</td><td>不确定时先看清楚再操作</td></tr>
+        <tr><td>类型转换</td><td>把内容倒进另一个形状的盒子</td><td>有可能倒不进去（<code>int("abc")</code> 直接报错）</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 四种基本类型（关键机制）</h3>
+    <table>
+      <thead>
+        <tr><th>类型</th><th>写法例子</th><th>用途</th><th>注意点</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>int</code> 整数</td>
+          <td><code>12800</code> <code>-5</code> <code>0</code></td>
+          <td>计数、条数、浏览量</td>
+          <td>精度<b>无限</b>，不会溢出</td>
+        </tr>
+        <tr>
+          <td><code>float</code> 浮点数</td>
+          <td><code>3.14</code> <code>1.0</code> <code>1e3</code></td>
+          <td>比例、平均值、概率</td>
+          <td>存在精度误差（见 4.5）；<code>1e3</code> 就是 1000.0</td>
+        </tr>
+        <tr>
+          <td><code>str</code> 字符串</td>
+          <td><code>"新闻"</code> <code>'abc'</code></td>
+          <td>文本、标题、来源</td>
+          <td><b>不可修改</b>；引号内的数字仍是字符串</td>
+        </tr>
+        <tr>
+          <td><code>bool</code> 布尔</td>
+          <td><code>True</code> <code>False</code></td>
+          <td>条件判断、开关标记</td>
+          <td>是 <code>int</code> 的子类，<code>True == 1</code> 成立</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>类型决定运算规则</h4>
+    <pre><code>1 + 1          # 2        int + int = int
+1 + 1.0        # 2.0      int + float = float（int 被"拓宽"为 float）
+"1" + "1"      # "11"     字符串拼接
+"1" + 1        # TypeError！字符串不能和整数相加
+
+# 除法永远是浮点数
+6 / 2          # 3.0  注意是 3.0 不是 3
+6 // 2         # 3    // 是整除（向下取整）
+-1 // 2        # -1   向下取整不是向零取整</code></pre>
+
+    <h3>4.5 浮点数精度：为什么 0.1 + 0.2 != 0.3</h3>
+    <pre><code>0.1 + 0.2 == 0.3        # False
+0.1 + 0.2               # 0.30000000000000004</code></pre>
+    <p>
+      原因：计算机用<b>二进制</b>存小数，而十进制的 0.1 在二进制里是无限循环小数（就像十进制的 1/3 = 0.333… 永远写不完）。
+      存储时只能截取前 53 位，于是得到一个「非常接近但不等于」0.1 的值。
+    </p>
+    <blockquote class="warn">
+      <b>这不是 Python 的 bug，也不是你代码的问题</b> —— C、Java、JavaScript 全都这样，因为硬件就是这么实现的（IEEE 754 标准）。
+      官方文档明确指出：Python 浮点数映射为 IEEE 754 binary64 双精度值，只有 53 位精度。
+    </blockquote>
+    <pre><code># 正确做法：比较时用容差，不要用 ==
+import math
+math.isclose(0.1 + 0.2, 0.3)      # True
+
+# 需要精确十进制（如金额）时用 decimal 模块
+from decimal import Decimal
+Decimal("0.1") + Decimal("0.2") == Decimal("0.3")   # True
+
+# 显示时格式化即可，不用改存储
+print(f"{0.1 + 0.2:.2f}")          # 0.30</code></pre>
+
+    <h3>4.6 类型转换</h3>
+    <pre><code>int("123")       # 123      字符串 → 整数
+int(3.9)         # 3        截断小数部分，不是四舍五入！
+float("3.14")    # 3.14
+str(456)         # "456"
+bool(0)          # False
+bool("")         # False    空字符串为假
+
+# 会失败的转换
+int("abc")       # ValueError: invalid literal for int()
+int("3.14")      # ValueError！要先 float("3.14") 再 int()</code></pre>
+    <p class="meta">
+      <code>bool()</code> 的规则：以下值一律为 <code>False</code> —— <code>None</code>、<code>False</code>、
+      所有数值零（<code>0</code> / <code>0.0</code>）、空序列和空集合（<code>""</code> / <code>[]</code> / <code>{}</code> / <code>()</code> / <code>set()</code>）。其余为 <code>True</code>。
+    </p>
+
+    <h3>4.7 命名规则</h3>
+    <table>
+      <thead><tr><th>规则</th><th>说明</th><th>例子</th></tr></thead>
+      <tbody>
+        <tr><td>可用字符</td><td>字母、数字、下划线；<b>不能数字开头</b></td><td><code>news_1</code> ✅ &nbsp; <code>1news</code> ❌</td></tr>
+        <tr><td>大小写敏感</td><td><code>Title</code> 和 <code>title</code> 是两个变量</td><td>踩坑高发区</td></tr>
+        <tr><td>不能用关键字</td><td>35 个保留字，见下</td><td><code>class</code> / <code>for</code> / <code>if</code> ❌</td></tr>
+        <tr><td>风格（PEP 8）</td><td>变量和函数用「全小写 + 下划线」</td><td><code>news_title</code> ✅ &nbsp; <code>newsTitle</code> ❌</td></tr>
+        <tr><td>避开易混字符</td><td>不用单个 <code>l</code> / <code>O</code> / <code>I</code></td><td>会和 <code>1</code> <code>0</code> 看混</td></tr>
+        <tr><td>常量</td><td>模块级常量全大写 + 下划线</td><td><code>MAX_COUNT</code></td></tr>
+      </tbody>
+    </table>
+    <p><b>Python 的 35 个关键字</b>（不能用作变量名）：</p>
+    <pre><code>False      await      else       import     pass
+None       break      except     in         raise
+True       class      finally    is         return
+and        continue   for        lambda     try
+as         def        from       nonlocal   while
+assert     del        global     not        with
+async      elif       if         or         yield</code></pre>
+    <p class="meta">
+      另有「软关键字」<code>match</code> / <code>case</code> / <code>_</code> / <code>type</code>，
+      仅在特定语法上下文中被当作关键字，作普通变量名仍可用（但建议避开）。
+    </p>
+
+    <h3>4.8 一个必须提前知道的坑：赋值是引用，不是拷贝</h3>
+    <pre><code>a = [1, 2, 3]
+b = a            # 没有复制！b 和 a 指向同一个列表
+b.append(4)
+print(a)         # [1, 2, 3, 4]  ← a 也变了</code></pre>
+    <blockquote class="warn">
+      官方文档原话：<b>「Python 中的简单赋值绝不会复制数据。」</b>
+      对于数字、字符串这类不可变对象感觉不出来（因为改的时候是新建对象），但<b>列表、字典这类可变对象一定会出问题</b>。
+      想真正复制：<code>b = a[:]</code> 或 <code>import copy; b = copy.deepcopy(a)</code>。
+    </blockquote>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：读取新闻数据时的类型陷阱（最常见）</h3>
+    <p>
+      你从 CSV 读进来一批新闻，想算平均浏览量。CSV 里所有内容读出来默认都是<b>字符串</b>，直接求和会报错或得到错误结果。
+    </p>
+    <pre><code>import csv
+
+with open("news.csv", encoding="utf-8-sig") as f:
+    rows = list(csv.DictReader(f))
+
+# 错误写法：字符串相加
+total = sum(r["浏览"] for r in rows)      # TypeError 或拼成一长串
+
+# 正确写法：先转换类型
+total = sum(int(r["浏览"]) for r in rows)
+print("平均浏览量：", total / len(rows))
+
+# 不确定时先探一下类型
+print(type(rows[0]["浏览"]))              # &lt;class 'str'&gt;</code></pre>
+    <p class="meta">
+      这正是 <a href="python-learning-map.html">学习地图</a>里第 1 课强调「先搞清楚手上是什么类型的数据」的原因。
+    </p>
+
+    <h3>场景二：给新闻打标时的布尔值</h3>
+    <p>
+      做内容分析时经常要标记「这条是不是爆款」，用 <code>bool</code> 直接存判断结果，比存 "是"/"否" 字符串更好用（能直接统计数量、能做筛选）。
+    </p>
+    <pre><code>news = {"标题": "AI 重塑新闻业", "浏览": 12800}
+
+# 存布尔值，而不是字符串
+news["是否爆款"] = news["浏览"] > 10000
+print(news["是否爆款"])        # True
+
+# 布尔能直接参与统计（True 就是 1）
+all_news = [{"浏览": 12800}, {"浏览": 3400}, {"浏览": 21000}]
+hot_count = sum(n["浏览"] > 10000 for n in all_news)
+print("爆款条数：", hot_count)   # 2</code></pre>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：<code>=</code> vs <code>==</code></h3>
+    <p><code>=</code> 是赋值（贴标签），<code>==</code> 是比较（判断值是否相等）。写错是新手最高频的语法错误之一。</p>
+    <pre><code>a = 1        # 把 1 贴到 a 上
+a == 1       # True，问「a 的值是 1 吗」</code></pre>
+
+    <h3>辨析 2：<code>is</code> vs <code>==</code></h3>
+    <p>
+      <code>is</code> 判断<b>是不是同一个对象</b>（身份），<code>==</code> 判断<b>值是否相等</b>。
+    </p>
+    <pre><code>a = [1, 2, 3]
+b = [1, 2, 3]
+a == b       # True   内容一样
+a is b       # False  但不是同一个对象
+
+c = a
+a is c       # True   同一个对象
+
+x = None
+x is None    # 这是判断 None 的推荐写法（PEP 8）</code></pre>
+    <blockquote class="warn">
+      不要用 <code>is</code> 比较数字或字符串的值 —— Python 并不保证小整数和字符串是单例。
+      官方文档明确列出「可放心用 <code>is</code>」的只有三种情况：赋值后、放入容器后、以及 <code>None</code> 这类单例。
+    </blockquote>
+
+    <h3>辨析 3：<code>int</code> 截断 vs 四舍五入</h3>
+    <pre><code>int(3.9)       # 3   截断小数部分
+round(3.9)     # 4   四舍五入
+int(-3.9)      # -3  截断是「向零取整」
+round(-3.9)    # -4</code></pre>
+    <p class="meta">处理浏览量、条数这类整数指标时，想清楚要的是截断还是舍入。</p>
+
+    <h3>辨析 4：<code>/</code> vs <code>//</code></h3>
+    <pre><code>7 / 2      # 3.5   普通除法，结果总是 float
+7 // 2     # 3     整除，向下取整
+-7 // 2    # -4    向下取整（不是 -3！）</code></pre>
+
+    <h3>辨析 5：字符串 <code>"1"</code> vs 数字 <code>1</code></h3>
+    <p>
+      从文件、网页、输入框拿到的数据<b>永远是字符串</b>。这是数据处理的头号类型陷阱。
+    </p>
+    <pre><code>1 + 1        # 2
+"1" + "1"    # "11"
+"1" + 1      # TypeError: can only concatenate str (not "int") to str</code></pre>
+
+    <h3>辨析 6：浮点不等式的来源（易被误判为 bug）</h3>
+    <p>
+      <code>0.1 + 0.2 != 0.3</code> 常被当成 Python 缺陷。它不是 —— 官方文档专门用一章说明这是二进制浮点的本质特性，
+      并指出<b>「你会在所有支持硬件浮点运算的语言中发现同样的情况」</b>。
+      需要精确计算用 <code>decimal</code>；需要比较用 <code>math.isclose()</code>。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：<code>a = 1</code> 之后执行 <code>a = a + 1</code>，为什么这不是数学上的矛盾？</b>
+      <div class="ans">
+        因为 <code>=</code> 是赋值不是相等判断。先算右侧 <code>a + 1</code> 得到新值 2，再让名字 <code>a</code> 改指向这个新对象。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：写出下面三个值的类型：<code>100</code>、<code>"100"</code>、<code>100.0</code>。</b>
+      <div class="ans"><code>int</code>、<code>str</code>、<code>float</code>。带引号的数字也是字符串，这是最典型的类型陷阱。</div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：<code>1 + 1.0</code> 的结果是什么类型？为什么？</b>
+      <div class="ans">
+        结果是 <code>2.0</code>（<code>float</code>）。混合运算时较窄的类型会被拓宽 —— 官方文档：若有浮点则另一个转浮点数。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>int("3.14")</code> 会成功吗？怎么做才对？</b>
+      <div class="ans">
+        不会，抛 <code>ValueError</code>。要先 <code>float("3.14")</code> 再 <code>int()</code>，即 <code>int(float("3.14"))</code> 得到 3。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>b = a</code> 之后修改 <code>b</code>，什么情况下 <code>a</code> 也会变？</b>
+      <div class="ans">
+        当 <code>a</code> 指向<b>可变对象</b>（如列表、字典）时。官方文档：「Python 中的简单赋值绝不会复制数据。」想隔离要用 <code>a[:]</code> 或 <code>copy.deepcopy()</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>0.1 + 0.2 == 0.3</code> 的结果？该怎么正确处理？</b>
+      <div class="ans">
+        <code>False</code>（实际值 <code>0.30000000000000004</code>）。用 <code>math.isclose()</code> 比较；需要精确十进制时用 <code>Decimal</code> 模块。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：为什么不能把变量命名为 <code>class</code> 或 <code>for</code>？</b>
+      <div class="ans">
+        它们是 Python 的 35 个保留关键字之一，被语言本身占用。可用 <code>keyword.kwlist</code> 打印完整列表。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 内置类型</td>
+          <td>类型分类、数值类型拓宽规则、bool 是 int 的子类、真值测试规则、序列可变性</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html">docs.python.org/zh-cn/3/library/stdtypes.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 词法分析（2.3 名称与关键字）</td>
+          <td>35 个关键字完整列表、软关键字说明</td>
+          <td><a href="https://docs.python.org/zh-cn/3/reference/lexical_analysis.html">docs.python.org/zh-cn/3/reference/lexical_analysis.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 浮点算术：问题和限制</td>
+          <td>IEEE 754 binary64 精度、0.1 的二进制表示、<code>math.isclose()</code> / <code>Decimal</code> 的正确用法</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/floatingpoint.html">docs.python.org/zh-cn/3/tutorial/floatingpoint.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题</td>
+          <td>值相等性与身份相等性（<code>is</code> vs <code>==</code>）、赋值不复制数据、可变默认参数陷阱</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 速览（第 3 章）</td>
+          <td>数字与字符串入门、除法与整除行为、注释与变量赋值示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/introduction.html">docs.python.org/zh-cn/3/tutorial/introduction.html</a></td>
+        </tr>
+        <tr>
+          <td>PEP 8 · Python 代码风格指南</td>
+          <td>变量与函数命名规范（小写+下划线）、常量全大写、应避免的易混单字符名</td>
+          <td><a href="https://peps.python.org/pep-0008/">peps.python.org/pep-0008/</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>6 条来源全部为 Python 官方文档（docs.python.org 中文版）与 PEP 官方站点，均通过抓取实际页面内容核对，非凭记忆生成</td></tr>
+        <tr><td>关键字列表</td><td>35 个关键字逐字对照官方「2.3.1 关键字」章节，一致</td></tr>
+        <tr><td>浮点精度解释</td><td>采用官方「15. 浮点算术：问题和限制」原文结论，含「IEEE 754 binary64」「53 位精度」表述</td></tr>
+        <tr><td>类型拓宽 / 真值测试 / 赋值引用</td><td>对照官方 stdtypes 与 FAQ 页面原文核对</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；示例中涉及的报错信息（<code>TypeError</code> / <code>ValueError</code>）与官方文档描述一致</td></tr>
+        <tr><td>未核实项</td><td>无。本份资料未使用任何非官方来源</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、应用场景、自测题由 AI 撰写；
+      术语定义、关键字清单、浮点精度机制、命名规范均逐条对照官方文档核验，核验范围见上表。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>变量与数据类型</b> · Python 概念学习资料 第 1 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

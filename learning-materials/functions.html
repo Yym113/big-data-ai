@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>函数 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>函数</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 7 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      函数就是<b>把一段代码打包，起个名字，以后想用就喊名字</b>。
+    </p>
+    <pre><code>def clean_title(t):
+    """清掉标题首尾空白和网站后缀。"""
+    t = t.strip()
+    for sep in (" - ", "｜"):
+        if sep in t:
+            t = t.split(sep)[0]
+    return t.strip()</code></pre>
+    <p>
+      打包之后，你处理 10 条标题和处理 10000 条标题，代码都只有一行 <code>clean_title(x)</code>。
+      想改清洗规则，只改这一个地方。
+    </p>
+    <p>
+      函数的两件事你一开始就要分清：
+    </p>
+    <ul>
+      <li><b>参数</b>：进门的东西（上面那个 <code>t</code>）。</li>
+      <li><b>返回值</b>：出门的东西（<code>return</code> 后面的值）。</li>
+    </ul>
+    <pre><code>def add_views(a, b):
+    return a + b
+
+total = add_views(12800, 3400)     # 参数是 12800 和 3400，返回值是 16200
+print(total)                       # 16200</code></pre>
+    <p>
+      最常见的两个坑，先说在前面：
+    </p>
+    <pre><code># 坑一：函数没有 return，它就返回 None
+def do_something(x):
+    print(x)
+
+y = do_something(5)     # 打印了 5
+print(y)                # None   ← 不是 5！
+
+# 坑二：可变默认参数会被"记住"
+def add_tag(tag, tags=[]):      # ❌
+    tags.append(tag)
+    return tags
+
+print(add_tag("AI"))      # ['AI']
+print(add_tag("算法"))     # ['AI', '算法']   ← 咦？上次的还在！</code></pre>
+    <blockquote class="warn">
+      <b>官方原文：「默认值只计算一次。」</b>
+      所以可变对象当默认值时，所有调用会共用同一个对象。
+      正确写法是用 <code>None</code> 兜底：<code>def add_tag(tag, tags=None):</code> 然后在函数体里判断。
+      这是 Python 最经典的陷阱，没有之一。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>用 <code>def</code> 定义函数、传参数、用 <code>return</code> 返回值，并说明没有 <code>return</code> 时返回什么；</li>
+      <li>区分位置参数与关键字参数，知道为什么「关键字参数必须跟在位置参数后面」；</li>
+      <li>用 <code>默认值 + None 兜底</code> 的写法避开可变默认参数陷阱，并解释为什么会踩这个坑；</li>
+      <li>解释 <code>UnboundLocalError</code> 的成因，知道该用局部变量、<code>global</code> 还是 <code>nonlocal</code>；</li>
+      <li>用 <code>*args</code> / <code>**kwargs</code> 接收不定数量的参数，用 <code>*</code> / <code>**</code> 解包实参；</li>
+      <li>给函数写文档字符串，并说明它和注释的区别。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li>怎么定义一个函数？函数名和参数起什么作用？</li>
+      <li><code>return</code> 和不写 <code>return</code> 有什么区别？函数能返回多个值吗？</li>
+      <li>位置参数和关键字参数有什么区别？为什么顺序有讲究？</li>
+      <li>默认参数是干什么的？为什么 <code>def f(x=[])</code> 是个陷阱？</li>
+      <li>函数里能读到外面的变量吗？为什么一赋值就报 <code>UnboundLocalError</code>？</li>
+      <li><code>global</code> 和 <code>nonlocal</code> 分别在解决什么问题？为什么最好别用？</li>
+      <li><code>*args</code> 和 <code>**kwargs</code> 是什么？什么时候真的需要它们？</li>
+      <li><code>/</code> 和 <code>*</code> 出现在参数列表里是什么意思？</li>
+      <li>同名函数定义两次会怎样？函数名可以当成变量传递吗？</li>
+      <li>文档字符串是什么？写和不写有什么实际区别？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>函数</b>：把一组语句封装起来、可以反复调用的代码块。
+      官方教程：<i>「<em>定义</em> 函数使用关键字 <code>def</code>，后跟函数名与括号内的形参列表。函数语句从下一行开始，并且必须缩进。」</i>
+    </p>
+    <p>
+      官方还给了一个容易忽略的说明：<b>实参是按值传递的，但这里的「值」始终是对象的引用，而不是对象的值</b>。
+      所以传一个列表进去、在函数里改它，调用方能看到变化。
+    </p>
+
+    <h3>4.2 最小模型</h3>
+    <pre><code>def fib2(n):
+    """返回斐波那契数组直到 n。"""
+    result = []
+    a, b = 0, 1
+    while a &lt; n:
+        result.append(a)
+        a, b = b, a+b
+    return result
+
+f100 = fib2(100)
+print(f100)
+# [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]</code></pre>
+    <p>（上面这个例子取自官方教程。）三步走：</p>
+    <ol>
+      <li><code>def 函数名(参数):</code> —— 定义头</li>
+      <li>缩进的函数体 —— 真正干活的代码</li>
+      <li><code>return 值</code> —— 把结果交出去</li>
+    </ol>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>函数</td><td>一台机器：进料 → 加工 → 出料</td><td>参数是进料，返回值是出料</td></tr>
+        <tr><td><code>def</code></td><td>造机器</td><td>造好放在那里，不会自己开动</td></tr>
+        <tr><td>调用 <code>f(x)</code></td><td>开机投料</td><td>每次调用都是独立的一次加工</td></tr>
+        <tr><td>位置参数</td><td>按顺序投料</td><td>投错顺序结果就错</td></tr>
+        <tr><td>关键字参数</td><td>箱子上贴标签投料</td><td>顺序可以乱，只要标签对</td></tr>
+        <tr><td>默认参数</td><td>没投料就用备用的</td><td>备用的那份是在「造机器时」就准备好的</td></tr>
+        <tr><td>可变默认参数陷阱</td><td>备用料是公用的，用完不洗</td><td>下次来发现里面还留着上次的残渣</td></tr>
+        <tr><td><code>return</code></td><td>出料口</td><td>没有 <code>return</code> 就什么都不出（<code>None</code>）</td></tr>
+        <tr><td>作用域</td><td>车间内部 vs 厂区</td><td>车间里能看见厂区的东西，但不能直接改厂区的牌子</td></tr>
+        <tr><td><code>*args</code></td><td>一个能装任意多件料的筐</td><td>装成元组</td></tr>
+        <tr><td><code>**kwargs</code></td><td>贴了标签的收纳盒</td><td>装成字典</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 <code>return</code>：没写就返回 <code>None</code></h3>
+    <p>
+      官方原文：<i>「<code>return</code> 语句不带表达式参数时，返回 <code>None</code>。函数执行完毕退出也返回 <code>None</code>。」</i>
+      并且官方举了 <code>fib</code> 的例子：<code>fib(0)</code> 看起来什么都没输出，
+      但 <code>print(fib(0))</code> 会打印 <code>None</code>。
+    </p>
+    <pre><code>def print_news(title):
+    print(title)          # 没有 return
+
+x = print_news("AI 重塑新闻业")
+# 打印：AI 重塑新闻业
+print(x)                  # None
+
+# return 后面可以接多个值 —— 实际返回一个元组
+def stat(views):
+    return min(views), max(views), sum(views) / len(views)
+
+lo, hi, avg = stat([12800, 3400, 21000])    # 解包
+print(lo, hi, avg)        # 3400 21000 12400.0
+
+# return 之后同一分支的代码不会执行
+def f(x):
+    return x
+    print("永远不会打印")     # 死代码
+
+# 空 return 与不写 return 等价
+def g(x):
+    if x &lt; 0:
+        return          # 提前退出，返回 None
+    return x * 2</code></pre>
+    <blockquote class="warn">
+      <b><code>list.sort()</code> 返回 <code>None</code> 是同一个道理</b> ——
+      函数如果没有 <code>return</code> 语句，它的返回值就是 <code>None</code>。
+      「打印」和「返回」是两件完全不同的事：<code>print()</code> 只是把人能看的东西写出来，
+      返回值才是给程序用的。<b>新手最常见的错误就是该写 <code>return</code> 的地方写了 <code>print</code>。</b>
+    </blockquote>
+
+    <h3>4.5 参数：位置、关键字、以及它们的顺序</h3>
+    <pre><code>def parrot(voltage, state='a stiff', action='voom', type='Norwegian Blue'):
+    print("-- This parrot wouldn't", action, end=' ')
+    print("if you put", voltage, "volts through it.")
+    print("-- Lovely plumage, the", type)
+    print("-- It's", state, "!")</code></pre>
+    <p>官方给出的合法与非法调用（示例来自官方教程）：</p>
+    <pre><code>parrot(1000)                                          # ✅ 1 个位置参数
+parrot(voltage=1000)                                  # ✅ 1 个关键字参数
+parrot(voltage=1000000, action='VOOOOOM')             # ✅ 2 个关键字参数
+parrot(action='VOOOOOM', voltage=1000000)             # ✅ 关键字顺序可以换
+parrot('a million', 'bereft of life', 'jump')          # ✅ 3 个位置参数
+parrot('a thousand', state='pushing up the daisies')   # ✅ 位置 + 关键字混用
+
+parrot()                     # ❌ 缺失必需的参数
+parrot(voltage=5.0, 'dead')  # ❌ 关键字参数后存在非关键字参数
+parrot(110, voltage=220)     # ❌ 同一个参数重复的值
+parrot(actor='John Cleese')  # ❌ 未知的关键字参数</code></pre>
+    <blockquote>
+      官方规则原话：<b>「函数调用时，关键字参数必须跟在位置参数后面。所有传递的关键字参数都必须匹配一个函数接受的参数……关键字参数的顺序并不重要。」</b>
+    </blockquote>
+    <pre><code># 报错示例（官方）
+def function(a):
+    pass
+
+function(0, a=0)
+# TypeError: function() got multiple values for argument 'a'</code></pre>
+
+    <h3>4.6 可变默认参数陷阱（最重要的一节）</h3>
+    <p>
+      官方教程的「重要警告」原文：<b>「默认值只计算一次。默认值为列表、字典或类实例等可变对象时，会产生与该规则不同的结果。」</b>
+    </p>
+    <pre><code># 官方示例：这个函数会累积后续调用时传递的参数
+def f(a, L=[]):
+    L.append(a)
+    return L
+
+print(f(1))    # [1]
+print(f(2))    # [1, 2]      ← 咦？上次那个 1 还在！
+print(f(3))    # [1, 2, 3]   ← 越攒越多</code></pre>
+    <p><b>官方给出的正确写法：</b></p>
+    <pre><code>def f(a, L=None):
+    if L is None:
+        L = []          # 为局部命名空间新建一个列表
+    L.append(a)
+    return L
+
+print(f(1))    # [1]
+print(f(2))    # [2]      ← 干净了
+print(f(3))    # [3]</code></pre>
+    <p>FAQ 里也专门说了这件事，语气更直白：</p>
+    <blockquote>
+      「新手程序员常常中招这类 Bug …… 大家往往希望，函数调用会为默认值创建新的对象。但事实并非如此。
+      <b>默认值只会在函数定义时创建一次。</b>如果对象发生改变……则后续调用该函数时将会引用这个改动的对象。」
+      并总结：<b>「不把可变对象用作默认值是一种良好的编程做法。」</b>
+    </blockquote>
+    <pre><code># 同类陷阱：字典默认值
+def add_field(news, extra={}):        # ❌
+    extra["来源"] = news.get("来源")
+    return extra
+
+print(add_field({"来源": "科技日报"}))   # {'来源': '科技日报'}
+print(add_field({"来源": "新闻战线"}))   # {'来源': '新闻战线'}  ← 看起来对
+                                          # 但这个 dict 是同一个对象，被反复改写了
+
+# ✅
+def add_field(news, extra=None):
+    if extra is None:
+        extra = {}
+    extra["来源"] = news.get("来源")
+    return extra</code></pre>
+    <p>还有一个容易看错的相关例子（官方示例）：</p>
+    <pre><code>i = 5
+
+def func(arg=i):
+    print(arg)
+
+i = 6
+func()      # 打印 5，不是 6！因为默认值在函数定义时就求值了</code></pre>
+    <h3>4.7 作用域：为什么会出现 <code>UnboundLocalError</code></h3>
+    <p>
+      官方 FAQ 里有一个非常经典的例子。这段代码<b>能跑</b>：
+    </p>
+    <pre><code>x = 10
+def bar():
+    print(x)
+
+bar()      # 10</code></pre>
+    <p>但只是多加了一行赋值，就崩了：</p>
+    <pre><code>x = 10
+def foo():
+    print(x)
+    x += 1
+
+foo()
+# UnboundLocalError: cannot access local variable 'x' where it is not associated with a value</code></pre>
+    <p>官方给出的原因（原文）：</p>
+    <blockquote>
+      「当对某作用域内的变量进行赋值时，该变量将成为该作用域内的局部变量，并覆盖外部作用域中的同名变量。
+      由于 <code>foo</code> 的最后一条语句为 <code>x</code> 分配了一个新值，编译器会将其识别为局部变量。
+      因此，前面的 <code>print(x)</code> 试图输出未初始化的局部变量，就会引发错误。」
+    </blockquote>
+    <p>解决方式：</p>
+    <pre><code># 方案一：换个名字（最推荐，副作用最小）
+x = 10
+def foo():
+    print(x)
+    y = x + 1
+    return y
+
+# 方案二：显式声明 global
+x = 10
+def foobar():
+    global x
+    print(x)
+    x += 1
+
+foobar()       # 打印 10
+print(x)       # 11   ← 外部的 x 真的被改了
+
+# 方案三：嵌套函数里用 nonlocal
+def outer():
+    x = 10
+    def inner():
+        nonlocal x
+        print(x)
+        x += 1
+    inner()
+    print(x)
+
+outer()
+# 10
+# 11</code></pre>
+    <blockquote class="warn">
+      <b>官方 FAQ 的另一条规则值得背下来：</b>
+      「函数内部只作引用的 Python 变量隐式视为全局变量。如果在函数内部任何位置为变量赋值，
+      则除非明确声明为全局变量，否则均将其视为局部变量。」
+      <br><br>
+      <b>实践建议：尽量不用 <code>global</code>。</b>
+      把结果用 <code>return</code> 交出去，让调用方决定怎么处理，代码的可测试性和可读性都会好很多。
+    </blockquote>
+
+    <h3>4.8 <code>*args</code> / <code>**kwargs</code>：不定参数</h3>
+    <p>
+      官方说明：<code>*name</code> 形式的形参接收一个元组（包含正式形参列表以外的位置参数），
+      <code>**name</code> 形式的形参接收一个字典（包含与正式形参对应的参数以外的所有关键字参数）。
+      <b><code>*name</code> 必须出现在 <code>**name</code> 之前。</b>
+    </p>
+    <pre><code># 官方示例
+def cheeseshop(kind, *arguments, **keywords):
+    print("-- Do you have any", kind, "?")
+    print("-- I'm sorry, we're all out of", kind)
+    for arg in arguments:
+        print(arg)
+    print("-" * 40)
+    for kw in keywords:
+        print(kw, ":", keywords[kw])
+
+cheeseshop("Limburger", "It's very runny, sir.",
+           "It's really very, VERY runny, sir.",
+           shopkeeper="Michael Palin",
+           client="John Cleese",
+           sketch="Cheese Shop Sketch")
+
+# 输出：
+# -- Do you have any Limburger ?
+# -- I'm sorry, we're all out of Limburger
+# It's very runny, sir.
+# It's really very, VERY runny, sir.
+# ----------------------------------------
+# shopkeeper : Michael Palin
+# client : John Cleese
+# sketch : Cheese Shop Sketch</code></pre>
+    <pre><code># 实用场景：写一个能接任意字段的新闻构造器
+def make_news(title, **fields):
+    """title 必填，其他字段随意。"""
+    news = {"标题": title}
+    news.update(fields)
+    return news
+
+n = make_news("AI 写稿工具上线", views=12800, source="科技日报")
+print(n)
+# {'标题': 'AI 写稿工具上线', 'views': 12800, 'source': '科技日报'}
+
+# 官方示例：*args 之后的参数自动变成仅限关键字
+def concat(*args, sep="/"):
+    return sep.join(args)
+
+concat("earth", "mars", "venus")            # 'earth/mars/venus'
+concat("earth", "mars", "venus", sep=".")   # 'earth.mars.venus'</code></pre>
+
+    <h3>4.9 解包实参：调用时的 <code>*</code> 和 <code>**</code></h3>
+    <pre><code># 官方示例：实参在列表或元组里时，用 * 解包
+args = [3, 6]
+list(range(*args))         # [3, 4, 5]  等价于 range(3, 6)
+
+# 字典用 ** 解包成关键字参数
+def parrot(voltage, state='a stiff', action='voom'):
+    print("-- This parrot wouldn't", action, end=' ')
+    print("if you put", voltage, "volts through it.", end=' ')
+    print("E's", state, "!")
+
+d = {"voltage": "four million", "state": "bleedin' demised", "action": "VOOM"}
+parrot(**d)
+# -- This parrot wouldn't VOOM if you put four million volts through it. E's bleedin' demised !</code></pre>
+
+    <h3>4.10 特殊参数：<code>/</code> 与 <code>*</code></h3>
+    <p>官方给出的形式（记住这张图就够了）：</p>
+    <pre><code>def f(pos1, pos2, /, pos_or_kwd, *, kwd1, kwd2):
+      -----------    ----------     ----------
+        |             |                  |
+        |        位置或关键字            |
+        |                                - 仅限关键字
+         -- 仅限位置
+
+# / 之前的：仅限位置，不能用关键字传
+# * 之后的：仅限关键字，必须用关键字传</code></pre>
+    <pre><code>def pos_only_arg(arg, /):
+    print(arg)
+pos_only_arg(1)          # ✅
+pos_only_arg(arg=1)      # ❌ TypeError: got some positional-only arguments passed as keyword arguments
+
+def kwd_only_arg(*, arg):
+    print(arg)
+kwd_only_arg(arg=3)      # ✅
+kwd_only_arg(3)          # ❌ TypeError: takes 0 positional arguments but 1 was given
+
+def combined_example(pos_only, /, standard, *, kwd_only):
+    print(pos_only, standard, kwd_only)
+combined_example(1, 2, kwd_only=3)          # ✅ 1 2 3
+combined_example(1, standard=2, kwd_only=3) # ✅ 1 2 3
+combined_example(1, 2, 3)                   # ❌ takes 2 positional arguments but 3 were given</code></pre>
+    <p class="meta">
+      入门阶段你自己写函数<b>用不上</b> <code>/</code>，但<b>一定会遇到</b>它 ——
+      比如 <code>help(divmod)</code> 显示 <code>divmod(x, y, /)</code>，意思是两个参数都不能用关键字传：
+      <code>divmod(x=3, y=4)</code> 会报 <code>TypeError: divmod() takes no keyword arguments</code>。
+    </p>
+
+    <h3>4.11 lambda 与文档字符串</h3>
+    <pre><code># lambda：只能写一个表达式的匿名函数
+add = lambda a, b: a + b
+add(1, 2)          # 3
+
+# 官方示例：用作排序键
+pairs = [(1, 'one'), (2, 'two'), (3, 'three'), (4, 'four')]
+pairs.sort(key=lambda pair: pair[1])
+print(pairs)
+# [(4, 'four'), (1, 'one'), (3, 'three'), (2, 'two')]
+
+# 返回一个函数（闭包）
+def make_incrementor(n):
+    return lambda x: x + n
+
+f = make_incrementor(42)
+f(0)     # 42
+f(1)     # 43</code></pre>
+    <pre><code>def clean_title(t):
+    """清掉标题首尾空白与网站后缀。
+
+    支持的缀尾分隔符：空格-连字符-空格、全角竖线。
+    传入空字符串会原样返回空字符串。
+    """
+    t = t.strip()
+    for sep in (" - ", "｜"):
+        if sep in t:
+            t = t.split(sep)[0]
+    return t.strip()
+
+print(clean_title.__doc__)      # 打印出上面那段说明
+help(clean_title)               # 在交互式环境里看到同样的内容</code></pre>
+    <p>
+      官方对文档字符串的格式约定：第一行是简短摘要，<b>以大写字母开头、以句点结尾</b>，不要在这里重复函数名或类型；
+      多行时第二行留空；后面的行描述调用约定、副作用等。Python 解析器会去除多行文档字符串里的缩进。
+    </p>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：把新闻清洗逻辑封装成函数，供全文复用</h3>
+    <pre><code>import re
+
+def clean_title(t: str, *, remove_suffix: bool = True) -&gt; str:
+    """清洗新闻标题：去空白、去控制字符，可选去网站后缀。
+
+    参数:
+        t: 原始标题
+        remove_suffix: 是否去掉 " - 网站名" / "｜栏目名" 这类后缀
+    返回:
+        清洗后的标题；输入为 None 或空串时返回空串
+    """
+    if not t:
+        return ""
+    t = t.replace("\u3000", " ").replace("\n", " ").replace("\t", " ")
+    t = re.sub(r"\s+", " ", t).strip()      # 连续空白压成一个空格
+    if remove_suffix:
+        for sep in (" - ", "｜", "——"):
+            if sep in t:
+                t = t.split(sep)[0].strip()
+                break
+    return t
+
+
+def normalize_source(src: str, mapping: dict | None = None) -> str:
+    """把来源名统一成规范写法。mapping 为 None 时只做去空白。"""
+    if mapping is None:                     # ← 避开可变默认参数陷阱
+        mapping = {}
+    src = (src or "").strip()
+    return mapping.get(src, src)
+
+
+def keyword_hits(text: str, keywords: list) -&gt; dict:
+    """统计关键词在文本中的出现次数，只保留出现过的。"""
+    result = {}
+    for kw in keywords:
+        c = text.count(kw)
+        if c:
+            result[kw] = c
+    return result</code></pre>
+    <pre><code># 复用：处理一批数据，逻辑只写一遍
+SOURCE_MAP = {"科技日报社": "科技日报", "科技日报网": "科技日报"}
+
+raw = [
+    {"标题": "  AI 写稿工具上线 - XX新闻网 ", "来源": "科技日报社", "正文": "AI 写稿已成常态。"},
+    {"标题": "算法推荐争议调查｜独家",       "来源": "新闻战线",   "正文": "算法透明度受关注。"},
+    {"标题": None,                          "来源": "科技日报网", "正文": "AI 训练数据来源不明。"},
+]
+
+for a in raw:
+    title = clean_title(a.get("标题"))
+    src = normalize_source(a.get("来源"), SOURCE_MAP)
+    hits = keyword_hits(a.get("正文", ""), ["AI", "算法", "数据"])
+    print(f"{src} | {title} | 命中 {hits}")
+
+# 科技日报 | AI 写稿工具上线 | 命中 {'AI': 1}
+# 新闻战线 | 算法推荐争议调查 | 命中 {'算法': 1}
+# 科技日报 |  | 命中 {'AI': 1, '数据': 1}</code></pre>
+    <blockquote class="ok">
+      注意三个函数的参数设计：<code>clean_title(t, *, remove_suffix=True)</code>
+      把开关做成了<b>仅限关键字参数</b>，调用时必须写 <code>remove_suffix=False</code>，
+      不会因为传个 <code>False</code> 位置搞混；<code>normalize_source</code> 的 <code>mapping</code>
+      用了 <code>None</code> 兜底 —— 这就是本节学到的两条规则在实践中长什么样。
+    </blockquote>
+
+    <h3>场景二：把一个脏数据校验规则写成可复用的检查函数</h3>
+    <pre><code>def validate_article(article: dict, *, required=("标题", "来源"), min_views=0) -&gt; tuple:
+    """校验一条新闻是否合格，返回 (是否合格, 问题列表)。"""
+    problems = []
+
+    for key in required:
+        value = article.get(key)
+        if not value:                          # 利用真值测试：None / "" 都算缺失
+            problems.append(f"缺少 {key}")
+
+    views = article.get("浏览")
+    if views is None:
+        problems.append("缺少 浏览")
+    elif not isinstance(views, int):
+        problems.append(f"浏览不是整数，实际是 {type(views).__name__}")
+    elif views &lt; min_views:
+        problems.append(f"浏览量 {views} 低于下限 {min_views}")
+
+    title = article.get("标题") or ""
+    if len(title) &gt; 40:
+        problems.append(f"标题过长（{len(title)} 字）")
+
+    return (not problems), problems
+
+
+cases = [
+    {"标题": "AI 写稿工具上线", "来源": "科技日报", "浏览": 12800},
+    {"标题": "", "来源": "新闻战线", "浏览": 3400},
+    {"标题": "算法推荐争议调查", "来源": "", "浏览": "21000"},
+    {"标题": "这是一条特别特别特别特别特别特别特别特别特别长的标题测试用例", "来源": "法治日报", "浏览": 100},
+]
+
+for i, c in enumerate(cases, 1):
+    ok, problems = validate_article(c, min_views=1000)
+    flag = "合格" if ok else "不合格"
+    print(f"{i}. {flag}" + (f" —— {'；'.join(problems)}" if problems else ""))
+
+# 1. 合格
+# 2. 不合格 —— 缺少 标题
+# 3. 不合格 —— 缺少 来源；浏览不是整数，实际是 str
+# 4. 不合格 —— 标题过长（30 字）；浏览量 100 低于下限 1000</code></pre>
+    <p class="meta">
+      「返回 <code>(是否合格, 问题列表)</code> 元组」是校验类函数的标准模式 ——
+      调用方既知道通不通，也知道为什么不通。
+      比抛异常温和，比只返回 <code>False</code> 信息量大得多。
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：<code>print</code> vs <code>return</code>（新手第一大坑）</h3>
+    <pre><code>def add_bad(a, b):
+    print(a + b)          # 只打印，不返回
+
+def add_good(a, b):
+    return a + b          # 把结果交出去
+
+x = add_bad(1, 2)         # 屏幕上有 3
+print(x)                  # None   ← 拿不到结果
+
+y = add_good(1, 2)
+print(y)                  # 3
+
+# 后果：想继续用这个结果就崩了
+z = add_bad(1, 2) + 10    # TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'</code></pre>
+
+    <h3>辨析 2：可变默认参数陷阱（必背）</h3>
+    <pre><code># ❌ 错误
+def add_tag(tag, tags=[]):
+    tags.append(tag)
+    return tags
+
+print(add_tag("AI"))      # ['AI']
+print(add_tag("算法"))     # ['AI', '算法']     ← 上次的结果还在
+print(add_tag("版权"))     # ['AI', '算法', '版权']
+
+# ✅ 正确：用 None 兜底
+def add_tag(tag, tags=None):
+    if tags is None:
+        tags = []          # 每次调用都新建
+    tags.append(tag)
+    return tags
+
+print(add_tag("AI"))      # ['AI']
+print(add_tag("算法"))     # ['算法']
+
+# ⚠️ 注意：不可变默认值是安全的
+def f(x, n=0, s="", t=()):   # ✅ 数字、字符串、元组、None 都可以当默认值
+    pass</code></pre>
+    <blockquote class="warn">
+      两个官方来源都确认了这件事。教程说「默认值只计算一次……不想在后续调用之间共享默认值时，
+      应以 <code>def f(a, L=None): if L is None: L = []</code> 方式编写」；
+      FAQ 说「不把可变对象用作默认值是一种良好的编程做法」。
+    </blockquote>
+
+    <h3>辨析 3：局部变量 vs 全局变量（<code>UnboundLocalError</code>）</h3>
+    <pre><code>count = 0
+
+# ❌ 想累加全局变量
+def add_one():
+    count += 1        # UnboundLocalError
+# 原因：函数里有赋值语句 → count 被判定为局部变量 → 读取时还没赋值
+
+# ✅ 方案一：不用 global，改成传参 + 返回
+def add_one(n):
+    return n + 1
+
+count = add_one(count)
+
+# ✅ 方案二：显式 global（不推荐，但要知道）
+def add_one():
+    global count
+    count += 1
+
+# ✅ 方案三：用可变容器（不需要 global，原地改）
+stats = {"count": 0}
+def add_one():
+    stats["count"] += 1     # 改的是字典内容，不是给名字重新赋值</code></pre>
+    <p class="meta">
+      方案三能成立的原因：<code>stats["count"] += 1</code> 是<b>修改对象内容</b>，
+      不是<b>给名字 stats 重新赋值</b>，所以不触发「局部变量」判定。
+      这和 <a href="lists.html#s6">列表</a>里「赋值不复制」是同一个知识点的两面。
+    </p>
+
+    <h3>辨析 4：位置参数 vs 关键字参数</h3>
+    <pre><code>def make_news(title, source, views=0):
+    return {"标题": title, "来源": source, "浏览": views}
+
+# 位置参数：靠顺序
+make_news("AI 写稿", "科技日报", 12800)     # ✅
+
+# 关键字参数：靠名字，顺序随意
+make_news(source="科技日报", title="AI 写稿")   # ✅
+
+# 混用时关键字必须在后
+make_news("AI 写稿", views=12800, source="科技日报")   # ✅
+make_news(title="AI 写稿", "科技日报")                   # ❌ SyntaxError
+
+# 参数多了以后，关键字写法更不容易错
+make_news("AI 写稿", "科技日报", 12800)     # 12800 是 views 还是别的？
+make_news(title="AI 写稿", source="科技日报", views=12800)   # 一眼就懂</code></pre>
+    <blockquote>
+      官方提醒：<b>「当形参名有实际意义……显示名称可以让函数定义更易理解时」用关键字参数。</b>
+      实践中一条经验：<b>参数超过 3 个，或者有多个同类型参数时，调用处就写关键字。</b>
+    </blockquote>
+
+    <h3>辨析 5：函数名是变量，可以被覆盖</h3>
+    <pre><code>def clean(t):
+    return t.strip()
+
+print(clean)          # &lt;function clean at 0x...&gt;
+
+# 函数名可以被重新赋值 —— 这是合法但非常危险的
+clean = "我不是函数了"
+clean("  x  ")        # TypeError: 'str' object is not callable
+
+# 也可以把函数当参数传递（这才是正确玩法）
+titles = ["  b  ", "a"]
+titles.sort(key=clean)
+print(titles)         # ['a', '  b  ']  ← 按 strip 后的长度排序</code></pre>
+    <p class="meta">
+      常见的一种失误：用 <code>list</code>、<code>sum</code>、<code>str</code>、<code>type</code>、<code>max</code>
+      这类内置名当变量名，把内置函数覆盖掉。
+      <code>sum = sum(...)</code> 之后 <code>sum()</code> 就不能用了。
+    </p>
+
+    <h3>辨析 6：<code>*args</code> 收到的是元组，<code>**kwargs</code> 收到的是字典；不要滥用</h3>
+    <pre><code>def f(*args, **kwargs):
+    print(type(args), args)          # &lt;class 'tuple'&gt; (1, 2, 3)
+    print(type(kwargs), kwargs)      # &lt;class 'dict'&gt; {'a': 1}
+
+f(1, 2, 3, a=1)
+
+# ⚠️ 滥用：签名失去自描述性，调用方不知道能传什么
+def process(*args, **kwargs):
+    pass
+
+# ✅ 明确列出参数，好处：IDE 能提示、文档能生成、传错能报错
+def process(article: dict, *, min_views: int = 0) -&gt; dict:
+    pass</code></pre>
+    <blockquote class="warn">
+      <b><code>*args</code> / <code>**kwargs</code> 是「接住不确定的东西」用的，不是「省事」用的。</b>
+      包一层别人的函数、装饰器、转发参数时才需要它们。
+      自己写的业务函数应该把参数一个个列清楚 —— 否则报错时会很难定位是谁传错了什么。
+    </blockquote>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：函数没有写 <code>return</code>，调用它会得到什么？</b>
+      <div class="ans">
+        <code>None</code>。官方原文：「<code>return</code> 语句不带表达式参数时，返回 <code>None</code>。
+        函数执行完毕退出也返回 <code>None</code>。」
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：为什么 <code>def f(a, L=[])</code> 是危险的？正确写法是什么？</b>
+      <div class="ans">
+        因为「默认值只计算一次」，这个列表在函数定义时就创建好了，所有调用共用同一个对象，
+        于是每次调用都会往同一个列表里追加。
+        正确写法：<code>def f(a, L=None): if L is None: L = []</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：<code>x = 10</code> 后再定义 <code>def foo(): print(x); x += 1</code>，调用 <code>foo()</code> 会怎样？</b>
+      <div class="ans">
+        抛 <code>UnboundLocalError</code>。因为函数里对 <code>x</code> 有赋值语句，
+        编译器把 <code>x</code> 当成局部变量，前面的 <code>print(x)</code> 读的是尚未初始化的局部变量。
+        要读全局的，得显式写 <code>global x</code>，或者干脆改用参数和返回值。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>parrot(voltage=5.0, 'dead')</code> 为什么报错？</b>
+      <div class="ans">
+        关键字参数必须跟在位置参数后面。这里位置参数 <code>'dead'</code> 出现在关键字参数之后，
+        报 <code>SyntaxError</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>*args</code> 和 <code>**kwargs</code> 分别接收到什么类型？</b>
+      <div class="ans">
+        <code>*args</code> 是元组（<code>tuple</code>），<code>**kwargs</code> 是字典（<code>dict</code>）。
+        官方还规定 <code>*name</code> 必须出现在 <code>**name</code> 之前。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>def f(x, /, y, *, z)</code> 里，<code>y</code> 能怎么传？<code>z</code> 呢？</b>
+      <div class="ans">
+        <code>y</code> 位置或关键字都行；<code>z</code> 只能按关键字传（<code>*</code> 之后是仅限关键字）；
+        <code>x</code> 只能按位置传（<code>/</code> 之前是仅限位置）。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：写了个函数在屏幕上有输出，但拿不到结果，最可能的原因是什么？</b>
+      <div class="ans">
+        用 <code>print</code> 代替了 <code>return</code>。函数里打印不影响返回值，没有 <code>return</code> 就只能拿到 <code>None</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 更多控制流工具（4.8 定义函数 / 4.9 函数定义详解）</td>
+          <td><code>def</code> 语法与缩进要求、函数局部符号表与查找顺序、「实参是按值调用（值始终是对象的引用）」原文、无 <code>return</code> 返回 <code>None</code>、官方 <code>fib</code> / <code>fib2</code> 示例、合法与非法调用的完整示例、<b>可变默认参数「重要警告」原文与 <code>L=None</code> 正确写法</b>、关键字参数顺序规则、<code>*args</code> / <code>**kwargs</code> 与解包、特殊参数 <code>/</code> 与 <code>*</code> 的完整说明与小节小结、lambda 表达式与 <code>sort(key=...)</code> 示例、文档字符串格式约定与注解</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/controlflow.html">docs.python.org/zh-cn/3/tutorial/controlflow.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题（UnboundLocalError / 共享默认值 / 按引用调用）</td>
+          <td><code>UnboundLocalError</code> 官方示例与成因原文、「当对某作用域内的变量进行赋值时，该变量将成为该作用域内的局部变量」、<code>global</code> / <code>nonlocal</code> 的官方示例、局部变量与全局变量规则、<b>「不把可变对象用作默认值是一种良好的编程做法」及 <code>mydict=None</code> 写法</b>、「在 Python 中参数是通过赋值传递的」、形参与实参的区别、斜杠 <code>/</code> 的含义与 <code>divmod</code> 示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>PEP 8 · Python 代码风格指南</td>
+          <td>函数与方法命名用 <code>lowercase_with_underscores</code>、函数之间用空行分隔、编写文档字符串的要求、运算符与逗号后的空格规则</td>
+          <td><a href="https://peps.python.org/pep-0008/">peps.python.org/pep-0008/</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型（真值测试）</td>
+          <td>校验函数中「<code>if not value</code> 把 <code>None</code> 和空串一并视为缺失」所依据的真值测试规则</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#truth-value-testing">docs.python.org/zh-cn/3/library/stdtypes.html#truth-value-testing</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置函数</td>
+          <td><code>isinstance</code> 的类型判断、<code>None</code> / <code>True</code> / <code>False</code> 为单例、<code>callable</code> 与「<code>'str' object is not callable</code>」的语境（辨析 5）</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/functions.html">docs.python.org/zh-cn/3/library/functions.html</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版）与 PEP 官方站点，均通过 WebFetch 实际抓取页面内容后使用</td></tr>
+        <tr><td><b>可变默认参数陷阱</b></td><td><b>已逐字核对两个来源。</b>教程原文：「默认值只计算一次。默认值为列表、字典或类实例等可变对象时，会产生与该规则不同的结果。」并给出 <code>def f(a, L=[])</code> → <code>[1] / [1, 2] / [1, 2, 3]</code> 的输出与 <code>L=None</code> 的正确写法；FAQ 表述为「新手程序员常常中招这类 Bug …… 不把可变对象用作默认值是一种良好的编程做法」</td></tr>
+        <tr><td>无 <code>return</code> 返回 <code>None</code></td><td>已核。原文：「即使没有 <code>return</code> 语句的函数也有返回值……这个值被称为 <code>None</code>」、「<code>return</code> 语句不带表达式参数时，返回 <code>None</code>」</td></tr>
+        <tr><td><code>UnboundLocalError</code></td><td>已核。FAQ 给出 <code>x=10 / def foo(): print(x); x += 1</code> 的完整示例与报错文本，并解释「当对某作用域内的变量进行赋值时，该变量将成为该作用域内的局部变量」；<code>global</code> / <code>nonlocal</code> 示例亦为原文</td></tr>
+        <tr><td>位置参数与关键字参数的调用规则</td><td>已核。六种合法调用与四种非法调用、<code>TypeError: function() got multiple values for argument 'a'</code> 均为官方原文</td></tr>
+        <tr><td>特殊参数 <code>/</code> 与 <code>*</code></td><td>已核。三段定义与对应的成功/失败调用示例取自官方原文；<code>divmod(x, y, /)</code> 与 <code>TypeError: divmod() takes no keyword arguments</code> 取自 FAQ 原文</td></tr>
+        <tr><td>lambda 与文档字符串</td><td>已核。<code>pairs.sort(key=lambda pair: pair[1])</code>、<code>make_incrementor(42)</code>、<code>my_function.__doc__</code> 示例与文档字符串格式约定均取自官方原文</td></tr>
+        <tr><td>函数名被覆盖 / 内置名被遮蔽</td><td><b>未逐条对照官方原文</b>。<code>'str' object is not callable</code> 的报错措辞、以及用内置名当变量名的警告，属依据通用语义补写</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；新闻清洗与校验场景为虚构示例；<code>re.sub(r"\s+", " ", t)</code> 等涉及正则的写法详见 <a href="regex.html">正则表达式</a>；未在本机逐条运行验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、新闻场景、自测题由 AI 撰写；
+      可变默认参数陷阱、<code>return</code> 语义、<code>UnboundLocalError</code> 成因、
+      参数传递规则、特殊参数语法、lambda 与文档字符串，均逐条对照官方文档原文核验（其中可变默认参数同时对照了教程与 FAQ 两个来源）。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>函数</b> · Python 概念学习资料 第 7 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

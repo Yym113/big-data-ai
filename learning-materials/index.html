@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>概念目录 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+
+    /* 概念卡片 */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+    .card {
+      border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px;
+      background: #fff; text-decoration: none; color: inherit; display: block;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .card:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(44,90,135,.1); }
+    .card .no {
+      display: inline-block; font-size: 0.72rem; font-weight: 700; color: #fff;
+      background: var(--accent); border-radius: 9px; padding: 1px 8px; margin-bottom: 6px;
+    }
+    .card .name { font-weight: 600; font-size: 1.02rem; color: var(--accent); }
+    .card .desc { font-size: 0.86rem; color: var(--muted); margin-top: 4px; line-height: 1.55; }
+    .card.todo {
+      background: #fbfaf7; border-style: dashed; cursor: default;
+    }
+    .card.todo .no { background: #b0a898; }
+    .card.todo .name { color: var(--muted); }
+
+    /* 关系图 */
+    .chain { background: var(--purple-bg); border-left: 3px solid var(--purple); border-radius: 4px; padding: 12px 18px; margin: 12px 0; }
+    .chain b { color: var(--purple); }
+    .arrow-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; font-size: 0.9rem; }
+    .node {
+      background: #fff; border: 1px solid var(--accent); color: var(--accent);
+      border-radius: 6px; padding: 4px 12px; font-weight: 600; white-space: nowrap;
+    }
+    .node.dim { border-color: #b0a898; color: var(--muted); }
+    .arrow { color: var(--muted); font-size: 1.1rem; }
+
+    .badge { display:inline-block; font-size:0.72rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; margin-left:6px; }
+    .badge.done { background: var(--ok-bg); color: var(--ok); }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>概念目录</h1>
+    <p class="subtitle">
+      Python 基础概念学习资料 · 共 15 个概念 &nbsp;|&nbsp; 配套 <a href="python-learning-map.html">13 次课学习地图</a><br>
+      每个概念一份独立资料，本页负责建立概念之间的联系
+    </p>
+  </header>
+
+  <section>
+    <h2>这套资料怎么用</h2>
+    <p>
+      每一份概念资料都是<b>自包含</b>的 —— 单独打开也能完整读完，包含定义、机制、类比、易错点和自测题。
+      但概念之间不是孤立的，本页的作用就是告诉你：<b>先学哪个、学完它接下来能学什么、它们在代码里怎么串起来</b>。
+    </p>
+    <blockquote>
+      <b>建议顺序：按编号顺序读。</b>编号编排遵循「先有数据 → 再有容器 → 再有逻辑 → 最后处理真实文件和数据」的依赖关系。
+      跳读也能读懂，但第 3 个概念（列表）之后的例子会默认你认识前面的内容。
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>概念地图总览</h2>
+    <div class="chain">
+      <b>依赖主线</b>（虚线框是还没生成的）
+      <div class="arrow-row">
+        <span class="node">变量与类型</span><span class="arrow">→</span>
+        <span class="node">字符串</span><span class="arrow">→</span>
+        <span class="node">列表</span><span class="arrow">→</span>
+        <span class="node">字典</span><span class="arrow">→</span>
+        <span class="node">条件判断</span><span class="arrow">→</span>
+        <span class="node">循环</span>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow">↓</span>
+      </div>
+      <div class="arrow-row">
+        <span class="node">函数</span><span class="arrow">→</span>
+        <span class="node">推导式</span><span class="arrow">→</span>
+        <span class="node">文件读写</span><span class="arrow">→</span>
+        <span class="node">异常处理</span>
+      </div>
+      <div class="arrow-row">
+        <span class="arrow">↓</span>
+      </div>
+      <div class="arrow-row">
+        <span class="node">正则表达式</span><span class="arrow">→</span>
+        <span class="node">模块与包</span><span class="arrow">→</span>
+        <span class="node">numpy</span><span class="arrow">→</span>
+        <span class="node">pandas</span><span class="arrow">→</span>
+        <span class="node">matplotlib</span>
+      </div>
+    </div>
+    <p class="meta">
+      箭头含义：<b>A → B</b> 表示「学 B 之前需要 A 打底」。同一行内是并列关系，跨行是递进关系。
+    </p>
+  </section>
+
+  <section>
+    <h2>阶段一 · 语言入门</h2>
+    <p class="meta">对应学习地图的课 1–4。目标是能读懂代码、能写简单逻辑。</p>
+    <div class="grid">
+
+      <a class="card" href="vars-and-types.html">
+        <span class="no">01</span><span class="badge done">已完成</span>
+        <div class="name">变量与数据类型</div>
+        <div class="desc">变量是名字、类型是形状。四种基本类型、类型转换、浮点精度、命名规则</div>
+      </a>
+
+      <a class="card" href="strings.html">
+        <span class="no">02</span><span class="badge done">已完成</span>
+        <div class="name">字符串</div>
+        <div class="desc">文本处理的主角。拼接、切分、替换、查找、格式化，以及「不可变」意味着什么</div>
+      </a>
+
+      <a class="card" href="lists.html">
+        <span class="no">03</span><span class="badge done">已完成</span>
+        <div class="name">列表</div>
+        <div class="desc">装一串数据的容器。索引、切片、增删改、排序，以及「赋值不复制」的经典坑</div>
+      </a>
+
+      <a class="card" href="dicts.html">
+        <span class="no">04</span><span class="badge done">已完成</span>
+        <div class="name">字典</div>
+        <div class="desc">用名字取值的容器。键值对、遍历、嵌套结构 —— 一条新闻的标准建模方式</div>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>阶段二 · 组织逻辑</h2>
+    <p class="meta">对应学习地图的课 5–8。目标是代码可复用、能读写真实文件、能自己修错。</p>
+    <div class="grid">
+
+      <a class="card" href="conditionals.html">
+        <span class="no">05</span><span class="badge done">已完成</span>
+        <div class="name">条件判断</div>
+        <div class="desc">让程序会做选择。if / elif / else、比较与逻辑运算、真值判断</div>
+      </a>
+
+      <a class="card" href="loops.html">
+        <span class="no">06</span><span class="badge done">已完成</span>
+        <div class="name">循环</div>
+        <div class="desc">批量处理的核心。for / while、range、enumerate、break 与 continue</div>
+      </a>
+
+      <a class="card" href="functions.html">
+        <span class="no">07</span><span class="badge done">已完成</span>
+        <div class="name">函数</div>
+        <div class="desc">把逻辑打包复用。参数、返回值、作用域、默认参数的经典陷阱</div>
+      </a>
+
+      <a class="card" href="comprehensions.html">
+        <span class="no">08</span><span class="badge done">已完成</span>
+        <div class="name">推导式与内置函数</div>
+        <div class="desc">写得更少做得更多。列表推导式、lambda、sorted / map / filter</div>
+      </a>
+
+      <a class="card" href="file-io.html">
+        <span class="no">09</span><span class="badge done">已完成</span>
+        <div class="name">文件读写</div>
+        <div class="desc">数据进出的通道。open / with 语法、TXT 与 CSV、中文编码三大坑</div>
+      </a>
+
+      <a class="card" href="exceptions.html">
+        <span class="no">10</span><span class="badge done">已完成</span>
+        <div class="name">异常处理与调试</div>
+        <div class="desc">学会自救。try / except、常见异常类型、读懂 Traceback、提问模板</div>
+      </a>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>阶段三 · 文本与数据实战</h2>
+    <p class="meta">对应学习地图的课 9–13。目标是真正拿数据做出东西 —— 这一段是重点。</p>
+    <div class="grid">
+
+      <a class="card" href="regex.html">
+        <span class="no">11</span><span class="badge done">已完成</span>
+        <div class="name">正则表达式</div>
+        <div class="desc">按模式而非精确内容查找。re 四函数、元字符与量词、新闻文本清洗实战</div>
+      </a>
+
+      <a class="card" href="modules-and-packages.html">
+        <span class="no">12</span><span class="badge done">已完成</span>
+        <div class="name">模块与包</div>
+        <div class="desc">站在别人的肩膀上。import 三种写法、pip 装库、虚拟环境、requirements.txt</div>
+      </a>
+
+      <a class="card" href="numpy.html">
+        <span class="no">13</span><span class="badge done">已完成</span>
+        <div class="name">numpy 数组</div>
+        <div class="desc">数值批量运算的引擎。向量化、广播、布尔索引 —— pandas 的地基</div>
+      </a>
+
+      <a class="card" href="pandas.html">
+        <span class="no">14</span><span class="badge done">已完成</span>
+        <div class="name">pandas 数据表</div>
+        <div class="desc">表格数据处理。DataFrame、筛选 / 排序 / 分组 / 新增列，AI 阶段用得最多</div>
+      </a>
+
+      <a class="card" href="matplotlib.html">
+        <span class="no">15</span><span class="badge done">已完成</span>
+        <div class="name">matplotlib 绘图</div>
+        <div class="desc">把数字变成图。折线 / 柱状 / 散点、中文显示、存图，以及 pandas 直接画图</div>
+      </a>
+
+    </div>
+    <blockquote class="ok">
+      <b>15 个概念已全部生成完毕。</b>建议按 01 → 15 的顺序读；如果只想先跑通一条线，
+      可以走「01 → 03 → 04 → 06 → 09 → 14」这条最短路径，它覆盖了处理新闻数据最常用的一整套操作。
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>概念之间的联系（跨概念的坑）</h2>
+    <p>下面这些坑<b>不属于某一个概念</b>，只有把几个概念放在一起看才会暴露出来。考试和实际写代码时最容易栽在这里。</p>
+
+    <h3>联系 1：变量赋值是引用 —— 跨「变量 / 列表 / 字典」</h3>
+    <div class="arrow-row">
+      <span class="node">变量与类型</span><span class="arrow">+</span>
+      <span class="node">列表</span><span class="arrow">+</span>
+      <span class="node">字典</span>
+    </div>
+    <p>
+      <code>b = a</code> 不复制数据。对不可变对象（数字、字符串）看不出问题，但对<b>列表和字典</b>会造成「改一个另一个也变了」。
+      详见 <a href="vars-and-types.html#s6">变量与类型 · 辨析 2</a> 和 <a href="lists.html">列表 · 赋值陷阱</a>。
+    </p>
+
+    <h3>联系 2：类型决定运算 —— 跨「变量 / 字符串 / 文件读写」</h3>
+    <div class="arrow-row">
+      <span class="node">变量与类型</span><span class="arrow">→</span>
+      <span class="node">字符串</span><span class="arrow">→</span>
+      <span class="node">文件读写</span>
+    </div>
+    <p>
+      从文件读出来的数据<b>全是字符串</b>。<code>"12800" + "3400"</code> 得到 <code>"128003400"</code> 而不是 16200。
+      这是数据处理第一号陷阱，必须养成「先 <code>int()</code> 再算」的习惯。
+    </p>
+
+    <h3>联系 3：循环 + 条件 + 累加器 —— 跨「循环 / 条件 / 变量」</h3>
+    <div class="arrow-row">
+      <span class="node">循环</span><span class="arrow">+</span>
+      <span class="node">条件判断</span><span class="arrow">+</span>
+      <span class="node">变量</span>
+    </div>
+    <p>
+      <code>total = 0</code> 开一个累加器 → 循环遍历 → <code>if</code> 筛出想要的 → <code>total += 值</code>。
+      这个四步模式是所有统计代码的骨架，后面统计词频、算平均值全靠它。
+    </p>
+
+    <h3>联系 4：推导式是循环 + 条件的简写 —— 跨「推导式 / 循环 / 条件」</h3>
+    <div class="arrow-row">
+      <span class="node">循环</span><span class="arrow">+</span>
+      <span class="node">条件判断</span><span class="arrow">→</span>
+      <span class="node">推导式</span>
+    </div>
+    <p>
+      <code>[t for t in titles if "AI" in t]</code> 等价于「建空列表 → 循环 → 判断 → append」。
+      理解不了推导式就把它展开成循环；反过来，看到循环 + append 就该想到能不能改写成推导式。
+    </p>
+
+    <h3>联系 5：pandas 是 numpy + 字典 + 循环的思想集合 —— 跨「numpy / 字典 / 推导式 / pandas」</h3>
+    <div class="arrow-row">
+      <span class="node">字典</span><span class="arrow">+</span>
+      <span class="node">numpy</span><span class="arrow">+</span>
+      <span class="node">推导式</span><span class="arrow">→</span>
+      <span class="node">pandas</span>
+    </div>
+    <p>
+      <code>df[df["浏览"] &gt; 10000]</code> 是 numpy 布尔索引的思路；<code>df["标题"]</code> 取一列像字典按键取值；
+      <code>groupby</code> 本质上是「循环 + 字典累加」。<b>前三样学扎实，pandas 不用背语法。</b>
+    </p>
+
+    <h3>联系 6：文件读写是数据进出的唯一入口 —— 跨「文件读写 / pandas / matplotlib」</h3>
+    <div class="arrow-row">
+      <span class="node">文件读写</span><span class="arrow">→</span>
+      <span class="node">pandas</span><span class="arrow">→</span>
+      <span class="node">matplotlib</span>
+    </div>
+    <p>
+      不管后面用什么高级工具，数据永远以文件形式存在。<code>read_csv</code> 帮你省掉手写 <code>open</code> 的活，
+      但底层就是课 09 学的东西 —— 包括那个绕不过去的中文编码问题。
+    </p>
+  </section>
+
+  <section>
+    <h2>常见问题</h2>
+    <h3>每份资料的结构都一样吗？</h3>
+    <p>
+      是。统一的 9 段结构：个人理解 / 学习目标 / 核心问题 / 结构化解释 / 应用场景 / 概念辨析 / 自测问题 / 可核查来源 / 核查记录。
+      看到「个人理解」可以直接跳到「概念辨析」——那里是干货密集区。
+    </p>
+    <h3>参考资料可靠吗？</h3>
+    <p>
+      每份文末的「核查记录」写明用了哪些来源、核到什么程度。来源优先用 Python 官方文档（中文版）、PEP 官方站点、
+      pandas / numpy 官方文档，全部附 URL 可自行打开验证。
+    </p>
+    <h3>这些和 13 次课学习地图是什么关系？</h3>
+    <p>
+      <a href="python-learning-map.html">学习地图</a>是「什么时候学什么」的日程表；本页的 15 份资料是「每个知识点具体讲什么」的内容。
+      地图里第 N 课讲的内容，通常对应这里 1–2 份概念资料。
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      <b>概念目录</b> · Python 概念学习资料总入口<br>
+      <a href="python-learning-map.html">Python 基础学习地图（13 次课）</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">由 concept-unpacker skill 生成 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

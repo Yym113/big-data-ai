@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文件读写与编码 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>文件读写与编码</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 9 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景（新闻传播学）</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1. 个人理解（先说人话）</h2>
+    <p>
+      前面几节里，你的数据都是自己手打进去的：<code>ages = [18, 20, 17]</code>、<code>name = "张三"</code>。
+      但真实的新闻数据不可能手打——你手上是宣传部发来的 Excel、是爬虫存下来的 <code>.csv</code>、
+      是录音转写软件导出的 <code>.txt</code>。所以「文件读写」这件事的本质是：
+      <strong>把程序外面的东西搬进内存，把内存里的结果搬出去存好。</strong>
+    </p>
+    <p>
+      只有两个动作：<strong>读</strong>（文件 → 内存）和<strong>写</strong>（内存 → 文件）。
+      但这两个动作里有三个非常具体的坑，几乎每个人第一次都会踩：
+    </p>
+    <ol>
+      <li><strong>忘了关文件</strong>——程序跑一万次没事，跑第一万零一次崩了。用 <code>with</code> 一劳永逸。</li>
+      <li><strong>编码不对</strong>——打开文件报 <code>UnicodeDecodeError</code>，或者满屏「锟斤拷」。这是中文用户特有的一关。</li>
+      <li><strong>CSV 的 <code>newline=''</code></strong>——不写这一句，Windows 上导出的表格每行之间会多出一个空行。</li>
+    </ol>
+    <p>
+      还有一个经常被误会的现象：<strong>用 Excel 打开 UTF-8 的 CSV 变成乱码，这不是你代码的错</strong>。
+      后面第 6 节会专门讲这件事该怎么跟同事解释、怎么绕开。
+    </p>
+    <blockquote>
+      「读文件」在 Python 里只有一种写法值得记：<code>with open(路径, "r", encoding="utf-8") as f:</code>。
+      把这句话当成一个整体背下来，就像背「新华社电」一样，不要拆开改。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2. 学习目标</h2>
+    <p>学完这一份，你应该能做到：</p>
+    <ul>
+      <li>能用 <code>open()</code> 打开文件，并说清 <code>"r"</code> / <code>"w"</code> / <code>"a"</code> 三种模式的差别，特别是 <code>"w"</code> 会<strong>清空原文件</strong>这一点。</li>
+      <li>能默写 <code>with open(...) as f:</code> 结构，并解释为什么它一定比 <code>f = open(...)</code> 好。</li>
+      <li>遇到 <code>UnicodeDecodeError</code> 时知道这是编码问题，能按「先试 utf-8、再试 gbk、最后加 errors=」的顺序排查，而不是乱改代码。</li>
+      <li>知道 <code>utf-8-sig</code> 是干什么的，能解释「BOM」是什么、为什么它会让你的数据表第一列列名变成 <code>\ufeff标题</code>。</li>
+      <li>能用 <code>csv.reader</code> / <code>csv.DictReader</code> 读表格，用 <code>csv.writer</code> / <code>csv.DictWriter</code> 写表格，并记得 <code>newline=''</code>。</li>
+      <li>能解释「Excel 打开 CSV 乱码」的成因，并给出两种可行的解决路径。</li>
+      <li>知道文本 I/O 性能不如二进制 I/O，理解为什么读大文件时应该<strong>逐行迭代</strong>而不是一次性 <code>read()</code>。</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <h2>3. 核心问题清单</h2>
+    <ol>
+      <li><code>open()</code> 的第二个参数 <code>mode</code> 有哪些取值？各自对文件做了什么？</li>
+      <li>为什么官方文档强烈建议在打开文本文件时<strong>显式指定编码</strong>？不指定会发生什么？</li>
+      <li><code>with</code> 到底帮我做了什么？不用 <code>with</code> 会怎样？</li>
+      <li>文件写了但没关，数据会不会丢？为什么会丢？</li>
+      <li><code>UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position ...</code> 这句报错在说什么？</li>
+      <li><code>gbk</code>、<code>gb2312</code>、<code>gb18030</code>、<code>utf-8</code> 之间是什么关系？为什么「中文乱码」总是和它们有关？</li>
+      <li>BOM（<code>0xef 0xbb 0xbf</code>）是什么？<code>utf-8-sig</code> 和 <code>utf-8</code> 差在哪？</li>
+      <li><code>errors=</code> 参数能取哪些值？<code>"ignore"</code> 和 <code>"replace"</code> 分别在什么场合下才敢用？</li>
+      <li>为什么读写 CSV 时官方要求 <code>newline=''</code>？不加会怎样？</li>
+      <li>用 Excel 打开 UTF-8 的 CSV 出现乱码——到底是代码的问题还是 Excel 的问题？怎么解决？</li>
+      <li>读大文件（比如几百 MB 的文本）时，为什么不能直接 <code>f.read()</code>？</li>
+      <li><code>open()</code> 在文本模式和二进制模式下有什么区别？<code>rb</code> 什么时候用？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4. 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>先看官方文档对「打开文件」给出的最简形式：</p>
+    <blockquote>
+      <code>open(filename, mode, encoding=None)</code>
+      <br>
+      第一个参数是包含文件名的字符串；第二个参数是描述文件用途的字符串；第三个参数用来指定文件的编码。
+      <span class="meta">——引自 Python 官方教程《输入与输出》7.2.1 节「读写文件的方法」</span>
+    </blockquote>
+    <p>
+      官方在这一节给出的标准写法是：
+    </p>
+    <pre><code>f = open('workfile', 'w', encoding="utf-8")</code></pre>
+    <p>
+      而关于 <code>encoding</code> 参数，官方有一句非常直接的建议：
+    </p>
+    <blockquote class="ok">
+      处理文件对象时，最好使用 <code>with</code> 关键字。这样做的好处是，文件使用完毕后会自动关闭，
+      即使出现异常也是如此。……在文本模式下读取文件时，默认把平台特定的行结束符（Unix 上为 <code>\n</code>，Windows 上为 <code>\r\n</code>）转换为 <code>\n</code>。
+      <br>
+      因为 UTF-8 是现代事实上的标准，除非你知道你需要使用一个不同的编码，否则建议使用 <code>encoding="utf-8"</code>。
+      <span class="meta">——引自 Python 官方教程《输入与输出》7.2.1 节</span>
+    </blockquote>
+
+    <h3>4.2 最小模型：一个「文件柜」模型</h3>
+    <p>
+      把文件想象成办公室里的一个文件柜。你的程序不能直接把柜子里的纸抽出来用，必须：
+    </p>
+    <ol>
+      <li><strong>打开柜门</strong>（<code>open()</code>）——你得先获得一个「把手」，也就是文件对象 <code>f</code>。</li>
+      <li><strong>取 / 放纸</strong>（<code>f.read()</code> / <code>f.write()</code>）——所有操作都通过这个把手进行。</li>
+      <li><strong>关柜门</strong>（<code>f.close()</code>）——不关，别人（甚至你自己）就打不开了，而且有些纸可能还没真正归档。</li>
+    </ol>
+    <p>
+      <code>with</code> 的作用是：<strong>你走出办公室的时候，门自动关上</strong>。
+      哪怕你中途摔了一跤（程序抛异常），门也会关。这就是官方说的「即使出现异常也是如此」。
+    </p>
+    <table>
+      <thead>
+        <tr><th>现实类比</th><th>Python 里对应什么</th><th>忘了会怎样</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>文件柜</td><td>磁盘上的一个文件</td><td>文件不存在 → <code>FileNotFoundError</code></td></tr>
+        <tr><td>把手（柜门把手）</td><td>文件对象 <code>f</code></td><td>没把手就干不了任何事</td></tr>
+        <tr><td>柜门上贴的标签「只读 / 可写 / 追加」</td><td><code>mode</code> 参数</td><td>标错标签：写进了只读文件 → <code>PermissionError</code></td></tr>
+        <tr><td>柜子里的纸上的字用什么语言写的</td><td><code>encoding</code> 参数</td><td>用错编码 → 打开全是天书（乱码）</td></tr>
+        <tr><td>出门顺手关门</td><td><code>with</code> 语句</td><td>不关 → 资源泄漏，写的内容可能没落盘</td></tr>
+      </tbody>
+    </table>
+    <p>
+      这个模型能解释绝大多数新手困惑。比如「为什么 <code>f.read()</code> 之后 <code>f.read()</code> 又返回空字符串了？」
+      ——因为<strong>把手上的「读到哪儿了」这个位置一直在往前移</strong>，读到底了自然就什么都读不到了。
+      这不是 bug，是文件指针（官方术语叫「当前位置」）的正常行为。
+    </p>
+
+    <h3>4.3 关键机制一：mode 与 with</h3>
+    <p>官方对模式字符的说明（《输入与输出》7.2.1 节）：</p>
+    <table>
+      <thead>
+        <tr><th>mode</th><th>含义</th><th>危险程度</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>"r"</code></td><td>只读（默认）。文件必须已存在，否则 <code>FileNotFoundError</code></td><td>安全</td></tr>
+        <tr><td><code>"w"</code></td><td>只写。<strong>会先清空原文件内容再写</strong></td><td>⚠ 会删数据</td></tr>
+        <tr><td><code>"a"</code></td><td>追加。写在文件末尾，不删原内容</td><td>较安全</td></tr>
+        <tr><td><code>"r+"</code></td><td>读写，文件必须已存在</td><td>注意文件指针</td></tr>
+        <tr><td><code>"b"</code></td><td>二进制模式（可加在其它模式后，如 <code>"rb"</code>、<code>"wb"</code>）</td><td>数据是 <code>bytes</code></td></tr>
+        <tr><td><code>"t"</code></td><td>文本模式（默认）</td><td>正常</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      官方在讨论 <code>open()</code> 的 <code>mode</code> 时特别指出：<code>'w'</code> 模式打开的文件如果已经存在，
+      原有内容会被<strong>覆盖</strong>（清空）。所以写文件前请务必确认路径没写错——
+      <code>open("data.csv", "w")</code> 跑一次，你原来的 <code>data.csv</code> 就没了。
+    </blockquote>
+    <p>
+      <code>with</code> 的返回值就是文件对象，所以 <code>as f</code> 里的 <code>f</code> 就是它。
+      官方还提到，文件关闭之后如果还去操作它，会抛 <code>ValueError: I/O operation on closed file.</code>；
+      可以用 <code>f.closed</code> 看文件是不是已经关了。
+    </p>
+    <p>还有一个容易被忽略的官方提醒：</p>
+    <blockquote class="warn">
+      调用 <code>f.write()</code> 时，如果不使用 <code>with</code> 关键字，或者不调用 <code>f.close()</code>，
+      那么<strong>即使程序正常退出，也不能保证数据已经写入了磁盘</strong>。
+      <span class="meta">——引自 Python 官方教程《输入与输出》7.2.1 节</span>
+    </blockquote>
+
+    <h3>4.4 关键机制二：编码——中文用户的必修课</h3>
+    <p>
+      先分清两个东西：
+    </p>
+    <ul>
+      <li><strong>字符</strong>（character）：你看到的「新」「闻」这些字形。</li>
+      <li><strong>字节</strong>（byte）：磁盘上实际存的 0/1，以字节为单位。</li>
+    </ul>
+    <p>
+      <strong>编码（encoding）就是「字符 → 字节」的翻译规则，解码（decoding）是反向翻译。</strong>
+      用错规则去翻译，出来的就是乱码。
+    </p>
+    <p>官方在 <code>io</code> 模块文档里把这件事说得非常重：</p>
+    <blockquote class="warn">
+      文本 I/O 的默认编码依赖于平台（即 <code>locale.getencoding()</code> 的返回值）……
+      为此，<strong>强烈建议你在打开文本文件时显式地指定编码格式</strong>。
+      <span class="meta">——引自 Python 标准库 <code>io</code> 模块文档「文本 I/O」节</span>
+    </blockquote>
+    <p>
+      这句话背后的现实是：Windows 简体中文系统的默认编码是 GBK 系，而 macOS / Linux 默认是 UTF-8。
+      同一份代码，你在自己电脑上跑得好好的，交给同事就炸了——原因就在这儿。
+    </p>
+    <p><strong>编码家族速查：</strong></p>
+    <table>
+      <thead>
+        <tr><th>编码名</th><th>别称 / 备注</th><th>典型场景</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>utf-8</code></td><td>现代事实标准</td><td>推荐默认选择；网页、GitHub、几乎所有现代工具</td></tr>
+        <tr><td><code>utf-8-sig</code></td><td>带 BOM 的 UTF-8</td><td>Windows 记事本、「另存为 CSV」、Excel 导出的 UTF-8 文件</td></tr>
+        <tr><td><code>gbk</code></td><td>官方文档中作为 <code>gb2312</code> 类的代表列出</td><td>老旧 Windows 软件导出的中文文本</td></tr>
+        <tr><td><code>gb18030</code></td><td>GBK 的超集，覆盖更全</td><td>当 <code>gbk</code> 也报错时可以试</td></tr>
+        <tr><td><code>big5</code></td><td>繁体中文</td><td>港澳台来源的文本</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.5 关键机制三：utf-8-sig 与 BOM</h3>
+    <p>这个知识点门槛很低但坑人无数。官方文档 <code>codecs</code> 模块里有一段专门讲它：</p>
+    <blockquote>
+      Microsoft 发明了一种 UTF-8 的变体形式（Python 称之为 <code>"utf-8-sig"</code>），
+      用于在文件中携带额外的签名信息。
+      <br><br>
+      在进行编码时，它会先写入一个 UTF-8 编码的 BOM（它看起来是这样一个字节序列：<code>0xef</code>, <code>0xbb</code>, <code>0xbf</code>），
+      然后再写入编码后数据。在进行解码时，<code>utf-8-sig</code> 将跳过这三个字节。
+      <br><br>
+      在 UTF-8 中并不推荐使用 BOM，通常应当避免它们的出现。
+      <span class="meta">——引自 Python 标准库 <code>codecs</code> 模块文档「encodings.utf_8_sig」节</span>
+    </blockquote>
+    <p>翻译成实际操作里的现象：</p>
+    <ul>
+      <li>你用 Excel 把表格「另存为 CSV UTF-8」，Excel 很可能给你加上了 BOM。</li>
+      <li>然后你用 <code>encoding="utf-8"</code> 去读，程序<strong>不会报错</strong>——但它会把那三个字节也当成一个字符读进来。</li>
+      <li>结果：你的第一列列名变成了 <code>'\ufeff标题'</code>。你在代码里写 <code>row["标题"]</code>，报 <code>KeyError: '标题'</code>。</li>
+      <li>你盯着屏幕看半天，明明打印出来就是「标题」两个字啊——因为 <code>\ufeff</code> 是个零宽字符，看不见。</li>
+    </ul>
+    <blockquote class="ok">
+      解决办法：读「可能是 Excel 存出来的 UTF-8 文件」时，用 <code>encoding="utf-8-sig"</code>。
+      它同时兼容「有 BOM」和「没有 BOM」两种情况，是处理这类文件最稳的选择。
+      验证方式：<code>print(repr(列名))</code>，就会看到 <code>'\ufeff标题'</code>。
+    </blockquote>
+
+    <h3>4.6 关键机制四：errors 参数——解不开的时候怎么办</h3>
+    <p>官方 <code>codecs</code> 文档列出了标准的错误处理方案，常用的几个：</p>
+    <table>
+      <thead>
+        <tr><th>值</th><th>官方含义</th><th>什么时候敢用</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>"strict"</code></td><td>默认。遇到错误就抛异常（<code>UnicodeDecodeError</code>）</td><td>永远的正解，先让它报错才知道问题在哪</td></tr>
+        <tr><td><code>"ignore"</code></td><td>忽略无法解码的字节，直接跳过</td><td>⚠ 会静默丢数据，慎用</td></tr>
+        <tr><td><code>"replace"</code></td><td>用替代标记（通常是 <code>?</code> 或 <code>�</code>）替换</td><td>只是想看看内容、不在乎几个坏字符时</td></tr>
+        <tr><td><code>"backslashreplace"</code></td><td>替换为反斜杠转义序列，如 <code>\xe9</code></td><td>调试时：能看出原始字节是什么</td></tr>
+        <tr><td><code>"surrogateescape"</code></td><td>把无法解码的字节映射到私有区域码位，可原样写回</td><td>需要「无损搬运」但暂时解不开内容时</td></tr>
+      </tbody>
+    </table>
+    <p>
+      官方文档对 <code>UnicodeEncodeError</code> 给的示例是 <code>'\udc80'.encode('utf-8')</code> 会报错（因为它是代理对码位）。
+      实际中最常见的还是解码时的 <code>UnicodeDecodeError</code>。
+    </p>
+
+    <h3>4.7 关键机制五：CSV 的 newline='' 与 Excel 乱码</h3>
+    <p>
+      CSV 不是 Python 发明的，它是一个很老、很松散的格式。Python 的 <code>csv</code> 模块文档里，
+      <code>reader</code> 和 <code>writer</code> 两处都明确写了同一句要求：
+    </p>
+    <blockquote class="warn">
+      如果 <code>csvfile</code> 是一个文件对象，则打开它时应设置 <code>newline=''</code>。
+      <span class="meta">——引自 Python 标准库 <code>csv</code> 模块文档</span>
+    </blockquote>
+    <p>为什么？因为 <code>csv</code> 模块要自己处理行结束符。如果你让 Python 的文件层先把 <code>\r\n</code> 转成 <code>\n</code>，</p>
+    <ul>
+      <li>读的时候：可能把字段里的换行符当成记录分隔符，把一行数据拆成两行。</li>
+      <li>写的时候（Windows）：<code>csv</code> 写出 <code>\r\n</code>，文件层又转一遍，变成 <code>\r\r\n</code>，Excel 打开就多出一堆空行。</li>
+    </ul>
+    <p>所以标准写法是：</p>
+    <pre><code>with open("data.csv", "r", encoding="utf-8-sig", newline="") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row)</code></pre>
+    <p>
+      注意这个位置：<code>newline=""</code> 是传给 <code>open()</code> 的，不是传给 <code>csv</code> 的。
+      这是新手最容易传错地方的一个参数。
+    </p>
+    <p><strong>关于「Excel 打开 CSV 乱码」：</strong></p>
+    <p>
+      这不是你代码的错。你的程序写出的是正确的 UTF-8 字节；是 Excel 在<strong>猜测</strong>编码，
+      而简体中文版 Excel 默认猜 GBK，猜错了就乱码。解决路径有三条：
+    </p>
+    <ol>
+      <li><strong>最推荐</strong>：用 <code>encoding="utf-8-sig"</code> 写出 CSV。那三个 BOM 字节会告诉 Excel「这是 UTF-8」，Excel 就猜对了。代价是给非 Excel 的程序读的时候要注意（用 <code>utf-8-sig</code> 读即可）。</li>
+      <li>不写 CSV，直接写 <code>.xlsx</code>（用 <code>openpyxl</code> / <code>pandas</code>），彻底绕开编码猜谜。</li>
+      <li>告诉同事：用「数据 → 从文本/CSV 导入」而不是双击打开，手动选 UTF-8。</li>
+    </ol>
+
+    <h3>4.8 关键机制六：二进制模式与性能</h3>
+    <p>
+      官方 <code>io</code> 模块文档指出，文本 I/O 在读写时要做编码/解码，所以<strong>文本 I/O 比二进制 I/O 慢得多</strong>。
+      这也是为什么处理图片、音频、压缩包时必须用 <code>"rb"</code> / <code>"wb"</code>：这类数据没有「字符」概念，
+      强行按文本解码毫无意义，而且会直接抛 <code>UnicodeDecodeError</code>。
+    </p>
+    <blockquote class="warn">
+      官方教程在讨论二进制模式时提醒：二进制模式下，读写的都是 <code>bytes</code> 对象，不会做任何编码转换。
+      <span class="meta">——引自 Python 官方教程《输入与输出》7.2.1 节</span>
+    </blockquote>
+    <p>另一个性能要点：<strong>读大文件不要 <code>f.read()</code></strong>。</p>
+    <pre><code># ❌ 一次性读入内存：文件 2GB，内存 8GB，直接卡死
+with open("huge.txt", encoding="utf-8") as f:
+    text = f.read()
+
+# ✅ 逐行迭代：内存占用恒定
+with open("huge.txt", encoding="utf-8") as f:
+    for line in f:
+        process(line)</code></pre>
+    <p>
+      官方明确说文件对象支持迭代，而且是<strong>内存高效</strong>的做法——它一次只在内存里保留一行。
+      这是「读大文件」的标准姿势。
+    </p>
+
+    <h3>4.9 可运行代码：完整对错对比</h3>
+    <p>
+      <strong>坑 1：不用 with / 用 with</strong>
+    </p>
+    <pre><code># ❌ 忘了 close，且在循环里反复 open 会耗尽文件句柄
+f = open("news.txt", "r", encoding="utf-8")
+text = f.read()
+# 后面如果抛异常，f.close() 永远执行不到
+
+# ✅ with：哪怕中间抛异常也会关
+with open("news.txt", "r", encoding="utf-8") as f:
+    text = f.read()
+print(open("news.txt").closed)  # 只读检查用</code></pre>
+
+    <p><strong>坑 2：编码报错的三步排查</strong></p>
+    <pre><code># 第一步：先按 utf-8 试，让它把错误说出来
+try:
+    with open("old.txt", encoding="utf-8") as f:
+        print(f.read())
+except UnicodeDecodeError as e:
+    print("不是 UTF-8：", e)
+    # 例：'utf-8' codec can't decode byte 0xd0 in position 0: invalid continuation byte
+
+# 第二步：看到 0xd0 / 0xc0 / 0xb5 这类字节，八成是 GBK 系
+with open("old.txt", encoding="gbk") as f:
+    print(f.read())
+
+# 第三步：还是不行，用 backslashreplace 看看到底是什么字节
+with open("old.txt", encoding="utf-8", errors="backslashreplace") as f:
+    print(f.read()[:200])</code></pre>
+
+    <p><strong>坑 3：utf-8-sig 与 BOM</strong></p>
+    <pre><code>import csv
+
+# ❌ 用 utf-8 读 Excel 另存的 CSV：不报错，但列名多了个看不见的 \ufeff
+with open("export.csv", encoding="utf-8", newline="") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(list(row.keys()))
+        break
+# 输出：['\ufeff标题', '日期', '记者']   ← 注意第一个！
+
+# ✅ 用 utf-8-sig：自动跳过 BOM，有 BOM 无 BOM 都能读
+with open("export.csv", encoding="utf-8-sig", newline="") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(list(row.keys()))
+        break
+# 输出：['标题', '日期', '记者']</code></pre>
+
+    <p><strong>坑 4：CSV 的 newline 与写文件</strong></p>
+    <pre><code>import csv
+
+rows = [
+    ["标题", "日期", "记者"],
+    ["某市启动老旧小区改造", "2026-03-01", "李明"],
+    ["垃圾分类新规实施首月观察", "2026-03-02", "王芳"],
+]
+
+# ❌ 没有 newline=""：Windows 上写出的文件带 \r\r\n，Excel 打开有空行
+with open("out1.csv", "w", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerows(rows)
+
+# ✅ 读和写都要 newline=""；写的时候用 utf-8-sig 让 Excel 认得
+with open("out2.csv", "w", encoding="utf-8-sig", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerows(rows)
+
+# 读回来验证
+with open("out2.csv", encoding="utf-8-sig", newline="") as f:
+    for row in csv.reader(f):
+        print(row)</code></pre>
+
+    <p><strong>坑 5：'w' 会清空文件</strong></p>
+    <pre><code># ❌ 想追加一条新闻，结果把原来 1000 条全删了
+with open("news.txt", "w", encoding="utf-8") as f:
+    f.write("新的一条\n")
+
+# ✅ 追加用 "a"
+with open("news.txt", "a", encoding="utf-8") as f:
+    f.write("新的一条\n")</code></pre>
+
+    <p><strong>坑 6：文件指针位置</strong></p>
+    <pre><code>with open("news.txt", "r", encoding="utf-8") as f:
+    first = f.read(10)     # 读 10 个字符，指针走到第 10 个
+    print(f.tell())        # 10
+    rest = f.read()        # 从第 10 个往后读，不是从头
+    f.seek(0)              # 手动回到开头
+    again = f.read(10)     # 又是前 10 个字符
+    print(first == again)  # True</code></pre>
+
+    <p><strong>坑 7：读大文件</strong></p>
+    <pre><code># ❌ 内存暴增
+# with open("2gb.txt", encoding="utf-8") as f:
+#     all_text = f.read()
+
+# ✅ 逐行迭代，内存恒定
+count = 0
+with open("big.txt", encoding="utf-8") as f:
+    for line in f:
+        if "人工智能" in line:
+            count += 1
+print(count)</code></pre>
+
+    <p><strong>坑 8：二进制模式</strong></p>
+    <pre><code># ❌ 图片用文本模式打开必然报错
+# with open("photo.jpg", "r", encoding="utf-8") as f:
+#     data = f.read()   # UnicodeDecodeError
+
+# ✅ 二进制模式，读到的是 bytes
+with open("photo.jpg", "rb") as f:
+    data = f.read()
+print(type(data), len(data))   # &lt;class 'bytes'&gt; 后面的数字是字节数</code></pre>
+  </section>
+
+  <section id="s5">
+    <h2>5. 应用场景（新闻传播学）</h2>
+
+    <h3>场景一：把宣传部发来的 CSV 读进来，做一份简单的选题线索表</h3>
+    <p>
+      现实情况：宣传部或市政热线给你一个 CSV，可能是 Excel 另存的，也可能是老系统导出的。
+      你要做的第一件事不是分析，而是<strong>把它稳稳地读进来</strong>——这一步做不对，后面全是白干。
+    </p>
+    <pre><code>import csv
+
+def read_clue_table(path):
+    """读进来的第一步：探编码 + 读成字典列表。"""
+    for enc in ("utf-8-sig", "utf-8", "gbk", "gb18030"):
+        try:
+            with open(path, encoding=enc, newline="") as f:
+                rows = list(csv.DictReader(f))
+            print(f"[成功] 用 {enc} 读入 {len(rows)} 条")
+            return rows
+        except UnicodeDecodeError:
+            print(f"[重试] {enc} 不行，换下一个")
+    raise RuntimeError("四种编码都试过了，请用记事本另存为 UTF-8")
+
+clues = read_clue_table("热线线索.csv")
+
+# 读进来之后，检查列名有没有 BOM 残留
+if clues:
+    print("列名：", list(clues[0].keys()))
+
+# 统计各街道的线索条数
+from collections import Counter
+street_counts = Counter(r["所属街道"] for r in clues if r.get("所属街道"))
+for street, n in street_counts.most_common(5):
+    print(f"{street}: {n} 条")</code></pre>
+    <p>这段代码里有三个值得留意的地方：</p>
+    <ul>
+      <li><strong>按顺序试编码</strong>：<code>utf-8-sig</code> 放第一个，因为它能兼容有 BOM 和无 BOM 两种情况，命中率最高。</li>
+      <li><strong><code>newline=""</code></strong>：<code>csv.reader</code> 的行，不能省。</li>
+      <li><strong>只用 <code>row.get()</code> 读列</strong>：某个街道列恰好是空的，直接用 <code>r["所属街道"]</code> 会 <code>KeyError</code>；用 <code>.get()</code> 更稳。</li>
+    </ul>
+
+    <h3>场景二：把舆情统计结果写成一份「Excel 打开不乱码」的报送文件</h3>
+    <p>
+      你要给领导交一份统计表。领导肯定会双击打开看——所以你的任务不是「写对 CSV」，
+      而是「写出一份<strong>双击打开不乱码</strong>的 CSV」。
+    </p>
+    <pre><code>import csv
+from collections import Counter
+
+# 假设 comments = [{"平台": "微博", "情感": "正面"}, ...]
+comments = [
+    {"平台": "微博", "情感": "正面"},
+    {"平台": "微博", "情感": "负面"},
+    {"平台": "抖音", "情感": "正面"},
+    {"平台": "抖音", "情感": "正面"},
+    {"平台": "微信", "情感": "中性"},
+]
+
+# 1) 先算出要报送的统计结果
+total = len(comments)
+counts = Counter((r["平台"], r["情感"]) for r in comments)
+
+# 2) 写出文件：注意 utf-8-sig + newline=""
+fieldnames = ["平台", "情感", "条数", "占比"]
+with open("舆情日报_20260917.csv", "w", encoding="utf-8-sig", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    writer.writeheader()
+    for (platform, sentiment), n in sorted(counts.items()):
+        writer.writerow({
+            "平台": platform,
+            "情感": sentiment,
+            "条数": n,
+            "占比": f"{n / total:.1%}",     # 1.2% 这种格式
+        })
+
+print("已写出，双击用 Excel 打开验证是否乱码")</code></pre>
+    <p>关键在这两处：</p>
+    <ul>
+      <li><code>encoding="utf-8-sig"</code>：给 Excel 一个明确的 UTF-8 信号，乱码问题基本消失。</li>
+      <li><code>newline=""</code>：Windows 上不加，Excel 打开会看到「每两行数据之间夹一个空行」。</li>
+    </ul>
+    <p>
+      最后一步永远是：<strong>自己双击打开看一眼</strong>。这不是多余的，是交付前的必要动作。
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2>6. 概念辨析</h2>
+
+    <h3>辨析 1：<code>open()</code> 不写 encoding vs 写 encoding</h3>
+    <pre><code># ❌ 不写 encoding：平台相关，Windows 中文系统默认 GBK
+with open("data.txt") as f:
+    text = f.read()
+
+# ✅ 显式指定：跨平台一致
+with open("data.txt", encoding="utf-8") as f:
+    text = f.read()</code></pre>
+    <p>
+      官方在 <code>io</code> 文档里的原话是「强烈建议你在打开文本文件时显式地指定编码格式」。
+      不写的代码在你自己电脑上能跑，在别人电脑上可能就报 <code>UnicodeDecodeError</code>。
+      这不是风格偏好，是<strong>可移植性要求</strong>。
+    </p>
+
+    <h3>辨析 2：<code>utf-8</code> vs <code>utf-8-sig</code></h3>
+    <pre><code>import csv
+# 假设 export.csv 是 Excel「另存为 CSV UTF-8」导出的，带 BOM
+
+# ❌ utf-8：不报错，但列名第一个字符是 \ufeff
+with open("export.csv", encoding="utf-8", newline="") as f:
+    print(list(next(csv.DictReader(f)).keys()))
+# ['\ufeff标题', '日期']
+
+# ✅ utf-8-sig：自动跳过 BOM
+with open("export.csv", encoding="utf-8-sig", newline="") as f:
+    print(list(next(csv.DictReader(f)).keys()))
+# ['标题', '日期']</code></pre>
+    <p>
+      记忆点：<code>utf-8-sig</code> = <code>utf-8</code> + 「写的时候加 BOM，读的时候跳过 BOM」。
+      <strong>读别人的文件用 <code>utf-8-sig</code> 更稳；写 CSV 给 Excel 看也用 <code>utf-8-sig</code>；
+      写 JSON、代码、给程序读的文件用纯 <code>utf-8</code>。</strong>
+    </p>
+
+    <h3>辨析 3：<code>errors="ignore"</code> vs 「找到正确编码」</h3>
+    <pre><code># ❌ 用 ignore 让报错消失，但数据被静默丢掉，而且你永远不知道丢了什么
+with open("old.txt", encoding="utf-8", errors="ignore") as f:
+    text = f.read()      # 不报错，但有些字变成了空气
+
+# ✅ 先搞清楚它是什么编码，再正确读取
+with open("old.txt", encoding="gbk") as f:
+    text = f.read()</code></pre>
+    <p>
+      <code>errors="ignore"</code> 最大的问题是<strong>它让错误变得不可见</strong>。
+      你以为读进来了 1000 条数据，其实有 30 条里的字被悄悄删了——做舆情统计时，这就是数据失真。
+      只在「我只是想大概看一眼这是什么文件」时才允许用。
+    </p>
+
+    <h3>辨析 4：<code>with</code> vs 手动 <code>close()</code></h3>
+    <pre><code># ❌ 手动关：中间一抛异常，close 就永远执行不到
+f = open("news.txt", encoding="utf-8")
+data = f.read()
+x = 1 / 0          # 抛 ZeroDivisionError
+f.close()          # 永远到不了这一行
+
+# ✅ with：异常时也保证关闭
+with open("news.txt", encoding="utf-8") as f:
+    data = f.read()
+    x = 1 / 0      # 抛异常，但文件一定被关了</code></pre>
+    <p>
+      只有当文件对象的生命周期跨函数、无法用 <code>with</code> 包住时才考虑手动管理。
+      日常写脚本，<code>with</code> 是唯一正解。
+    </p>
+
+    <h3>辨析 5：文本模式 <code>"r"</code> vs 二进制模式 <code>"rb"</code></h3>
+    <pre><code># 文本模式：读到 str，会自动做编码转换和换行符转换
+with open("news.txt", "r", encoding="utf-8") as f:
+    print(type(f.read()))     # &lt;class 'str'&gt;
+
+# 二进制模式：读到 bytes，不做任何转换
+with open("news.txt", "rb") as f:
+    b = f.read()
+    print(type(b))            # &lt;class 'bytes'&gt;
+    print(b[:20])             # b'\xe6\x9f\x90\xe5\xb8\x82...'</code></pre>
+    <p>
+      判据很简单：<strong>这份文件里有「文字」吗？有就用文本模式；没有（图片、音频、视频、压缩包）就用二进制模式。</strong>
+      另外官方提到文本 I/O 比二进制 I/O 慢很多，如果你在做大规模的数据处理且不需要解码，可以考虑二进制模式。
+    </p>
+
+    <h3>辨析 6：<code>w</code> vs <code>a</code></h3>
+    <pre><code># "w"：清空原内容，从头写
+with open("log.txt", "w", encoding="utf-8") as f:
+    f.write("今天第一条\n")
+# 文件内容：今天第一条
+
+# "a"：在原内容末尾追加
+with open("log.txt", "a", encoding="utf-8") as f:
+    f.write("今天第二条\n")
+# 文件内容：今天第一条 / 今天第二条</code></pre>
+    <p>
+      做每日抓取日志、增量收集数据时，一律用 <code>"a"</code>。
+      用 <code>"w"</code> 跑一次循环，昨天抓的数据就全没了——这是真实会发生的生产事故。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7. 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：</b>下面这段代码跑完，<code>data.csv</code> 里还剩几行？为什么？
+      <pre><code>with open("data.csv", "w", encoding="utf-8") as f:
+    f.write("a,b\n")</code></pre>
+      <div class="ans">
+        只剩 1 行。因为 <code>"w"</code> 模式会先<strong>清空</strong>文件原有内容再写。
+        如果你的本意是追加，应该用 <code>"a"</code>。这个坑做数据收集时最致命。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：</b>报错 <code>UnicodeDecodeError: 'utf-8' codec can't decode byte 0xd0 in position 0: invalid continuation byte</code>，你的排查顺序是什么？
+      <div class="ans">
+        ① 确认这是解码问题，不是代码逻辑问题——你的代码没写错，是文件的编码不是 UTF-8；
+        ② 尝试 <code>encoding="gbk"</code>（<code>0xd0</code> 这种高位字节是 GBK 系的典型特征）；
+        ③ 还不行就试 <code>gb18030</code>，再不行用 <code>errors="backslashreplace"</code> 打出前几百字节看规律；
+        ④ 实在搞不定，用记事本/VSCode 打开「另存为 UTF-8」，一劳永逸。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：</b>用 <code>encoding="utf-8"</code> 读 Excel 另存的 CSV，程序没报错，但 <code>row["标题"]</code> 抛 <code>KeyError: '标题'</code>。为什么？
+      <div class="ans">
+        因为文件带 BOM。前三个字节 <code>0xef 0xbb 0xbf</code> 被当成了一个字符 <code>\ufeff</code>，
+        拼到了第一列列名前面，实际列名是 <code>'\ufeff标题'</code>。
+        它零宽不可见，所以 <code>print</code> 出来看着一模一样。
+        改用 <code>encoding="utf-8-sig"</code>，或者用 <code>print(repr(列名))</code> 亲自确认一下。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：</b>读写 CSV 时 <code>newline=''</code> 应该加在哪儿？不加会怎样？
+      <div class="ans">
+        加在 <code>open()</code> 的参数里，不是 <code>csv.reader()</code> 里。
+        不加的话：读的时候字段内的换行可能被误当成记录分隔；写的时候（Windows）会写出 <code>\r\r\n</code>，
+        用 Excel 打开会看到每行数据之间多一个空行。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：</b>同事说「你写的 CSV 用 Excel 打开是乱码」。你的代码有问题吗？怎么回应？
+      <div class="ans">
+        大概率代码没问题。你写的是正确的 UTF-8 字节，是 Excel 在猜编码，简体中文版 Excel 默认猜 GBK。
+        三种处理方式：① 写出时改用 <code>encoding="utf-8-sig"</code>，用 BOM 告诉 Excel 这是 UTF-8（最推荐）；
+        ② 直接输出 <code>.xlsx</code> 文件；③ 让对方用「数据 → 从文本/CSV 导入」并手动选 UTF-8。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：</b>为什么处理图片时 <code>open("a.jpg", encoding="utf-8")</code> 一定会失败？
+      <div class="ans">
+        因为默认是文本模式 <code>"r"</code>，Python 会尝试把文件内容按 UTF-8 规则解码成 <code>str</code>。
+        而 JPEG 里是一堆随机的二进制字节，几乎必然包含不合法的 UTF-8 序列。
+        正确做法是 <code>open("a.jpg", "rb")</code>，拿到 <code>bytes</code>，不做任何解码。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：</b>官方为什么不推荐在 UTF-8 文件里使用 BOM？但你又为什么有时候必须用 <code>utf-8-sig</code>？
+      <div class="ans">
+        官方原话是「在 UTF-8 中并不推荐使用 BOM，通常应当避免它们的出现」——
+        因为 BOM 是 Microsoft 为兼容旧软件发明的，它不是 UTF-8 标准的一部分，会给其它程序解析带来麻烦。
+        但现实是 Excel 靠这三个字节来正确识别 UTF-8 而不乱码，
+        所以「给 Excel 看的 CSV」用 <code>utf-8-sig</code>，「给程序和工具看的文件」用纯 <code>utf-8</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8. 可核查参考来源</h2>
+    <table>
+      <thead>
+        <tr><th>来源</th><th>URL</th><th>用到的内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Python 官方教程《输入与输出》7.2 读写文件</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/inputoutput.html#reading-and-writing-files">docs.python.org/zh-cn/3/tutorial/inputoutput.html#reading-and-writing-files</a></td>
+          <td><code>open()</code> 签名与 mode 说明；「因为 UTF-8 是现代事实上的标准……建议使用 <code>encoding="utf-8"</code>」；<code>with</code> 的好处与「即使出现异常也是如此」；「不调用 <code>f.close()</code> 则不能保证数据写入磁盘」；<code>ValueError: I/O operation on closed file.</code> 与 <code>f.closed</code>；<code>read(size)</code> / <code>readline()</code> / <code>f.write()</code> / <code>tell()</code> / <code>seek()</code> 的说明与示例；二进制模式说明；文件对象可迭代且内存高效</td>
+        </tr>
+        <tr>
+          <td>Python 标准库 <code>csv</code> 模块</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/csv.html">docs.python.org/zh-cn/3/library/csv.html</a></td>
+          <td>「如果 <code>csvfile</code> 是一个文件对象，则打开它时应设置 <code>newline=''</code>」（<code>reader</code> 与 <code>writer</code> 两处）；<code>reader</code>/<code>writer</code>/<code>DictReader</code>/<code>DictWriter</code> 的用法与官方示例；dialect 与 fmtparams；<code>QUOTE_*</code> 常量；<code>csv.Error</code></td>
+        </tr>
+        <tr>
+          <td>Python 标准库 <code>codecs</code> 模块</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/codecs.html">docs.python.org/zh-cn/3/library/codecs.html</a></td>
+          <td>错误处理方案表（<code>strict</code> / <code>ignore</code> / <code>replace</code> / <code>backslashreplace</code> / <code>surrogateescape</code> / <code>xmlcharrefreplace</code> / <code>namereplace</code>）；<code>encodings.utf_8_sig</code> 关于 BOM 的完整原文（含 <code>0xef</code>, <code>0xbb</code>, <code>0xbf</code> 与「在 UTF-8 中并不推荐使用 BOM」）；<code>gb2312</code> 别名说明；<code>UnicodeEncodeError</code> 示例</td>
+        </tr>
+        <tr>
+          <td>Python 标准库 <code>io</code> 模块</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/io.html">docs.python.org/zh-cn/3/library/io.html</a></td>
+          <td>「文本 I/O 的默认编码依赖于平台……为此，强烈建议你在打开文本文件时显式地指定编码格式」；Windows locale 与 UTF-8 的差异示例；<code>EncodingWarning</code> 与 <code>-X warn_default_encoding</code>；<code>TextIOWrapper</code> 的 <code>newline</code> 参数语义；<code>errors</code> 参数；<code>StringIO</code>；文本 I/O 慢于二进制 I/O 的说明</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      以上 4 条来源在撰写前均已通过 WebFetch 实际抓取页面内容，页面均返回成功。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9. 核查记录</h2>
+    <table>
+      <thead>
+        <tr><th>核查项</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>4 条来源 URL 可访问性</td><td>✅ 已核</td><td>撰写前均实际抓取成功</td></tr>
+        <tr><td><code>open()</code> 签名与 mode 说明</td><td>✅ 已核</td><td>来自《输入与输出》7.2.1 节</td></tr>
+        <tr><td>「强烈建议显式指定编码」</td><td>✅ 已核（直接引用）</td><td>来自 <code>io</code> 模块文档文本 I/O 节</td></tr>
+        <tr><td>「UTF-8 是现代事实上的标准」</td><td>✅ 已核（直接引用）</td><td>来自《输入与输出》7.2.1 节</td></tr>
+        <tr><td>「不调用 <code>f.close()</code> 不能保证写入磁盘」</td><td>✅ 已核（直接引用）</td><td>来自《输入与输出》7.2.1 节</td></tr>
+        <tr><td>CSV <code>newline=''</code> 官方要求</td><td>✅ 已核（直接引用）</td><td><code>reader</code> 与 <code>writer</code> 两处均有，措辞一致</td></tr>
+        <tr><td>utf-8-sig 与 BOM 的官方说明</td><td>✅ 已核（直接引用）</td><td>来自 <code>codecs</code> 文档 <code>encodings.utf_8_sig</code> 节，含字节序列与「不推荐使用 BOM」</td></tr>
+        <tr><td><code>errors</code> 各取值的官方含义</td><td>✅ 已核</td><td>来自 <code>codecs</code> 文档错误处理方案表</td></tr>
+        <tr><td><code>TextIOWrapper</code> 的 <code>newline</code> 参数语义</td><td>✅ 已核</td><td>来自 <code>io</code> 文档；四种取值的含义已在该节列出</td></tr>
+        <tr><td>「文本 I/O 慢于二进制 I/O」</td><td>✅ 已核</td><td>来自 <code>io</code> 文档的分层说明</td></tr>
+        <tr><td><code>gbk</code> / <code>gb18030</code> / <code>big5</code> 的推荐使用场景</td><td>⚠ 部分核</td><td><code>codecs</code> 文档列出了这些编码及其别名，但「老系统导出多为 GBK」这类判断来自实践经验，非官方明文结论</td></tr>
+        <tr><td>「Excel 简体中文版默认按 GBK 猜编码」</td><td>⚠ 未能核到官方来源</td><td>这是业界广泛观察到的现象，但 Python 官方文档不涉及 Excel 行为，本节相关表述为基于经验的解释，不是官方原文</td></tr>
+        <tr><td><code>UnicodeDecodeError</code> 报错的具体措辞</td><td>⚠ 部分核</td><td>文档给出了「<code>UnicodeDecodeError</code> 在解码时遇到错误会抛出」这一事实，但文中展示的报错字符串是 Python 3.12 实际运行的典型输出，未逐字对照官方文档</td></tr>
+        <tr><td>文中所有代码（第 4.9 节与第 5 节）</td><td>⚠ 未逐条实测</td><td>代码按 Python 3.12 语法与官方示例编写，逻辑已逐一检查；但本文件生成环境未实际运行这些代码，尤其是「Excel 打开是否乱码」需要你在 Windows + Excel 环境下亲自验证</td></tr>
+        <tr><td><code>open("news.txt")</code> 无 encoding 时的行为</td><td>✅ 已核</td><td>由 <code>io</code> 文档「默认编码依赖于平台（即 <code>locale.getencoding()</code> 的返回值）」支撑</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      诚实说明：本文件的编码部分（尤其第 4.4、4.5、4.7 节）大量依赖官方文档的直接引用，这些引用均已实际抓取原文核对。
+      但关于 <strong>Excel 具体行为</strong>（怎么猜编码、双击打开 CSV 走什么路径）的部分，Python 官方文档不涉及，
+      属于基于实践的推断，请以你在本机 Excel 上的实际测试为准。
+      另外文中所有代码建议你在本机跑一遍——尤其是第 5 节的场景代码。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <a href="index.html">概念目录</a> ·
+      <a href="python-learning-map.html">学习地图</a> ·
+      <a href="https://github.com/Yym113/big-data-ai">GitHub 仓库</a>
+    </p>
+    <p>生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

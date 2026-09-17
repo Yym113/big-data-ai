@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正则表达式 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>正则表达式</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 11 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景（新闻传播学）</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1. 个人理解（先说人话）</h2>
+    <p>
+      前面几节你处理文本，用的都是「精确匹配」：<code>if 标题 == "某市启动改造"</code>、
+      <code>if "人工智能" in 正文</code>。这些只能回答「有没有」这个问题。
+    </p>
+    <p>
+      但新闻数据里的问题往往是这样问的：
+    </p>
+    <ul>
+      <li>这 3000 条评论里，所有手机号都要打码——手机号长什么样？「1 开头、11 位数字」。</li>
+      <li>把这份稿件里所有日期统一成 <code>2026-09-17</code> 格式——日期长什么样？「四位年-两位月-两位日」，但原文里可能是「2026年9月17日」。</li>
+      <li>找出所有提到「某某区某某街道」的段落——这个「某某」是不确定的字符串。</li>
+    </ul>
+    <p>
+      <strong>正则表达式就是一门用来描述「长什么样的字符串」的迷你语言。</strong>
+      你不是在给 Python 一串具体文字，而是在给它一个<strong>模式</strong>（pattern），
+      让它自己去找所有符合这个模式的文本。
+    </p>
+    <blockquote>
+      把它想象成图书馆检索：<code>"人工智能" in 正文</code> 是「找一本书名完全叫《人工智能》的书」；
+      而正则表达式是「找所有书名<em>形如</em>《XX 与 XX》的书」——你在描述形状，不是在指定内容。
+    </blockquote>
+    <p>
+      这门语言很小，核心符号不到 20 个，但威力很大。代价是：<strong>它写出来像乱码</strong>。
+      所以本节的重点有两块：一是让你能读懂 <code>r"\d{4}-\d{2}-\d{2}"</code> 这种串，
+      二是让你知道<strong>什么时候不该用它</strong>——新手最常见的错误是用正则去解 HTML 和 JSON，
+      那会痛不欲生，因为你已经有 <code>BeautifulSoup</code> 和 <code>json</code> 了。
+    </p>
+  </section>
+
+  <section id="s2">
+    <h2>2. 学习目标</h2>
+    <p>学完这一份，你应该能做到：</p>
+    <ul>
+      <li>能说出正则表达式解决的是「模糊搜索」问题，而不是「精确匹配」问题。</li>
+      <li>能<strong>读懂</strong>并能手写这些基本元字符：<code>.</code> <code>*</code> <code>+</code> <code>?</code> <code>{m,n}</code> <code>[]</code> <code>()</code> <code>|</code> <code>^</code> <code>$</code> 和 <code>\d</code> <code>\w</code> <code>\s</code>。</li>
+      <li>能解释<strong>为什么正则表达式字符串前面必须加 <code>r</code></strong>，并说出不加会发生什么。</li>
+      <li>能区分 <code>re.search()</code> / <code>re.match()</code> / <code>re.fullmatch()</code> 的区别（这是新手第一大坑）。</li>
+      <li>能区分<strong>贪婪</strong>和<strong>非贪婪</strong>量词，能解释为什么 <code>&lt;.*&gt;</code> 会吃掉整行，而 <code>&lt;.*?&gt;</code> 不会。</li>
+      <li>能用 <code>re.findall()</code> 抽取、<code>re.sub()</code> 清洗、<code>re.split()</code> 切分，并知道用什么函数拿到分组。</li>
+      <li>能写出匹配中文的正则表达式（<code>[\u4e00-\u9fa5]</code>），并知道它为什么不是唯一的写法。</li>
+      <li>能用 <code>re.compile()</code> + <code>re.VERBOSE</code> 写出可读的长正则。</li>
+      <li>知道正则的两个主要限制：不能解析嵌套结构（如 HTML、JSON），回溯可能很慢。</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <h2>3. 核心问题清单</h2>
+    <ol>
+      <li>正则表达式是「匹配文字」还是「匹配模式」？<code>"AI"</code> 和 <code>r"A.I"</code> 有什么区别？</li>
+      <li>为什么正则字符串要写成 <code>r"..."</code>？不写会怎样？</li>
+      <li><code>re.search()</code> 和 <code>re.match()</code> 到底差在哪？为什么我的 <code>match</code> 总是返回 <code>None</code>？</li>
+      <li>匹配成功后返回的那个 <code>Match</code> 对象怎么用？怎么拿到括号里的内容？</li>
+      <li><code>[]</code> 里的字符有没有特殊含义？<code>[.]</code> 和 <code>.</code> 是一回事吗？</li>
+      <li>什么是「贪婪」？为什么 <code>&lt;.*&gt;</code> 会匹配整行？</li>
+      <li><code>.</code> 为什么匹配不到换行符？怎么让它匹配换行符？</li>
+      <li><code>^</code> 和 <code>$</code> 在什么情况下不按你想的工作？<code>re.MULTILINE</code> 做什么？</li>
+      <li><code>re.findall()</code> 什么时候返回字符串列表、什么时候返回元组列表？</li>
+      <li><code>re.sub()</code> 的第二个参数里 <code>\1</code> 和 <code>\g&lt;name&gt;</code> 是什么意思？</li>
+      <li>怎么只替换前 N 处，而不是全部替换？</li>
+      <li>怎么匹配中文？<code>[\u4e00-\u9fa5]</code> 是哪来的？它覆盖所有汉字吗？</li>
+      <li>如果用户输入的字符串要「当成普通文字」来匹配，怎么办？（<code>re.escape</code>）</li>
+      <li>为什么不能用正则解析 HTML？那该用什么？</li>
+      <li>正则写错了会怎样？报什么错？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4. 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>官方对 <code>re</code> 模块的第一句介绍：</p>
+    <blockquote>
+      本模块提供了与 Perl 语言类似的正则表达式匹配操作。
+      <br><br>
+      模式和被搜索的字符串既可以是 Unicode 字符串（<code>str</code>），也可以是 8 位字节串（<code>bytes</code>）。
+      <strong>两者不能混用</strong>：不能将 Unicode 字符串与字节串模式进行匹配，反之亦然；
+      执行替换时，替换字串的类型也必须与所用的模式和搜索字串的类型一致。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块文档开头</span>
+    </blockquote>
+    <p>
+      所以：正则表达式不是数据类型，是<strong>一种字符串的写法约定</strong>。
+      你传给 <code>re</code> 的都是字符串，只不过 <code>re</code> 会给某些字符赋予特殊含义。
+    </p>
+
+    <h3>4.2 最小模型：正则是一门「描述形状」的语言</h3>
+    <p>
+      把正则表达式想象成<strong>通缉令上的画像</strong>。通缉令不会写具体名字，它会写：
+      「身高 175 上下、戴眼镜、左眉有疤」。警方拿着这份画像去人群中找<strong>所有符合的人</strong>。
+    </p>
+    <table>
+      <thead>
+        <tr><th>通缉令措辞</th><th>正则里对应什么</th><th>例子</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>「随便什么」</td><td><code>.</code></td><td><code>a.c</code> 匹配 <code>abc</code>、<code>a2c</code>、<code>a c</code></td></tr>
+        <tr><td>「0 个或多个」</td><td><code>*</code></td><td><code>ab*</code> 匹配 <code>a</code>、<code>ab</code>、<code>abbb</code></td></tr>
+        <tr><td>「至少 1 个」</td><td><code>+</code></td><td><code>ab+</code> 匹配 <code>ab</code>、<code>abbb</code>，但<b>不</b>匹配 <code>a</code></td></tr>
+        <tr><td>「有或没有都行」</td><td><code>?</code></td><td><code>ab?</code> 匹配 <code>a</code> 或 <code>ab</code></td></tr>
+        <tr><td>「正好 4 位」</td><td><code>{4}</code></td><td><code>\d{4}</code> 匹配 <code>2026</code>，不匹配 <code>202</code></td></tr>
+        <tr><td>「2 到 4 位」</td><td><code>{2,4}</code></td><td><code>\d{2,4}</code> 匹配 <code>26</code>、<code>2026</code></td></tr>
+        <tr><td>「这几个中的一个」</td><td><code>[...]</code></td><td><code>[abc]</code> 匹配 <code>a</code> 或 <code>b</code> 或 <code>c</code></td></tr>
+        <tr><td>「这几个形状的一个」</td><td><code>|</code></td><td><code>cat|dog</code> 匹配 <code>cat</code> 或 <code>dog</code></td></tr>
+        <tr><td>「这一段要单独拿出来」</td><td><code>(...)</code></td><td><code>(\d{4})-(\d{2})</code> 能分别提取年月</td></tr>
+        <tr><td>「必须是开头」</td><td><code>^</code></td><td><code>^2026</code> 只匹配以 2026 开头的</td></tr>
+        <tr><td>「必须是结尾」</td><td><code>$</code></td><td><code>。$</code> 只匹配以句号结尾的</td></tr>
+      </tbody>
+    </table>
+    <p>
+      这个「通缉令」模型解释了一个新手常困惑的现象：
+      <strong>为什么 <code>re.search(r"A.I", "我买了个 A4I 纸")</code> 能找到东西，</strong>
+      而 <code>"A.I" in "我买了个 A4I 纸"</code> 找不到？
+      因为前者在按「形状」找（A + 任意一个字符 + I），后者在按「文字」找。
+    </p>
+
+    <h3>4.3 关键机制一：<code>r"..."</code> —— 为什么必须加这个 r</h3>
+    <p>这是新手的第一道门槛，也是官方专门用一节来讲的东西。官方原文：</p>
+    <blockquote>
+      正则表达式使用反斜杠字符（<code>'\'</code>）表示特殊形式或是允许在使用特殊字符时不引发它们的特殊含义。
+      这会与 Python 在字符串字面值中对于相同字符出于相同目的规定的用法<strong>发生冲突</strong>；
+      例如，要匹配一个反斜杠字面值，用户将必须写成 <code>'\\\\'</code>，
+      因为正则表达式必须为 <code>\\</code>，而每个反斜杠在普通 Python 字符串字面值中又必须表示为 <code>\\</code>。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块文档「原始字符串标记」节前</span>
+    </blockquote>
+    <p>官方给出的解决方案：</p>
+    <blockquote class="ok">
+      解决办法是对于正则表达式模式（patterns）使用 Python 的<strong>原始字符串表示法</strong>；
+      在带有 <code>'r'</code> 前缀的字符串字面值中，反斜杠不必做任何特殊处理。
+      因此 <code>r"\n"</code> 表示包含 <code>'\'</code> 和 <code>'n'</code> 两个字符的字符串，
+      而 <code>"\n"</code> 则表示只包含一个换行符的字符串。
+      <strong>模式在 Python 代码中通常都使用原始字符串表示法。</strong>
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块文档「原始字符串标记」节</span>
+    </blockquote>
+    <p>官方还给了两组「完全一致」的对照代码：</p>
+    <pre><code>&gt;&gt;&gt; re.match(r"\W(.)\1\W", " ff ")
+&lt;re.Match object; span=(0, 4), match=' ff '&gt;
+&gt;&gt;&gt; re.match("\\W(.)\\1\\W", " ff ")
+&lt;re.Match object; span=(0, 4), match=' ff '&gt;</code></pre>
+    <pre><code>&gt;&gt;&gt; re.match(r"\\", r"\\")
+&lt;re.Match object; span=(0, 1), match='\\'&gt;
+&gt;&gt;&gt; re.match("\\\\", r"\\")
+&lt;re.Match object; span=(0, 1), match='\\'&gt;</code></pre>
+    <p>
+      看到第二组了吗？想匹配<strong>一个反斜杠</strong>：
+    </p>
+    <ul>
+      <li>用 <code>r"\\"</code>：两个字符，一眼能数清。</li>
+      <li>用 <code>"\\\\"</code>：四个反斜杠。因为 Python 字符串层要先吃掉两个，剩下两个给正则。</li>
+    </ul>
+    <p>
+      所以规则很简单：<strong>凡是正则表达式，一律加 <code>r</code>。没有例外。</strong>
+    </p>
+    <p>官方还提到一个未来的变化，值得提前知道：</p>
+    <blockquote class="warn">
+      注意：Python 的字符串字面值中使用的反斜杠，若有任何无效转义序列将产生 <code>SyntaxWarning</code>，
+      并将在未来改为 <code>SyntaxError</code>。此行为即使对于正则表达式来说有效的转义字符同样会发生。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块文档开头</span>
+    </blockquote>
+    <p>
+      意思是：<code>"\d"</code> 这种写法现在会警告，以后会直接报错。
+      这也是「一律加 <code>r</code>」的另一个理由。
+    </p>
+
+    <h3>4.4 关键机制二：search / match / fullmatch —— 三个函数的区别</h3>
+    <p>官方对三者的定义：</p>
+    <table>
+      <thead>
+        <tr><th>函数</th><th>官方说明</th><th>记忆口诀</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>re.match(pattern, string)</code></td>
+          <td>如果 <em>string</em> <strong>开头</strong>的零个或多个字符与正则表达式 <em>pattern</em> 匹配，则返回相应的 <code>Match</code>。<br>注意即便是 <code>MULTILINE</code> 多行模式，<code>re.match()</code> 也只匹配字符串的开始位置，而不匹配每行开始。</td>
+          <td>只看开头</td>
+        </tr>
+        <tr>
+          <td><code>re.search(pattern, string)</code></td>
+          <td><strong>扫描整个</strong> <em>string</em> 查找正则表达式 <em>pattern</em> 产生匹配的第一个位置，并返回相应的 <code>Match</code>。</td>
+          <td>到处找，找第一个</td>
+        </tr>
+        <tr>
+          <td><code>re.fullmatch(pattern, string)</code></td>
+          <td>如果<strong>整个</strong> <em>string</em> 与正则表达式 <em>pattern</em> 匹配，则返回相应的 <code>Match</code>。</td>
+          <td>整串必须完全匹配</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>官方示例（<code>deque</code> 之外最值得背下来的一个）：</p>
+    <pre><code>&gt;&gt;&gt; re.match("c", "abcdef")    # 不匹配
+&gt;&gt;&gt; re.search("c", "abcdef")   # 匹配
+&lt;re.Match object; span=(2, 3), match='c'&gt;
+&gt;&gt;&gt; re.fullmatch("p.*n", "python") # 匹配
+&lt;re.Match object; span=(0, 6), match='python'&gt;
+&gt;&gt;&gt; re.fullmatch("r.*n", "python") # 不匹配</code></pre>
+    <p>官方还有一段关于「用 <code>^</code> 来限制 search」的说明：</p>
+    <pre><code>&gt;&gt;&gt; re.match("c", "abcdef")    # 不匹配
+&gt;&gt;&gt; re.search("^c", "abcdef")  # 不匹配
+&gt;&gt;&gt; re.search("^a", "abcdef")  # 匹配
+&lt;re.Match object; span=(0, 1), match='a'&gt;</code></pre>
+    <p>以及 <code>MULTILINE</code> 的影响：</p>
+    <pre><code>&gt;&gt;&gt; re.match("X", "A\nB\nX", re.MULTILINE)  # 不匹配
+&gt;&gt;&gt; re.search("^X", "A\nB\nX", re.MULTILINE)  # 匹配
+&lt;re.Match object; span=(4, 5), match='X'&gt;</code></pre>
+    <blockquote class="warn">
+      新手的经典错误：想判断「这一行是不是手机号」，写 <code>re.match(r"\d{11}", 行)</code>。
+      结果是——只要一行<strong>以 11 位数字开头</strong>就通过，哪怕后面跟着「abc」。
+      判据：<strong>要判断「整串是什么」，用 <code>fullmatch</code>；
+      要「在文本里找符合的东西」，用 <code>search</code>；<code>match</code> 只在少数「以 X 开头」的场景用。</strong>
+    </blockquote>
+
+    <h3>4.5 关键机制三：Match 对象与分组</h3>
+    <p>官方对 Match 对象的介绍：</p>
+    <blockquote>
+      匹配对象总是有一个布尔值 <code>True</code>。如果没有匹配的话 <code>match()</code> 和 <code>search()</code> 返回 <code>None</code>，
+      所以你可以简单的用 <code>if</code> 语句来判断是否匹配
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块「匹配对象」节</span>
+    </blockquote>
+    <p>所以标准写法是：</p>
+    <pre><code>m = re.search(pattern, text)
+if m:                 # 千万别写 if m == True，也不要用 try
+    process(m)</code></pre>
+    <p>关于 <code>group()</code>，官方说明：</p>
+    <blockquote>
+      返回一个或者多个匹配的子组。如果只有一个参数，结果就是一个字符串；如果有多个参数，结果就是一个元组且其中每项都对应一个参数。
+      如果没有参数，则 <em>group1</em> 默认为零（即返回整个匹配）。
+      如果 <em>groupN</em> 参数为零，则对应的返回值就是整个匹配字符串；如果是一个正整数，则为匹配对应带圆括号分组的字符串。
+      <br><br>
+      如果一个分组包含在模式的某一<strong>未匹配</strong>的部分之中，则对应的结果为 <code>None</code>。
+      如果一个分组包含在模式的某一<strong>多次匹配</strong>的部分之中，则返回最后一个匹配。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块「匹配对象」节</span>
+    </blockquote>
+    <pre><code>&gt;&gt;&gt; m = re.match(r"(\w+) (\w+)", "Isaac Newton, physicist")
+&gt;&gt;&gt; m.group(0)       # 整个匹配
+'Isaac Newton'
+&gt;&gt;&gt; m.group(1)       # 第一个圆括号标记的子分组。
+'Isaac'
+&gt;&gt;&gt; m.group(2)       # 第二个圆括号标记的子分组。
+'Newton'
+&gt;&gt;&gt; m.group(1, 2)    # 使用多个参数则返回一个元组。
+('Isaac', 'Newton')</code></pre>
+    <p>「多次匹配只返回最后一个」的例子：</p>
+    <pre><code>&gt;&gt;&gt; m = re.match(r"(..)+", "a1b2c3")  # 匹配 3 次。
+&gt;&gt;&gt; m.group(1)                        # 只返回最后一个匹配。
+'c3'</code></pre>
+    <p>常用方法速查：</p>
+    <table>
+      <thead>
+        <tr><th>方法</th><th>作用</th><th>示例</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>m.group(0)</code> 或 <code>m[0]</code></td><td>整个匹配到的字符串</td><td><code>'Isaac Newton'</code></td></tr>
+        <tr><td><code>m.group(1)</code> / <code>m[1]</code></td><td>第 1 个分组</td><td><code>'Isaac'</code></td></tr>
+        <tr><td><code>m.groups()</code></td><td>所有分组组成的元组</td><td><code>('24', '1632')</code></td></tr>
+        <tr><td><code>m.groupdict()</code></td><td>命名分组组成的字典</td><td><code>{'first_name': 'Malcolm', ...}</code></td></tr>
+        <tr><td><code>m.start()</code> / <code>m.end()</code></td><td>匹配的开始 / 结束位置</td><td>见官方 email 示例</td></tr>
+        <tr><td><code>m.span()</code></td><td><code>(start, end)</code> 元组</td><td><code>(0, 6)</code></td></tr>
+      </tbody>
+    </table>
+    <p>官方的 <code>groups()</code> 与 <code>groupdict()</code> 示例：</p>
+    <pre><code>&gt;&gt;&gt; m = re.match(r"(\d+)\.(\d+)", "24.1632")
+&gt;&gt;&gt; m.groups()
+('24', '1632')
+
+&gt;&gt;&gt; m = re.match(r"(\d+)\.?(\d+)?", "24")
+&gt;&gt;&gt; m.groups()      # 第二个分组默认为 None。
+('24', None)
+&gt;&gt;&gt; m.groups('0')   # 现在，第二个分组默认为 '0'。
+('24', '0')
+
+&gt;&gt;&gt; m = re.match(r"(?P&lt;first_name&gt;\w+) (?P&lt;last_name&gt;\w+)", "Malcolm Reynolds")
+&gt;&gt;&gt; m.groupdict()
+{'first_name': 'Malcolm', 'last_name': 'Reynolds'}</code></pre>
+    <p>官方那个很巧妙的 <code>start()</code>/<code>end()</code> 用法（可以用来「删掉文本中间某一段」）：</p>
+    <pre><code>&gt;&gt;&gt; email = "tony@tiremove_thisger.net"
+&gt;&gt;&gt; m = re.search("remove_this", email)
+&gt;&gt;&gt; email[:m.start()] + email[m.end():]
+'tony@tiger.net'</code></pre>
+
+    <h3>4.6 关键机制四：贪婪 vs 非贪婪</h3>
+    <p>这是正则里最容易写出 bug 的地方。官方原文：</p>
+    <blockquote class="warn">
+      <code>'*'</code>, <code>'+'</code> 和 <code>'?'</code> 数量限定符都是<strong>贪婪的</strong>；它们会匹配尽可能多的文本。
+      有时这种行为并不被需要；如果 RE <code>&lt;.*&gt;</code> 针对 <code>'&lt;a&gt; b &lt;c&gt;'</code> 进行匹配，
+      它将匹配整个字符串，而不只是 <code>'&lt;a&gt;'</code>。
+      <br><br>
+      在数量限定符之后添加 <code>?</code> 将使其以<strong>非贪婪</strong>或<strong>最小</strong>风格来执行匹配；
+      也就是将匹配数量尽可能<strong>少的</strong>字符。使用 RE <code>&lt;.*?&gt;</code> 将只匹配 <code>'&lt;a&gt;'</code>。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块「重复」节</span>
+    </blockquote>
+    <p>官方的另一个例子（数字范围）：</p>
+    <blockquote>
+      例如，在 6 个字符的字符串 <code>'aaaaaa'</code> 上，<code>a{3,5}</code> 将匹配 5 个 <code>'a'</code> 字符，
+      而 <code>a{3,5}?</code> 将只匹配 3 个字符。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块 <code>{m,n}?</code> 条目</span>
+    </blockquote>
+    <p>完整对照表：</p>
+    <table>
+      <thead>
+        <tr><th>类型</th><th>语法</th><th>行为</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>贪婪（默认）</td><td><code>*</code> <code>+</code> <code>?</code> <code>{m,n}</code></td><td>官方：「都是贪婪的；它们会匹配尽可能多的文本」</td></tr>
+        <tr><td>非贪婪（最小）</td><td><code>*?</code> <code>+?</code> <code>??</code> <code>{m,n}?</code></td><td>官方：「将使其以非贪婪或最小风格来执行匹配；也就是将匹配数量尽可能少的字符」</td></tr>
+        <tr><td>占有型（3.11+）</td><td><code>*+</code> <code>++</code> <code>?+</code> <code>{m,n}+</code></td><td>官方：「在之后的表达式匹配失败时不允许反向追溯」，性能优化用，初学可以不管</td></tr>
+      </tbody>
+    </table>
+    <pre><code>import re
+
+text = "&lt;a&gt; 新闻标题 &lt;/a&gt; &lt;a&gt; 另一个标题 &lt;/a&gt;"
+
+# ❌ 贪婪：.* 吃到最后一个 &gt;，整个串都被吃进第一个匹配
+re.findall(r"&lt;a&gt;.*&lt;/a&gt;", text)
+# ['&lt;a&gt; 新闻标题 &lt;/a&gt; &lt;a&gt; 另一个标题 &lt;/a&gt;']   ← 只找到 1 个，而且是整串
+
+# ✅ 非贪婪：.*? 吃到最近的 &lt;/a&gt; 就停
+re.findall(r"&lt;a&gt;.*?&lt;/a&gt;", text)
+# ['&lt;a&gt; 新闻标题 &lt;/a&gt;', '&lt;a&gt; 另一个标题 &lt;/a&gt;']   ← 找到 2 个，正确</code></pre>
+    <blockquote class="ok">
+      实用口诀：<strong>提取「一对标记之间的内容」时，一律用非贪婪 <code>.*?</code></strong>。
+      只有当 <code>.*?</code> 结果不对时，才回去考虑贪婪。
+    </blockquote>
+
+    <h3>4.7 关键机制五：字符集合与特殊序列</h3>
+    <p>官方对 <code>[]</code> 字符集合的说明（要点摘录）：</p>
+    <blockquote>
+      <ul>
+        <li>字符可以单独列出，比如 <code>[amk]</code> 匹配 <code>'a'</code>，<code>'m'</code>，或者 <code>'k'</code>。</li>
+        <li>可以表示字符范围，通过用 <code>'-'</code> 将两个字符连起来。比如 <code>[a-z]</code> 将匹配任何小写 ASCII 字符，<code>[0-5][0-9]</code> 将匹配从 <code>00</code> 到 <code>59</code> 的两位数字。<br>如果 <code>-</code> 进行了转义（比如 <code>[a\-z]</code>）或者它的位置在首位或者末尾（如 <code>[-a]</code> 或 <code>[a-]</code>），它就只表示普通字符 <code>'-'</code>。</li>
+        <li><strong>除反斜杠外的特殊字符在集合中会失去其特殊含义</strong>。例如，<code>[(+*)]</code> 将匹配字符字面值 <code>'('</code>, <code>'+'</code>, <code>'*'</code>, 或 <code>')'</code> 中的任何一个。</li>
+        <li>不在集合范围内的字符可以通过<strong>取反</strong>来进行匹配。如果集合首字符是 <code>'^'</code>，所有<strong>不</strong>在集合内的字符将会被匹配，比如 <code>[^5]</code> 将匹配所有字符，除了 <code>'5'</code>。</li>
+        <li>要在集合内匹配一个 <code>']'</code> 字面值，可以在它前面加上反斜杠，或是将它放到集合的开头。</li>
+      </ul>
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块「字符集合」节</span>
+    </blockquote>
+    <p>
+      第三点非常重要，解释了一个高频困惑：<strong><code>[.]</code> 只匹配「一个真实的点」，不是「任意字符」。</strong>
+      因为 <code>.</code> 在集合里失去了特殊含义。
+      所以「匹配文件名里的点」应该写 <code>r"\."</code>（转义）或 <code>r"[.]"</code>（放进集合）。
+    </p>
+    <p>常用特殊序列（官方定义节选）：</p>
+    <table>
+      <thead>
+        <tr><th>序列</th><th>官方说明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>\d</code></td>
+          <td>Unicode（<code>str</code>）样式：匹配任意 Unicode 十进制数码（即任何属于 Unicode 字符类别 <code>[Nd]</code> 的字符）。这包括 <code>[0-9]</code>，还包括许多其他的数码类字符。如果使用了 <code>ASCII</code> 旗标则匹配 <code>[0-9]</code>。</td>
+        </tr>
+        <tr>
+          <td><code>\w</code></td>
+          <td>Unicode（<code>str</code>）样式：匹配 Unicode 单词类字符；这包括所有 Unicode 字母数字类字符（由 <code>str.isalnum()</code> 定义），以及下划线（<code>_</code>）。如果使用了 <code>ASCII</code> 旗标则匹配 <code>[a-zA-Z0-9_]</code>。</td>
+        </tr>
+        <tr>
+          <td><code>\s</code></td>
+          <td>Unicode（<code>str</code>）样式：匹配 Unicode 空白字符（如 <code>str.isspace()</code> 所定义的）。这包括 <code>[ \t\n\r\f\v]</code>，还包括许多其他字符，例如许多语言中由排版规则约定的非中断空白字符。</td>
+        </tr>
+        <tr>
+          <td><code>\b</code></td>
+          <td>匹配空字符串，但只在单词开始或结尾的位置。一个单词被定义为一个单词字符的序列。注意在通常情况下，<code>\b</code> 被定义为 <code>\w</code> 和 <code>\W</code> 字符之间的边界（反之亦然），或是 <code>\w</code> 和字符串开始或结尾之间的边界。<br><strong>备注：</strong>在一个字符范围内，<code>\b</code> 代表退格符。</td>
+        </tr>
+        <tr>
+          <td><code>\.</code> <code>\*</code> <code>\+</code> 等</td>
+          <td>官方：转义特殊字符（允许你匹配 <code>'*'</code>, <code>'?'</code>, 或者此类其他），或者表示一个特殊序列。</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      注意 <code>\w</code> 和 <code>\d</code> 的官方定义是 <strong>Unicode 级别</strong>的，不只是 ASCII。
+      这意味着 <code>\w</code> 能匹配中文——这一点很多人不知道，也不知道它有时会带来麻烦
+      （比如你想只匹配英文单词时，<code>\w+</code> 会把中文也吃进去）。
+      这种时候要加 <code>re.ASCII</code> 旗标，或者显式写 <code>[a-zA-Z]</code>。
+    </p>
+    <p>关于 <code>.</code>（点号），官方定义：</p>
+    <blockquote>
+      在默认模式下，匹配<strong>除换行符以外的</strong>任意字符。如果指定了旗标 <code>DOTALL</code>，它将匹配包括换行符在内的任意字符。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块「特殊字符」节</span>
+    </blockquote>
+
+    <h3>4.8 关键机制六：四个最常用的函数</h3>
+    <table>
+      <thead>
+        <tr><th>函数</th><th>返回</th><th>用途</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>re.search(p, s)</code></td><td><code>Match</code> 或 <code>None</code></td><td>判断「有没有」，或取第一处</td></tr>
+        <tr><td><code>re.findall(p, s)</code></td><td>列表（字符串或元组）</td><td><strong>抽取所有</strong>符合的片段</td></tr>
+        <tr><td><code>re.sub(p, repl, s)</code></td><td>新字符串</td><td><strong>替换 / 清洗</strong></td></tr>
+        <tr><td><code>re.split(p, s)</code></td><td>列表</td><td>按复杂规则切分</td></tr>
+      </tbody>
+    </table>
+    <p><strong>findall 的返回值取决于有几个分组</strong>，这一点官方说得很清楚：</p>
+    <blockquote>
+      返回结果取决于模式中捕获组的数量。如果没有组，返回与整个模式匹配的字符串列表。
+      如果有且仅有一个组，返回与该组匹配的字符串列表。
+      如果有多个组，返回与这些组匹配的字符串元组列表。非捕获组不影响结果。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块 <code>findall</code> 条目</span>
+    </blockquote>
+    <pre><code>&gt;&gt;&gt; re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
+['foot', 'fell', 'fastest']
+&gt;&gt;&gt; re.findall(r'(\w+)=(\d+)', 'set width=20 and height=10')
+[('width', '20'), ('height', '10')]</code></pre>
+    <p><strong>sub 的官方说明</strong>：</p>
+    <blockquote>
+      返回通过使用 <em>repl</em> 替换在 <em>string</em> 最左边非重叠出现的 <em>pattern</em> 而获得的字符串。如果样式没有找到，则不加改变地返回 <em>string</em>。
+      <em>repl</em> 可以是字符串或函数；如为字符串，则其中任何反斜杠转义序列都会被处理。
+      <br><br>
+      向后引用像是 <code>\6</code> 会用样式中第 6 组所匹配到的子字符串来替换。
+      <br><br>
+      可选参数 <em>count</em> 是要替换的模式的最大出现次数；<em>count</em> 必须是一个非负整数。如果省略或为零，则将全部替换。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块 <code>sub</code> 条目</span>
+    </blockquote>
+    <pre><code>&gt;&gt;&gt; def dashrepl(matchobj):
+...     if matchobj.group(0) == '-': return ' '
+...     else: return '-'
+...
+&gt;&gt;&gt; re.sub('-{1,2}', dashrepl, 'pro----gram-files')
+'pro--gram files'
+&gt;&gt;&gt; re.sub(r'\sAND\s', ' &amp; ', 'Baked Beans And Spam', flags=re.IGNORECASE)
+'Baked Beans &amp; Spam'</code></pre>
+    <p>官方还提到一个容易踩的细节：</p>
+    <blockquote class="warn">
+      相邻的空匹配没有可能，但一个空匹配可以在一个非空匹配之后立即发生。
+      因此，<code>sub('x*', '-', 'abxd')</code> 将返回 <code>'-a-b--d-'</code> 而不是 <code>'-a-b-d-'</code>。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块 <code>sub</code> 条目</span>
+    </blockquote>
+    <p>
+      这说明：当你的模式可以匹配空字符串（比如 <code>x*</code>、<code>\d*</code>）时，
+      <code>sub</code> 会在每个位置都插一次替换文本，结果会多于预期。
+      <strong>写 <code>sub</code> 时尽量用 <code>+</code> 而不是 <code>*</code>。</strong>
+    </p>
+    <p><strong>split 的官方示例</strong>：</p>
+    <pre><code>&gt;&gt;&gt; re.split(r'\W+', 'Words, words, words.')
+['Words', 'words', 'words', '']
+&gt;&gt;&gt; re.split(r'(\W+)', 'Words, words, words.')
+['Words', ', ', 'words', ', ', 'words', '.', '']
+&gt;&gt;&gt; re.split(r'\W+', 'Words, words, words.', maxsplit=1)
+['Words', 'words, words.']
+&gt;&gt;&gt; re.split('[a-f]+', '0a3B9', flags=re.IGNORECASE)
+['0', '3', '9']</code></pre>
+    <p>注意第二行：<strong>如果分隔符里有捕获括号，分隔符本身也会留在结果里</strong>。这常被用来「保留分隔符」。</p>
+
+    <h3>4.9 关键机制七：compile、旗标与 VERBOSE</h3>
+    <p>官方对 <code>re.compile()</code> 的说明：</p>
+    <blockquote>
+      将正则表达式模式编译为一个正则表达式对象，可以被用于通过这个对象的方法 <code>match()</code>, <code>search()</code> 以及如下所述的其他方法进行匹配。
+      <br><br>
+      如果需要多次使用这个正则表达式的话，使用 <code>re.compile()</code> 和保存这个正则对象以便复用，可以让程序更加高效。
+      <br><br>
+      <strong>备注</strong>：通过 <code>re.compile()</code> 编译后的样式，和模块级的函数会被缓存，所以少数的正则表达式使用无需考虑编译的问题。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块 <code>compile</code> 条目</span>
+    </blockquote>
+    <p>常用旗标：</p>
+    <table>
+      <thead>
+        <tr><th>旗标</th><th>官方说明</th><th>内联写法</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>re.IGNORECASE</code> / <code>re.I</code></td>
+          <td>执行忽略大小写的匹配；<code>[A-Z]</code> 这样的表达式也将匹配小写字母。完全的 Unicode 匹配（如 <code>Ü</code> 将匹配 <code>ü</code>）同样适用。</td>
+          <td><code>(?i)</code></td>
+        </tr>
+        <tr>
+          <td><code>re.MULTILINE</code> / <code>re.M</code></td>
+          <td>在指定之后，模式字符 <code>'^'</code> 将匹配字符串的开始和每一行的开头（紧随在换行符之后）；而模式字符 <code>'$'</code> 将匹配字符串的末尾和每一行的末尾（紧接在换行符之前）。</td>
+          <td><code>(?m)</code></td>
+        </tr>
+        <tr>
+          <td><code>re.DOTALL</code> / <code>re.S</code></td>
+          <td>使 <code>'.'</code> 特殊字符匹配任意字符，包括换行符；如果没有这个旗标，<code>'.'</code> 将匹配<em>除去</em>换行符以外的任意字符。</td>
+          <td><code>(?s)</code></td>
+        </tr>
+        <tr>
+          <td><code>re.VERBOSE</code> / <code>re.X</code></td>
+          <td>允许你通过在视觉上分隔表达式的逻辑段落和添加注释来编写更为友好并更具可读性的正则表达式。表达式中的空白符会被忽略，除非是在字符类中，或前面有一个未转义的反斜杠……当一个行内包含不在字符类中并且前面没有未转义反斜杠的 <code>#</code> 时，则从最左边的此 <code>#</code> 直至行尾的所有字符都会被忽略。</td>
+          <td><code>(?x)</code></td>
+        </tr>
+        <tr>
+          <td><code>re.ASCII</code> / <code>re.A</code></td>
+          <td>使 <code>\w</code>, <code>\W</code>, <code>\b</code>, <code>\B</code>, <code>\d</code>, <code>\D</code>, <code>\s</code> 和 <code>\S</code> 执行仅限 ASCII 匹配而不是完整的 Unicode 匹配。</td>
+          <td><code>(?a)</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>官方给的 <code>VERBOSE</code> 示例——这是让长正则变得可读的关键技巧：</p>
+    <pre><code>a = re.compile(r"""\d +  # 整数部分
+                   \.    # 小数点
+                   \d *  # 几个小数位""", re.X)
+b = re.compile(r"\d+\.\d*")
+# a 和 b 等价，但 a 看得懂</code></pre>
+    <p>旗标可以组合：</p>
+    <pre><code>pattern = re.compile(r"^来源：(.+)$", re.MULTILINE | re.IGNORECASE)</code></pre>
+    <p>还有个很实用但常被忽略的函数 <code>re.escape()</code>：</p>
+    <blockquote>
+      转义 <em>pattern</em> 中的特殊字符。如果你想对任意可能包含正则表达式元字符的文本字符串进行匹配，它就是有用的。
+      <span class="meta">——引自 Python 标准库 <code>re</code> 模块 <code>escape</code> 条目</span>
+    </blockquote>
+    <pre><code>&gt;&gt;&gt; print(re.escape('https://www.python.org'))
+https://www\.python\.org</code></pre>
+
+    <h3>4.10 关键机制八：中文匹配</h3>
+    <p>
+      Python 官方文档没有专门给出「怎么匹配中文」的条目（因为中文只是 Unicode 的一个区块）。
+      实践中最常用的写法是：
+    </p>
+    <pre><code>import re
+
+# 匹配汉字：[\u4e00-\u9fa5] 是最常见的写法
+re.findall(r"[\u4e00-\u9fa5]+", "Hello 世界，Python 编程")
+# ['世界', '编程']
+
+# 更严谨的写法：用 Unicode 属性（需要第三方 regex 模块，或用 unicodedata 过滤）
+# 标准库 re 不支持 \p{Han}，这一点和 Perl / Java 不同</code></pre>
+    <p>关于 <code>[\u4e00-\u9fa5]</code> 要诚实说清三件事：</p>
+    <ol>
+      <li><code>\uXXXX</code> 是 Unicode 转义，官方在「被接受的转义序列」中列出了 <code>\u</code>；它只在 Unicode（<code>str</code>）模式中被识别。</li>
+      <li><code>\u4e00</code>–<code>\u9fa5</code> 是「基本汉字区」（CJK Unified Ideographs）的主体范围。<strong>它不包含</strong>扩展区的生僻字、也不包含扩展 A 区等。对新闻文本来说够用，但严格说不完整。</li>
+      <li>如果只是想「匹配非 ASCII 的文字」，更简单的写法是 <code>[^\x00-\x7f]+</code>；如果要覆盖所有汉字，<code>[\u4e00-\u9fff]</code> 比 <code>[\u4e00-\u9fa5]</code> 稍宽一些。</li>
+    </ol>
+    <blockquote class="warn">
+      还有一种绕开字符范围的方式：用 <code>\w</code> 加 Unicode 默认行为——因为官方说 <code>\w</code> 在 Unicode 模式下
+      「包括所有 Unicode 字母数字类字符（由 <code>str.isalnum()` 定义）」，其中就包含汉字。
+      所以 <code>\w+</code> 能匹配中文。但这会同时匹配英文和数字，
+      所以「只要中文」还是得用字符范围。
+    </blockquote>
+
+    <h3>4.11 关键机制九：什么时候不该用正则</h3>
+    <p>这一节没有官方条文，是实践共识，但非常重要：</p>
+    <table>
+      <thead>
+        <tr><th>任务</th><th>❌ 别用正则</th><th>✅ 该用什么</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>解析 HTML 页面</td><td><code>re.findall(r"&lt;a href=...", html)</code></td><td><code>BeautifulSoup</code> / <code>lxml</code></td></tr>
+        <tr><td>读写 JSON</td><td><code>re.findall(r'"标题": "(.+?)"', s)</code></td><td><code>json.loads()</code></td></tr>
+        <tr><td>读写 CSV</td><td><code>re.split(r",", line)</code></td><td><code>csv</code> 模块（能正确处理引号内的逗号）</td></tr>
+        <tr><td>判断「是不是数字」</td><td><code>re.fullmatch(r"\d+", s)</code></td><td><code>s.isdigit()</code> 或 <code>try: int(s)</code></td></tr>
+        <tr><td>判断「是不是手机号」（业务规则）</td><td>复杂的正则</td><td>先用简单正则筛长度，再用明确逻辑判断号段</td></tr>
+      </tbody>
+    </table>
+    <p>
+      核心理由有两条：一是 HTML / JSON 是<strong>嵌套结构</strong>，而正则本质上是「有限状态」的工具，
+      官方文档自己也引用了 Friedl 的书来说明它的边界；二是这些格式已经有成熟解析器，用正则等于重新发明轮子还更容易出错。
+    </p>
+
+    <h3>4.12 可运行代码：完整对错对比</h3>
+
+    <p><strong>坑 1：忘了 <code>r</code> 前缀</strong></p>
+    <pre><code>import re
+
+# ❌ 不加 r：Python 先把 \d 当成「无效转义」，或者 \n 直接变成换行符
+re.findall("\d+", "abc123")     # 会告 SyntaxWarning / DeprecationWarning
+re.findall("\bword\b", "a word b")   # \b 变成了退格符！完全匹配不到
+
+# ✅ 一律加 r
+re.findall(r"\d+", "abc123")          # ['123']
+re.findall(r"\bword\b", "a word b")   # ['word']</code></pre>
+
+    <p><strong>坑 2：match 和 search 搞混</strong></p>
+    <pre><code># ❌ 用 match 找「文本里有没有日期」：只在开头找，中间有也找不到
+re.match(r"\d{4}-\d{2}-\d{2}", "发布时间：2026-09-17")   # None！
+
+# ✅ 用 search
+re.search(r"\d{4}-\d{2}-\d{2}", "发布时间：2026-09-17")  # Match
+
+# ❌ 判断「整串是不是日期」用 match：后面有垃圾也算过
+bool(re.match(r"\d{4}-\d{2}-\d{2}", "2026-09-17 备注：xxx"))   # True，误判！
+
+# ✅ 用 fullmatch
+bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", "2026-09-17 备注：xxx"))  # False
+bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", "2026-09-17"))            # True</code></pre>
+
+    <p><strong>坑 3：贪婪导致「一锅端」</strong></p>
+    <pre><code>html = "&lt;h2&gt;标题一&lt;/h2&gt;&lt;p&gt;正文&lt;/p&gt;&lt;h2&gt;标题二&lt;/h2&gt;&lt;p&gt;正文二&lt;/p&gt;"
+
+# ❌ 贪婪：.* 从第一个 &lt;h2&gt; 一直吃到最后一个 &lt;/h2&gt;
+re.findall(r"&lt;h2&gt;.*&lt;/h2&gt;", html)
+# ['&lt;h2&gt;标题一&lt;/h2&gt;&lt;p&gt;正文&lt;/p&gt;&lt;h2&gt;标题二&lt;/h2&gt;']  ← 1 个，错的
+
+# ✅ 非贪婪：.*? 吃到最近的 &lt;/h2&gt; 就停
+re.findall(r"&lt;h2&gt;.*?&lt;/h2&gt;", html)
+# ['&lt;h2&gt;标题一&lt;/h2&gt;', '&lt;h2&gt;标题二&lt;/h2&gt;']  ← 2 个，对的
+
+# ✅ 更稳：用分组只取中间的内容
+re.findall(r"&lt;h2&gt;(.*?)&lt;/h2&gt;", html)
+# ['标题一', '标题二']  ← 直接拿到干净内容</code></pre>
+
+    <p><strong>坑 4：<code>.</code> 匹配不到换行</strong></p>
+    <pre><code>text = "第一行\n第二行"
+
+# ❌ 默认 . 不含换行符
+re.search(r"第一行.+第二行", text)      # None
+
+# ✅ 方案 A：加 DOTALL 旗标
+re.search(r"第一行.+第二行", text, re.DOTALL)   # Match
+
+# ✅ 方案 B：显式用 [\s\S]（这也是一个经典技巧）
+re.search(r"第一行[\s\S]+第二行", text)         # Match</code></pre>
+
+    <p><strong>坑 5：<code>^</code> <code>$</code> 在默认模式下只管整串</strong></p>
+    <pre><code>text = "来源：A\n来源：B\n来源：C"
+
+# ❌ 默认模式：^ 只匹配整个字符串的开头，只找到第 1 个
+re.findall(r"^来源：(.+)$", text)
+# ['A']                  ← 注意 $ 后面还有个 B？不，这里只匹配到第一个 \n 之前
+
+# ✅ 加 MULTILINE：^ 和 $ 按「行」工作
+re.findall(r"^来源：(.+)$", text, re.MULTILINE)
+# ['A', 'B', 'C']</code></pre>
+
+    <p><strong>坑 6：findall 返回的东西不是你想要的</strong></p>
+    <pre><code>s = "宽=20 高=10"
+
+# ❌ 有多个分组时，返回的是元组列表，不是字符串
+re.findall(r"(\w+)=(\d+)", s)
+# [('宽', '20'), ('高', '10')]        ← 想要的是 ['20', '10']？
+
+# ✅ 用非捕获组 (?:...) 让非目标分组不参与返回
+re.findall(r"(?:\w+)=(\d+)", s)
+# ['20', '10']                        ← 正确
+
+# ✅ 或者直接用 finditer 拿 Match 对象，自己取 group
+for m in re.finditer(r"(\w+)=(\d+)", s):
+    print(m.group(1), "→", m.group(2))
+# 宽 → 20
+# 高 → 10</code></pre>
+
+    <p><strong>坑 7：<code>sub</code> 里用 <code>\1</code> 要注意转义</strong></p>
+    <pre><code>s = "张三，男，1990年生"
+
+# ❌ 替换串用普通字符串，\1 在 Python 字符串层就有歧义
+# re.sub(r"(\d{4})年", "\1年生日", s)     # 可能出问题
+
+# ✅ 替换串也用 raw 字符串
+re.sub(r"(\d{4})年", r"生于 \1 年", s)
+# '张三，男，生于 1990 年生'
+
+# ✅ 命名组更清楚
+re.sub(r"(?P&lt;y&gt;\d{4})年", r"生于 \g&lt;y&gt; 年", s)</code></pre>
+
+    <p><strong>坑 8：用正则代替本该有的字符串方法</strong></p>
+    <pre><code>s = "  某市  启动  改造  "
+
+# ❌ 用正则做字符串方法就能做的事，又慢又难读
+re.sub(r"^\s+|\s+$", "", s)
+re.sub(r"\s+", " ", s)
+
+# ✅ 用字符串自己的方法
+s.strip()
+" ".join(s.split())
+
+# ❌ 判断前缀
+re.match(r"来源", s)
+# ✅
+s.startswith("来源")</code></pre>
+
+    <p><strong>坑 9：用户输入直接拼进正则</strong></p>
+    <pre><code>user_input = "1+1=2"      # 也可能是 "C++"、"a.b" 等
+
+# ❌ 直接拼接：+ 变成量词，. 变成通配符，结果完全不对甚至报错
+# re.search(user_input, text)
+
+# ✅ 用 re.escape 转义
+re.search(re.escape(user_input), "计算结果 1+1=2 是对的")   # Match</code></pre>
+
+    <p><strong>坑 10：正则语法错误不处理</strong></p>
+    <pre><code>import re
+
+# 正则表达式写错（比如括号不配对）会抛 re.PatternError（3.13 前叫 re.error）
+try:
+    re.compile(r"(\d+")
+except re.PatternError as e:
+    print("正则写错了：", e)
+    print("出错位置：", e.pos)
+
+# 官方对该异常的说明：
+# 「当传递给某个函数的字符串不是合法的正则表达式（例如，它可能包含不匹配的圆括号）
+#   或者当在编译或匹配期间出现其他错误时所引发的异常。
+#   如果字符串未包含对某个模式的匹配绝不会导致错误。」</code></pre>
+    <blockquote class="ok">
+      最后一句很重要：<strong>「没匹配到」永远不会报错</strong>，只会返回 <code>None</code> 或空列表。
+      报 <code>PatternError</code> 永远意味着「你的正则本身写错了」。
+    </blockquote>
+  </section>
+
+  <section id="s5">
+    <h2>5. 应用场景（新闻传播学）</h2>
+
+    <h3>场景一：评论区数据脱敏 + 联系方式提取</h3>
+    <p>
+      真实场景：你要把一批读者留言做成公开数据集，但里面有手机号、身份证号、邮箱、QQ 号。
+      合规要求是<strong>必须脱敏</strong>才能发布。同时你还想把「愿意接受采访的读者」筛出来——
+      这些人留了联系方式。这是一件事的两个方向：一个要抹掉，一个要提取。
+    </p>
+    <pre><code>import re
+
+# ---------- 1. 脱敏：把敏感信息替换成占位符 ----------
+# 手机号：1 开头，第二位 3-9，共 11 位；用 \b 保证不是更长数字的一部分
+phone_re = re.compile(r"(?&lt;!\d)1[3-9]\d{9}(?!\d)")
+
+# 身份证：18 位，最后一位可能是 X（用 17 位数字 + 校验位）
+id_re = re.compile(r"(?&lt;!\d)\d{17}[\dXx](?!\d)")
+
+# 邮箱
+email_re = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+
+# 固定电话（带区号）
+landline_re = re.compile(r"(?&lt;!\d)0\d{2,3}-\d{7,8}(?!\d)")
+
+def mask_sensitive(text):
+    text = phone_re.sub("[手机号]", text)
+    text = id_re.sub("[身份证]", text)
+    text = email_re.sub("[邮箱]", text)
+    text = landline_re.sub("[固话]", text)
+    return text
+
+message = "我住城东，电话13812345678，也可以发邮件到 reader@example.com，身份证 11010119900307123X"
+print(mask_sensitive(message))
+# 我住城东，电话[手机号]，也可以发邮件到[邮箱]，身份证 [身份证]
+
+
+# ---------- 2. 提取：找出所有联系方式，做访谈名单 ----------
+def extract_contacts(text):
+    result = {}
+    if m := phone_re.search(text):
+        result["手机号"] = m.group(0)
+    if m := email_re.search(text):
+        result["邮箱"] = m.group(0)
+    if m := landline_re.search(text):
+        result["固话"] = m.group(0)
+    return result
+
+print(extract_contacts(message))
+# {'手机号': '13812345678', '邮箱': 'reader@example.com', '固话': ...}</code></pre>
+    <p>这段代码里几个值得注意的地方：</p>
+    <ul>
+      <li><strong>用 <code>(?&lt;!\d)</code> 和 <code>(?!\d)</code> 做边界</strong>：匹配「前后都不是数字」的位置。这样才不会被「1234567890123」（13 位）的中间部分误伤。这是官方文档里的两种断言，<code>(?!...)</code> 叫否定型前视断言，<code>(?&lt;!...)</code> 叫否定型后视断言。</li>
+      <li><strong>用 <code>re.compile()</code> 预编译</strong>：因为这几个正则会反复用，官方说这样「可以让程序更加高效」。</li>
+      <li><strong>用海象运算符 <code>:=</code> 简化「匹配并取值」</strong>：<code>if m := phone_re.search(text)</code> 一行完成两件事。</li>
+      <li><strong><code>sub</code> 全部替换 vs <code>count=1</code></strong>：脱敏要全部替换（默认 <code>count=0</code> 就是全部）；如果只想替换第一处，传 <code>count=1</code>。</li>
+    </ul>
+    <p>
+      诚实提醒：手机号号段规则会变，身份证校验位有算法。生产环境里更稳的做法是
+      <strong>「简单的正则做初筛 + 明确的业务逻辑做判断」</strong>，不要把所有规则都塞进正则。
+    </p>
+
+    <h3>场景二：把杂乱的稿件日期统一成标准格式</h3>
+    <p>
+      真实场景：你收了 8 家媒体的稿子，日期写法五花八门：<code>2026年9月17日</code>、
+      <code>2026-9-17</code>、<code>2026/09/17</code>、<code>26.9.17</code> 等。
+      要做时间序列分析，必须先统一。这是正则替换的经典用法。
+    </p>
+    <pre><code>import re
+from datetime import date
+
+# 用命名的分组，把「年 月 日」分别捕获，允许分隔符是 年/月/日、-、/、.
+date_pattern = re.compile(r"""
+    (?P&lt;年&gt;\d{4})           # 4 位年
+    \s*                      # 可能有空格
+    (?:年|[-/.])             # 分隔符：年 / - / / / .
+    \s*
+    (?P&lt;月&gt;\d{1,2})          # 1-2 位月
+    \s*
+    (?:月|[-/.])
+    \s*
+    (?P&lt;日&gt;\d{1,2})          # 1-2 位日
+    \s*
+    日?                      # 末尾的「日」可选
+""", re.VERBOSE)
+
+
+def normalize_date(text):
+    """把文本里所有日期改写成 YYYY-MM-DD 格式，并返回改写后的文本与找到的日期列表。"""
+    found = []
+
+    def repl(m):
+        y, mo, d = int(m["年"]), int(m["月"]), int(m["日"])
+        try:
+            normalized = date(y, mo, d).isoformat()     # 顺手校验：9月31日会抛 ValueError
+        except ValueError:
+            found.append((m.group(0), "非法日期"))
+            return m.group(0)                     # 原样保留，但记录下来
+        found.append((m.group(0), normalized))
+        return normalized
+
+    new_text = date_pattern.sub(repl, text)
+    return new_text, found
+
+
+draft = """
+【3月15日讯】2026年9月17日，某市启动了老旧小区改造。
+相关方案早在 2026-3-1 就已公示，后来又在 2026/09/05 做过一次修订。
+补充报道时间是 2026.9.18。
+"""
+
+new_draft, records = normalize_date(draft)
+print(new_draft)
+print("--- 替换记录 ---")
+for old, new in records:
+    print(f"{old!r:20} → {new}")</code></pre>
+    <p>这段代码的技术要点：</p>
+    <ul>
+      <li><strong>用 <code>re.VERBOSE</code> 写长正则</strong>：官方说它「允许你通过在视觉上分隔表达式的逻辑段落和添加注释来编写更为友好并更具可读性的正则表达式」。上面这个正则如果挤成一行，没人看得懂。</li>
+      <li><strong>用命名分组 <code>(?P&lt;名&gt;...)</code></strong>：比 <code>\1</code>、<code>\2</code> 清楚得多，官方也说「分组所匹配到的子字符串可通过符号分组名称 name 来访问」。</li>
+      <li><strong><code>re.sub</code> 的替换参数可以是函数</strong>：官方说「如果 <em>repl</em> 是一个函数，则它会针对每次 <em>pattern</em> 的非重叠出现的情况被调用。该函数接受单个 <code>Match</code> 参数，并返回替换字符串」。用函数的好处是可以顺手做校验——<code>date(2026, 9, 31)</code> 会抛 <code>ValueError</code>，于是非法日期不会被悄悄改错。</li>
+      <li><strong>不要用正则做日期计算</strong>：格式改写用正则，日期的合法性校验和加减用 <code>datetime</code>。各司其职。</li>
+    </ul>
+    <p>
+      另外注意 <code>(?:年|[-/.])</code> 用的是<strong>非捕获组</strong>——
+      官方说它「匹配在括号内的任何正则表达式，但该分组所匹配的子字符串不能在执行匹配后被获取」。
+      这里我们不需要拿分隔符，所以用非捕获组更干净，也不会影响 <code>groupdict()</code> 的结果。
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2>6. 概念辨析</h2>
+
+    <h3>辨析 1：<code>"AI" in text</code> vs <code>re.search(r"A.I", text)</code></h3>
+    <pre><code>text = "我买了一套 A4I 打印纸"
+
+# 精确找文字
+print("AI" in text)                        # False
+print("A4I" in text)                       # True
+
+# 按形状找
+import re
+print(bool(re.search(r"A.I", text)))       # True —— . 匹配了那个 4
+print(bool(re.search(r"A\dI", text)))      # True —— \d 也匹配 4
+print(bool(re.search(r"A[A-Z]I", text)))   # False —— 4 不是字母</code></pre>
+    <p>
+      判据：<strong>你确切知道要找的文字 → 用 <code>in</code>；只知道「形状」或要提取变化的部分 → 用正则。</strong>
+      <code>in</code> 更快也更好读，能用就用它。
+    </p>
+
+    <h3>辨析 2：<code>.</code> vs <code>[.]</code> vs <code>\.</code></h3>
+    <pre><code>s = "a.c abc"
+
+re.findall(r"a.c", s)     # ['a.c', 'abc']  ← . 是通配符，两个都匹配
+re.findall(r"a[.]c", s)   # ['a.c']         ← [] 里 . 失去特殊含义
+re.findall(r"a\.c", s)    # ['a.c']         ← 转义后也是字面点</code></pre>
+    <p>
+      官方对 <code>[]</code> 里特殊字符的说明是：「<strong>除反斜杠外的特殊字符在集合中会失去其特殊含义</strong>」。
+      所以 <code>[.]</code> 和 <code>\.</code> 都可以，看个人习惯。但 <code>[.*+?()]</code> 这种写法比一串 <code>\.\*\+\?\(\)</code> 好读。
+    </p>
+
+    <h3>辨析 3：贪婪 <code>.*</code> vs 非贪婪 <code>.*?</code></h3>
+    <pre><code>s = "&lt;p&gt;甲&lt;/p&gt;&lt;p&gt;乙&lt;/p&gt;"
+
+re.findall(r"&lt;p&gt;.*&lt;/p&gt;", s)     # ['&lt;p&gt;甲&lt;/p&gt;&lt;p&gt;乙&lt;/p&gt;']   ← 贪婪，一锅端
+re.findall(r"&lt;p&gt;.*?&lt;/p&gt;", s)    # ['&lt;p&gt;甲&lt;/p&gt;', '&lt;p&gt;乙&lt;/p&gt;']  ← 非贪婪，逐个</code></pre>
+    <p>
+      官方原文：贪婪的「会匹配尽可能多的文本」，加 <code>?</code> 后「将匹配数量尽可能少的字符」。
+      <strong>结论：提取成对标记之间的内容，默认用非贪婪。</strong>
+    </p>
+
+    <h3>辨析 4：<code>re.match</code> vs <code>re.search</code> vs <code>re.fullmatch</code></h3>
+    <pre><code>s = "发布时间：2026-09-17"
+
+re.match(r"\d{4}-\d{2}-\d{2}", s)       # None    ← 只看开头
+re.search(r"\d{4}-\d{2}-\d{2}", s)      # Match   ← 到处找
+re.fullmatch(r"\d{4}-\d{2}-\d{2}", s)   # None    ← 要求整串就是日期
+
+re.fullmatch(r"\d{4}-\d{2}-\d{2}", "2026-09-17")   # Match</code></pre>
+    <p>
+      官方对 <code>match</code> 的补充说明特别值得注意：「注意即便是 <code>MULTILINE</code> 多行模式，
+      <code>re.match()</code> 也只匹配字符串的开始位置，而不匹配每行开始」。
+      所以如果你在逐行处理文本，每行单独调 <code>match</code> 是可以的；
+      但如果对整段文本调 <code>match</code> 并期望它匹配每一行，那是误解。
+    </p>
+
+    <h3>辨析 5：<code>^</code>/<code>$</code> 默认 vs 加 <code>MULTILINE</code></h3>
+    <pre><code>text = "A\nB\nC"
+
+re.findall(r"^\w$", text)                  # []            ← 默认：只能是整串「单个字符」，A\nB\nC 不是
+re.findall(r"^\w$", text, re.MULTILINE)    # ['A', 'B', 'C']  ← 按行匹配</code></pre>
+    <p>
+      官方说明：<code>MULTILINE</code> 让 <code>'^'</code> 「匹配字符串的开始和每一行的开头（紧随在换行符之后）」，
+      <code>'$'</code> 「匹配字符串的末尾和每一行的末尾（紧接在换行符之前）」。
+      <strong>逐行提取（比如提取所有以「来源：」开头的行）必须加 <code>MULTILINE</code>。</strong>
+    </p>
+
+    <h3>辨析 6：正则 vs 专用解析器</h3>
+    <pre><code>import json
+
+# ❌ 用正则解 JSON：嵌套一深就崩，转义、空格、顺序全都要考虑
+s = '{"标题": "某市改造", "来源": {"名称": "日报", "级别": "市级"}}'
+re.findall(r'"名称":\s*"(.+?)"', s)     # 这个简单例子能work，但稍微复杂就完蛋
+
+# ✅ 用 json
+data = json.loads(s)
+print(data["来源"]["名称"])             # 日报
+
+# ❌ 用正则解 HTML
+# ✅ 用 BeautifulSoup / lxml
+from html.parser import HTMLParser   # 标准库自带的最简方案</code></pre>
+    <p>
+      判断标准：<strong>数据里有「嵌套结构」或「转义规则」时，一定要用专用解析器。</strong>
+      正则擅长的是「扁平的、形状固定的文本」，比如手机号、日期、编号。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7. 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：</b>为什么正则表达式字符串前面要加 <code>r</code>？不加会有什么具体后果？
+      <div class="ans">
+        因为正则和 Python 字符串都用反斜杠做转义，会冲突。
+        官方原文：「要匹配一个反斜杠字面值，用户将必须写成 <code>'\\\\'</code>，因为正则表达式必须为 <code>\\</code>，
+        而每个反斜杠在普通 Python 字符串字面值中又必须表示为 <code>\\</code>」。
+        加 <code>r</code> 之后「反斜杠不必做任何特殊处理」，<code>r"\\"</code> 就是两个字符。
+        具体后果举例：<code>"\bword\b"</code> 里的 <code>\b</code> 会被 Python 当成退格符，导致完全匹配不到；
+        <code>"\d"</code> 会产生 <code>SyntaxWarning</code>（官方说未来会变成 <code>SyntaxError</code>）。
+        结论：<strong>凡是正则，一律加 <code>r</code>。</strong>
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：</b><code>re.match(r"\d{4}", "年份：2026")</code> 返回什么？为什么？怎么改？
+      <div class="ans">
+        返回 <code>None</code>。因为 <code>re.match()</code> 只检查字符串<strong>开头</strong>是否匹配，
+        而这里字符串以「年」字开头，不是数字。
+        官方对 <code>match</code> 的定义是「如果 <em>string</em> 开头的零个或多个字符与正则表达式 <em>pattern</em> 匹配」。
+        改成 <code>re.search(r"\d{4}", "年份：2026")</code> 就能匹配到。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：</b>下面两个表达式在 <code>"&lt;a&gt;x&lt;/a&gt;&lt;a&gt;y&lt;/a&gt;"</code> 上结果有何不同？为什么？
+      <pre><code>re.findall(r"&lt;a&gt;.*&lt;/a&gt;", s)
+re.findall(r"&lt;a&gt;.*?&lt;/a&gt;", s)</code></pre>
+      <div class="ans">
+        第一个返回 1 个元素（整个字符串），第二个返回 2 个元素。
+        因为 <code>*</code> 是<strong>贪婪</strong>的，官方说它「会匹配尽可能多的文本」，所以 <code>.*</code> 会一直吃到最后一个 <code>&lt;/a&gt;</code>。
+        加 <code>?</code> 变成<strong>非贪婪</strong>，「将匹配数量尽可能少的字符」，所以吃到最近的 <code>&lt;/a&gt;</code> 就停。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：</b><code>re.findall(r"(\w+)=(\d+)", s)</code> 和 <code>re.findall(r"(?:\w+)=(\d+)", s)</code> 的返回值有什么不同？
+      <div class="ans">
+        前者返回<strong>元组列表</strong>，如 <code>[('width', '20'), ('height', '10')]</code>；
+        后者返回<strong>字符串列表</strong>，如 <code>['20', '10']</code>。
+        官方说明：「如果有多个组，返回与这些组匹配的字符串元组列表」；「非捕获组不影响结果」。
+        <code>(?:...)</code> 是「正则括号的非捕获版本……但该分组所匹配的子字符串不能在执行匹配后被获取」。
+        只要不想要的值，就用 <code>(?:...)</code> 或 <code>finditer</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：</b>想要匹配「一行以『来源：』开头的内容」，为什么下面代码返回空列表？
+      <pre><code>text = "标题：A\n来源：某日报\n来源：通讯社"
+re.findall(r"^来源：(.+)$", text)</code></pre>
+      <div class="ans">
+        因为默认模式下 <code>^</code> 只匹配<strong>整个字符串</strong>的开头，<code>$</code> 只匹配整个字符串的末尾。
+        这里字符串开头是「标题：A」，所以匹配失败。
+        加 <code>re.MULTILINE</code> 就会让 <code>^</code> 匹配每一行的开头、<code>$</code> 匹配每一行的末尾，
+        返回 <code>['某日报', '通讯社']</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：</b>为什么 <code>re.compile(r"(\d+")</code> 会报错，而 <code>re.search(r"(\d+", "abc")</code> 不会？
+      <div class="ans">
+        这两个都会报错。官方对 <code>PatternError</code> 的说明是：
+        「当传递给某个函数的字符串不是合法的正则表达式（例如，它可能包含不匹配的圆括号）……
+        如果字符串未包含对某个模式的匹配<strong>绝不会导致错误</strong>」。
+        也就是说：<strong>「没匹配到」永远不报错（返回 <code>None</code>）；报错永远意味着「正则本身写错了」。</strong>
+        <code>(\d+</code> 缺少右括号，是语法错误，编译阶段就抛异常。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：</b>要判断「用户输入的这个字符串」在文本里出现过，为什么必须用 <code>re.escape()</code>？举个例子。
+      <div class="ans">
+        因为用户输入里可能含有正则元字符，不转义的话它们会按特殊含义解释。
+        比如用户输入 <code>"1+1=2"</code>，<code>+</code> 会被解释成「前面的字符重复 1 次以上」；
+        输入 <code>"a.b"</code>，<code>.</code> 会变成通配符；输入 <code>"C++"</code> 甚至可能让正则语义完全走样。
+        官方对 <code>re.escape</code> 的说明是：「转义 pattern 中的特殊字符。
+        如果你想对任意可能包含正则表达式元字符的文本字符串进行匹配，它就是有用的」。
+        正确写法：<code>re.search(re.escape(用户输入), 文本)</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8. 可核查参考来源</h2>
+    <table>
+      <thead>
+        <tr><th>来源</th><th>URL</th><th>用到的内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Python 标准库 <code>re</code> 模块文档</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/re.html">docs.python.org/zh-cn/3/library/re.html</a></td>
+          <td>模块开头「与 Perl 语言类似」与「str/bytes 不能混用」；原始字符串表示法与「模式在 Python 代码中通常都使用原始字符串表示法」原文，含两组 <code>r"\W(.)\1\W"</code> 对照示例；反斜杠冲突说明；「无效转义序列将产生 SyntaxWarning，未来改为 SyntaxError」；特殊字符表（<code>.</code> <code>^</code> <code>$</code> <code>*</code> <code>+</code> <code>?</code> <code>{m,n}</code> <code>[]</code> <code>|</code> <code>(...)</code>）；贪婪/非贪婪/占有型的官方定义与 <code>&lt;.*&gt;</code>、<code>a{3,5}</code> 示例；字符集合 <code>[]</code> 的五条规则（含「除反斜杠外的特殊字符在集合中会失去其特殊含义」）；特殊序列 <code>\d</code> <code>\w</code> <code>\s</code> <code>\b</code> 的 Unicode/ASCII 说明；扩展标记 <code>(?:...)</code>、<code>(?P&lt;name&gt;...)</code>、<code>(?=...)</code>、<code>(?!...)</code>、<code>(?&lt;=...)</code>、<code>(?&lt;!...)</code>；旗标表（<code>ASCII</code>/<code>IGNORECASE</code>/<code>LOCALE</code>/<code>MULTILINE</code>/<code>DOTALL</code>/<code>UNICODE</code>/<code>VERBOSE</code>）与 <code>VERBOSE</code> 官方示例；<code>compile</code> / <code>search</code> / <code>match</code> / <code>fullmatch</code> / <code>split</code> / <code>findall</code> / <code>finditer</code> / <code>sub</code> / <code>subn</code> / <code>escape</code> / <code>purge</code> 的完整说明与全部示例；<code>PatternError</code> 及其属性；<code>re.Pattern</code> 与 <code>re.Match</code> 的属性方法表与示例（含 <code>group</code> / <code>groups</code> / <code>groupdict</code> / <code>start</code> / <code>end</code> / <code>span</code>）；<code>search</code>/<code>match</code>/<code>fullmatch</code> 对比示例与 <code>MULTILINE</code> 示例；命名分组的三种引用上下文；<code>bytes</code> 模式分组名限制（3.12 变更）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      本条来源在撰写前已通过 WebFetch 实际抓取页面内容，页面返回成功。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9. 核查记录</h2>
+    <table>
+      <thead>
+        <tr><th>核查项</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>来源 URL 可访问性</td><td>✅ 已核</td><td>撰写前实际抓取成功</td></tr>
+        <tr><td><code>r"..."</code> 原始字符串的官方说明</td><td>✅ 已核（直接引用）</td><td>「原始字符串标记」节，含两组对照示例与「模式在 Python 代码中通常都使用原始字符串表示法」</td></tr>
+        <tr><td>反斜杠冲突的官方解释</td><td>✅ 已核（直接引用）</td><td>「要匹配一个反斜杠字面值，用户将必须写成 <code>'\\\\'</code>……」原文</td></tr>
+        <tr><td>无效转义将升为 SyntaxError</td><td>✅ 已核（直接引用）</td><td>模块开头「注意」段</td></tr>
+        <tr><td><code>search</code>/<code>match</code>/<code>fullmatch</code> 定义与区别</td><td>✅ 已核（直接引用）</td><td>三者条目原文 + 官方对比示例（<code>re.match("c", "abcdef")</code> 等）+ <code>MULTILINE</code> 示例</td></tr>
+        <tr><td>Match 对象的布尔值与 <code>if m:</code> 写法</td><td>✅ 已核（直接引用）</td><td>「匹配对象总是有一个布尔值 True……」原文</td></tr>
+        <tr><td><code>group()</code> 行为（含未匹配返回 None、多次匹配返回最后一个）</td><td>✅ 已核（直接引用）</td><td><code>group</code> 条目原文 + <code>(..)+</code> 示例</td></tr>
+        <tr><td><code>groups()</code> / <code>groupdict()</code> / <code>start()</code> / <code>end()</code></td><td>✅ 已核（官方示例）</td><td>均取自文档示例（含 <code>groups('0')</code> 与 email 拼接示例）</td></tr>
+        <tr><td>贪婪与非贪婪的官方定义</td><td>✅ 已核（直接引用）</td><td>「都是贪婪的；它们会匹配尽可能多的文本」与「将匹配数量尽可能少的字符」；<code>&lt;.*&gt;</code> 与 <code>a{3,5}?</code> 示例</td></tr>
+        <tr><td>占有型量词（3.11 新增）</td><td>✅ 已核</td><td>文档「在之后的表达式匹配失败时不允许反向追溯」，文中仅提及未展开</td></tr>
+        <tr><td>字符集合 <code>[]</code> 的规则</td><td>✅ 已核（直接引用）</td><td>五条要点逐条对应，含「除反斜杠外的特殊字符在集合中会失去其特殊含义」</td></tr>
+        <tr><td><code>\d</code> <code>\w</code> <code>\s</code> <code>\b</code> 的 Unicode/ASCII 语义</td><td>✅ 已核（直接引用）</td><td>特殊序列表原文；<code>\b</code> 在字符类内表示退格的「备注」也已引用</td></tr>
+        <tr><td><code>.</code> 默认不匹配换行、<code>DOTALL</code> 的作用</td><td>✅ 已核（直接引用）</td><td>特殊字符表 <code>.</code> 条目</td></tr>
+        <tr><td><code>findall</code> 返回值取决于分组数</td><td>✅ 已核（直接引用）</td><td><code>findall</code> 条目原文 + 两组官方示例</td></tr>
+        <tr><td><code>sub</code> 的 repl 可以是函数、count 参数、空匹配案例</td><td>✅ 已核（直接引用）</td><td><code>sub</code> 条目原文 + <code>dashrepl</code>、<code>\sAND\s</code>、<code>sub('x*', '-', 'abxd')</code> 示例</td></tr>
+        <tr><td><code>split</code> 保留捕获组、<code>maxsplit</code> 行为</td><td>✅ 已核（官方示例）</td><td><code>split</code> 条目四组示例；3.13 起位置参数弃用的提示也已核到，文中未展开</td></tr>
+        <tr><td><code>compile</code> 的缓存备注</td><td>✅ 已核（直接引用）</td><td>「通过 <code>re.compile()</code> 编译后的样式，和模块级的函数会被缓存」</td></tr>
+        <tr><td>旗标表（含 VERBOSE 的官方说明与示例）</td><td>✅ 已核（直接引用）</td><td>旗标表逐条对应；VERBOSE 的 <code>a</code> / <code>b</code> 对比示例为官方原文</td></tr>
+        <tr><td><code>(?:...)</code> 非捕获组定义</td><td>✅ 已核（直接引用）</td><td>扩展标记表条目</td></tr>
+        <tr><td><code>re.escape</code> 的定义与示例</td><td>✅ 已核（直接引用）</td><td><code>escape</code> 条目原文 + <code>print(re.escape('https://www.python.org'))</code> 示例；3.3/3.7 的变更说明也已核到</td></tr>
+        <tr><td><code>PatternError</code> 及其属性</td><td>✅ 已核（直接引用）</td><td>异常条目原文，含「如果字符串未包含对某个模式的匹配绝不会导致错误」；3.13 改名说明也已核到</td></tr>
+        <tr><td>前视/后视断言的定义</td><td>✅ 已核（直接引用）</td><td><code>(?=...)</code> <code>(?!...)</code> <code>(?&lt;=...)</code> <code>(?&lt;!...)</code> 条目；后视断言「内部表达式必须是固定长度」也已核到</td></tr>
+        <tr><td><code>[\u4e00-\u9fa5]</code> 匹配中文</td><td>⚠ 未能核到官方来源</td><td>官方 <code>re</code> 文档<strong>没有</strong>「如何匹配中文」的条目；<code>\uXXXX</code> 作为被接受的转义序列有官方依据（「<code>\u</code>, <code>\U</code> 和 <code>\N</code> 转义序列仅在 Unicode (str) 模式中可被识别」），但 <code>4e00</code>–<code>9fa5</code> 这个具体区间及其「不含扩展区」的结论来自 Unicode 区块表（CJK Unified Ideographs 为 U+4E00–U+9FFF），非 <code>re</code> 文档内容。文中已如实标注这一区别，并把 <code>[\u4e00-\u9fff]</code> 作为更宽的备选给出</td></tr>
+        <tr><td>标准库 <code>re</code> 不支持 <code>\p{Han}</code></td><td>⚠ 未能核到官方明文</td><td>本次来源中未见 <code>\p{...}</code> 的任何说明（文档只提到第三方 <code>regex</code> 模块「提供了附加功能和更全面的 Unicode 支持」）。文中表述为「标准库 re 不支持」属推断，使用前建议在本地实测</td></tr>
+        <tr><td>手机号 / 身份证 / 邮箱 / 固话的具体正则</td><td>⚠ 非官方</td><td>这些是实践惯例写法，不在官方文档中。文中已注明「号段规则会变」「生产环境应简单正则初筛 + 业务逻辑判断」</td></tr>
+        <tr><td>「不要用正则解析 HTML / JSON」</td><td>⚠ 非官方结论</td><td>这是工程共识。官方文档只在文末「另见」提到第三方 <code>regex</code> 模块，并引用 Friedl 的《Mastering Regular Expressions》作为进一步阅读，未直接表述「不要用正则解析 HTML」</td></tr>
+        <tr><td><code>f-string</code> 相关的 <code>SyntaxWarning</code> 细节</td><td>✅ 已核但未采用</td><td>文档 <code>SyntaxError</code> 条目提到 f-string 字段错误的 <code>args</code> 格式，与本文件主题关系不大，未写入正文</td></tr>
+        <tr><td>文中第 4.12 节与第 5 节全部代码</td><td>⚠ 未实测运行</td><td>代码按 Python 3.12+ 语法与官方示例风格编写，正则语义已逐条对照文档检查；但本文件生成环境未实际执行。第 5 节场景一的号段规则与场景二的日期正则建议你在本地用真实数据跑一遍再采用</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      诚实说明：本文件关于正则语法、<code>re</code> 模块函数行为、Match/Pattern 对象方法、旗标语义的部分，
+      全部基于 <code>re</code> 模块官方文档的实际抓取内容，引号内的句子与示例代码均可对照原文核实。
+      <br><br>
+      但有三处需要你留意：① <strong>中文匹配</strong>（<code>[\u4e00-\u9fa5]</code>）在官方 <code>re</code> 文档中没有对应条目，
+      区间范围来自 Unicode 区块标准而非 Python 文档；② 「不要用正则解析 HTML/JSON」是工程共识而非官方结论；
+      ③ 第 5 节的两个场景代码（手机号号段、日期格式）都含实践性规则，建议用真实数据实测后再用于正式工作。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <a href="index.html">概念目录</a> ·
+      <a href="python-learning-map.html">学习地图</a> ·
+      <a href="https://github.com/Yym113/big-data-ai">GitHub 仓库</a>
+    </p>
+    <p>生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NumPy 与数组计算 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>NumPy 与数组计算</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 13 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景（新闻传播学）</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1. 个人理解（先说人话）</h2>
+    <p>
+      假设你有一份 5000 条评论的阅读量数据，现在要算「平均每条多少字」。
+      用你前面学的列表，你可以这样写：
+    </p>
+    <pre><code>lengths = [12, 300, 45, ...]           # 5000 个数字
+total = 0
+for n in lengths:
+    total += n
+avg = total / len(lengths)</code></pre>
+    <p>能跑，但麻烦。NumPy 让你写成这样：</p>
+    <pre><code>import numpy as np
+lengths = np.array([12, 300, 45, ...])
+avg = lengths.mean()</code></pre>
+    <p>
+      更重要的是，你还能这样写：
+    </p>
+    <pre><code>lengths[lengths &gt; 100]    # 直接挑出所有长评论，不用写循环
+lengths * 2                # 每个数都乘 2，一行搞定
+(lengths &gt; 100).sum()      # 长评论有多少条</code></pre>
+    <p>
+      <strong>NumPy 的核心价值就一件事：把「对一堆数逐个做同样操作」这件事，从 Python 的循环里搬到 C 里去。</strong>
+      官方说法是「broadcasting provides a means of vectorizing array operations so that looping occurs in C instead of Python」——
+      循环还在，只是不在你写的代码里了，而在底层用 C 跑，快几十倍。
+    </p>
+    <blockquote>
+      想象你要给 5000 个信封逐张盖邮戳。用 Python 列表是「你亲手一个个盖」；
+      用 NumPy 是「你把整摞信封交给一台机器，机器一次盖完整摞」。
+      信封的编号规则（形状）必须整齐，机器才认——这就是为什么 NumPy 要求数组形状对齐。
+    </blockquote>
+    <p>
+      NumPy 的地位很特殊：它不是「一个可选工具」，而是整个科学计算生态的地基。
+      pandas 底层用的是 NumPy 数组，matplotlib 画图时接的是 NumPy 数组，
+      所以这一节学得扎实，下一节的 pandas 和再下一节的 matplotlib 都会轻松很多。
+    </p>
+  </section>
+
+  <section id="s2">
+    <h2>2. 学习目标</h2>
+    <p>学完这一份，你应该能做到：</p>
+    <ul>
+      <li>能说出「向量化」是什么意思，并能解释它为什么比 Python 循环快。</li>
+      <li>会用 <code>np.array()</code> 创建数组，能说出 <code>ndarray</code> 与列表的三个关键区别（同类型、定长度、支持元素级运算）。</li>
+      <li>能读懂 <code>.shape</code> / <code>.ndim</code> / <code>.dtype</code>，会用 <code>reshape</code> 和 <code>np.newaxis</code> 调整形状。</li>
+      <li>能熟练使用<strong>布尔索引</strong>（<code>lengths[lengths &gt; 100]</code>）做筛选，并知道它为什么优于循环加 if。</li>
+      <li>能说出<strong>广播</strong>的两条规则（从右往左比、相等或有一个是 1），能预判两个数组能不能相加。</li>
+      <li>能区分<strong>视图</strong>和<strong>副本</strong>，知道切片返回的是视图（改了会影响原数组）。</li>
+      <li>会用 <code>sum</code> / <code>mean</code> / <code>max</code> / <code>min</code> / <code>std</code> / <code>argmin</code> 等聚合函数，能指定 <code>axis</code>。</li>
+      <li>知道什么是内存浪费型广播，什么时候该改用循环。</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <h2>3. 核心问题清单</h2>
+    <ol>
+      <li>NumPy 数组和 Python 列表到底差在哪？为什么不能直接拿列表做数学运算？</li>
+      <li>什么是「向量化」？它快在哪？</li>
+      <li><code>np.array([1, 2, 3])</code> 和 <code>np.array([1, 2, "3"])</code> 有什么区别？</li>
+      <li><code>shape</code>、<code>ndim</code>、<code>size</code>、<code>dtype</code> 分别是什么？</li>
+      <li>一维数组的 <code>shape</code> 是 <code>(3,)</code>，为什么不是 <code>(3, 1)</code> 或 <code>(1, 3)</code>？</li>
+      <li>布尔索引是什么？<code>a[a &gt; 5]</code> 中间发生了什么？</li>
+      <li>为什么 <code>a[a &gt; 5]</code> 是「筛选」，而 <code>a * (a &gt; 5)</code> 是「保留或清零」？</li>
+      <li>广播是什么？<code>[1,2,3] + 10</code> 为什么能算？</li>
+      <li>广播的两条规则具体是什么？<code>(4,3)</code> 和 <code>(4,)</code> 能相加吗？</li>
+      <li><code>a[:, np.newaxis]</code> 的作用是什么？</li>
+      <li>切片得到的是视图还是副本？改切片会影响原数组吗？</li>
+      <li><code>reshape</code> / <code>ravel</code> 返回的是视图还是副本？</li>
+      <li>聚合函数里的 <code>axis=0</code> 和 <code>axis=1</code> 分别是什么意思？</li>
+      <li>什么时候广播反而会拖慢程序？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4. 结构化解释</h2>
+
+    <h3>4.1 定义：什么是 ndarray</h3>
+    <p>
+      NumPy 的核心只有一个对象：<code>ndarray</code>（N-dimensional array，N 维数组）。
+      它是一个「固定长度、元素同类型、带形状信息」的多维数据容器。
+    </p>
+    <p>它的三个属性你每天都会用到：</p>
+    <table>
+      <thead>
+        <tr><th>属性</th><th>含义</th><th>例子</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>a.shape</code></td><td>每一维的长度，返回元组</td><td><code>(3,)</code> / <code>(4, 3)</code></td></tr>
+        <tr><td><code>a.ndim</code></td><td>维数（就是 <code>shape</code> 的长度）</td><td><code>1</code> / <code>2</code></td></tr>
+        <tr><td><code>a.dtype</code></td><td>元素的类型</td><td><code>int64</code> / <code>float64</code> / <code>&lt;U5</code></td></tr>
+      </tbody>
+    </table>
+    <pre><code>import numpy as np
+
+a = np.array([1.0, 2.0, 3.0])
+print(a.shape, a.ndim, a.dtype)
+# (3,) 1 float64
+
+b = np.array([[1, 2, 3],
+              [4, 5, 6]])
+print(b.shape, b.ndim, b.dtype)
+# (2, 3) 2 int64</code></pre>
+    <p>
+      注意 <code>a.shape</code> 是 <code>(3,)</code> 而不是 <code>(3, 1)</code>。
+      这是一个非常重要的细节：<strong>一维数组没有任何「方向」</strong>，
+      它既不是行向量也不是列向量。它只有在参与广播时，才根据位置决定自己像不像行或列。
+      这一点是理解广播和 <code>newaxis</code> 的关键。
+    </p>
+
+    <h3>4.2 最小模型：整摞信封 vs 一叠便利贴</h3>
+    <p>把列表和 NumPy 数组想象成两种收纳方式：</p>
+    <table>
+      <thead>
+        <tr><th>现实类比</th><th>Python 列表</th><th>NumPy 数组</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>收纳方式</td><td>一叠便利贴，每张可以写不同的东西</td><td>整摞规格统一的信封，每个格子里装同类东西</td></tr>
+        <tr><td>能不能混装</td><td>能：<code>[1, "a", 3.5]</code></td><td>不能，会统一成同一种类型</td></tr>
+        <tr><td>能不能加长</td><td>能，<code>append</code> 随便加</td><td>不能，长度创建后就定了</td></tr>
+        <tr><td>统一盖章</td><td>得一张张盖（循环）</td><td>整摞一次过机器（向量化）</td></tr>
+        <tr><td>取其中一页</td><td>得到一张新的便利贴（拷贝）</td><td>得到「同一摞的一个窗口」（视图）</td></tr>
+      </tbody>
+    </table>
+    <p>
+      「规格统一」这件事有两个后果。好处是：机器（C 语言写的底层）知道每个格子多大，
+      可以用连续内存 + 指针算术飞快地处理。
+      代价是：<strong>你不能往数组里塞一个字符串和一个数字</strong>。
+    </p>
+    <pre><code># 列表：混装没问题
+lst = [1, 2, "3"]        # OK
+
+# NumPy：会强行统一类型，结果是灾难
+arr = np.array([1, 2, "3"])
+print(arr)               # ['1' '2' '3']
+print(arr.dtype)         # &lt;U21  ← 全都变成字符串了！
+print(arr.sum())         # 报错或得到奇怪结果</code></pre>
+    <blockquote class="warn">
+      这是新手最常见的坑之一：<strong>从 CSV 读进来的数字，如果某一列混了一个 <code>"暂无"</code>，
+      整列会变成字符串类型</strong>，之后所有数值计算都出错。
+      判断方法：<code>print(arr.dtype)</code>。看到 <code>&lt;U...</code> 或 <code>object</code> 就要警惕。
+    </blockquote>
+
+    <h3>4.3 关键机制一：向量化——为什么快</h3>
+    <p>
+      官方对广播价值的说明里有一句关键词：广播「provides a means of vectorizing array operations
+      so that <strong>looping occurs in C instead of Python</strong>」。
+    </p>
+    <p>对比两种写法：</p>
+    <pre><code>import numpy as np
+
+data = np.array([12.0, 300.0, 45.0, 88.0, 210.0])
+
+# ❌ Python 循环：每轮都要做一次「类型检查 + 装箱拆箱 + 方法查找」
+result_loop = []
+for x in data.tolist():
+    result_loop.append(x * 2 + 10)
+
+# ✅ 向量化：整个操作交给 C 层一次完成
+result_vectorized = data * 2 + 10
+
+print(result_vectorized)   # [ 34. 610. 100. 186. 430.]</code></pre>
+    <p>
+      快的根本原因不是「语法更短」，而是：
+    </p>
+    <ul>
+      <li><strong>内存连续</strong>：数组的数据在内存里是一整块，CPU 缓存命中率高。</li>
+      <li><strong>类型固定</strong>：不用每条都去问「这个东西是什么类型、怎么做乘法」。</li>
+      <li><strong>不创建中间对象</strong>：Python 循环里每个数字都是一个独立对象，要分配、回收；NumPy 里它们只是内存里的几个字节。</li>
+    </ul>
+    <p>
+      <strong>实践结论：见到「循环 + 对每个元素做同样运算」，就该想「能不能改成数组运算」。</strong>
+      这就是所谓的「向量化思维」——它是学 NumPy 真正要学的东西，语法只是副产品。
+    </p>
+
+    <h3>4.4 关键机制二：布尔索引（重点）</h3>
+    <p>
+      布尔索引是 NumPy 最有用、也最容易被低估的功能。它让你<strong>用一个条件直接筛出子集</strong>，不写循环。
+    </p>
+    <pre><code>import numpy as np
+
+lengths = np.array([12, 300, 45, 88, 210, 8, 500])
+
+# 第一步：比较操作产生一个布尔数组
+mask = lengths &gt; 100
+print(mask)          # [False  True False False  True False  True]
+
+# 第二步：用这个布尔数组做索引，挑出 True 位置上的元素
+print(lengths[mask])    # [300 210 500]
+
+# 通常连起来写
+print(lengths[lengths &gt; 100])   # [300 210 500]</code></pre>
+    <p>它和 for 循环写法的对比：</p>
+    <pre><code># ❌ 循环写法：啰嗦，而且容易写错
+long_comments = []
+for n in lengths:
+    if n &gt; 100:
+        long_comments.append(n)
+
+# ✅ 布尔索引
+long_comments = lengths[lengths &gt; 100]
+
+# ✅ 直接数个数（注意：True 当 1，False 当 0）
+print((lengths &gt; 100).sum())    # 3
+
+# ✅ 求长评论的平均字数
+print(lengths[lengths &gt; 100].mean())   # 336.67</code></pre>
+    <p>布尔索引还能组合条件。这里有一个必须记住的坑：</p>
+    <pre><code># ❌ 链式比较：NumPy 里会报错（ValueError: truth value of an array is ambiguous）
+lengths[100 &lt; lengths &lt; 400]        # 报错！
+
+# ❌ 用 and / or：也会报同样的错
+lengths[(lengths &gt; 100) and (lengths &lt; 400)]    # 报错！
+
+# ✅ 用 & | ~ 加括号
+lengths[(lengths &gt; 100) &amp; (lengths &lt; 400)]     # ✅
+lengths[(lengths &lt; 100) | (lengths &gt; 400)]     # ✅
+lengths[~(lengths &gt; 100)]                    # ✅ 取反
+
+# ⚠️ 括号不能省！& 的优先级比 &gt; 高
+lengths[lengths &gt; 100 &amp; lengths &lt; 400]         # 语义完全错了</code></pre>
+    <blockquote class="warn">
+      两个必须记住的点：
+      <br>① NumPy 里组合条件用 <code>&amp;</code> / <code>|</code> / <code>~</code>，<strong>不能用 <code>and</code> / <code>or</code> / <code>not</code></strong>；
+      <br>② 每个条件<strong>必须加括号</strong>。
+      <br>这两条的原因是一样的：Python 的 <code>and</code> 和 <code>&amp;</code> 优先级规则跟 NumPy 的数组语义不匹配，
+      不加括号时表达式的解析结果跟你想的完全不同。
+    </blockquote>
+    <p>还有一个非常有用的变体——用布尔数组做「保留或清零」：</p>
+    <pre><code>lengths = np.array([12, 300, 45, 88, 210])
+
+# 布尔值可以直接参与算术：True 当 1，False 当 0
+print(lengths * (lengths &gt; 100))
+# [  0 300   0   0 210]     ← 短评论被乘成 0，长评论保留
+
+print((lengths &gt; 100).sum())   # 3      长评论条数
+print((lengths &gt; 100).mean())  # 0.6    长评论占比</code></pre>
+    <p>
+      最后两行是数据新闻里天天用的：
+      <strong><code>(条件).sum()</code> 数个数，<code>(条件).mean()</code> 算占比。</strong>
+      比写循环 + 计数器清楚得多。
+    </p>
+
+    <h3>4.5 关键机制三：广播（Broadcasting）</h3>
+    <p>官方对广播的定义：</p>
+    <blockquote>
+      The term broadcasting describes how NumPy treats arrays with different shapes during arithmetic operations.
+      Subject to certain constraints, the smaller array is "broadcast" across the larger array so that they have compatible shapes.
+      Broadcasting provides a means of vectorizing array operations so that looping occurs in C instead of Python.
+      It does this without making needless copies of data and usually leads to efficient algorithm implementations.
+      There are, however, cases where broadcasting is a bad idea because it leads to inefficient use of memory that slows computation.
+      <span class="meta">——引自 NumPy 官方文档《Broadcasting》开头</span>
+    </blockquote>
+    <p>最简单的例子（官方示例）：</p>
+    <pre><code>&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; a = np.array([1.0, 2.0, 3.0])
+&gt;&gt;&gt; b = 2.0
+&gt;&gt;&gt; a * b
+array([2.,  4.,  6.])</code></pre>
+    <p>官方对这件事的解释：</p>
+    <blockquote>
+      We can think of the scalar <code>b</code> being <em>stretched</em> during the arithmetic operation into an array with the same shape as <code>a</code>.
+      The new elements in <code>b</code> are simply copies of the original scalar.
+      The stretching analogy is only conceptual. NumPy is smart enough to use the original scalar value
+      <strong>without actually making copies</strong> so that broadcasting operations are as memory and computationally efficient as possible.
+      <span class="meta">——引自 NumPy 官方文档《Broadcasting》</span>
+    </blockquote>
+    <p>这段话说清了两个重点：① 概念上可以想象成「拉伸复制」；② 实际实现上<strong>不复制</strong>，所以很快。</p>
+    <p><strong>广播的两条规则</strong>（官方原文）：</p>
+    <blockquote class="ok">
+      When operating on two arrays, NumPy compares their shapes element-wise.
+      It starts with the <strong>trailing (i.e. rightmost) dimension</strong> and works its way left.
+      Two dimensions are compatible when
+      <ol>
+        <li>they are equal, or</li>
+        <li>one of them is 1.</li>
+      </ol>
+      If these conditions are not met, a <code>ValueError: operands could not be broadcast together</code> exception is thrown,
+      indicating that the arrays have incompatible shapes.
+      <br><br>
+      Input arrays do not need to have the same <em>number</em> of dimensions.
+      The resulting array will have the same number of dimensions as the input array with the greatest number of dimensions,
+      where the <em>size</em> of each dimension is the largest size of the corresponding dimension among the input arrays.
+      <strong>Note that missing dimensions are assumed to have size one.</strong>
+      <span class="meta">——引自 NumPy 官方文档《Broadcasting》"General broadcasting rules" 节</span>
+    </blockquote>
+    <p>用大白话重说一遍：</p>
+    <ol>
+      <li><strong>右对齐</strong>：两个 shape 靠右对齐来比。</li>
+      <li><strong>短的缺位补 1</strong>：位数少的那个，左边缺的维度当成 1。</li>
+      <li><strong>每一位要么相等、要么有一个是 1</strong>。1 会向另一边「撑开」。</li>
+    </ol>
+    <p>官方给的一组例子（含能广播和不能广播的）：</p>
+    <pre><code>A      (2d array):  5 x 4
+B      (1d array):      1
+Result (2d array):  5 x 4
+
+A      (3d array):  15 x 3 x 5
+B      (3d array):  15 x 1 x 5
+Result (3d array):  15 x 3 x 5
+
+A      (3d array):  15 x 3 x 5
+B      (2d array):       3 x 5
+Result (3d array):  15 x 3 x 5
+
+A      (4d array):  8 x 1 x 6 x 1
+B      (3d array):      7 x 1 x 5
+Result (4d array):  8 x 7 x 6 x 5
+
+# 以下是不能广播的：
+A      (1d array):  3
+B      (1d array):  4      # trailing dimensions do not match
+
+A      (2d array):      2 x 1
+B      (3d array):  8 x 4 x 3   # second from last dimensions mismatched</code></pre>
+    <p>官方特意给出了那个「新手最常撞上」的失败案例：</p>
+    <pre><code>&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; a = np.array([[ 0.0,  0.0,  0.0],
+...               [10.0, 10.0, 10.0],
+...               [20.0, 20.0, 20.0],
+...               [30.0, 30.0, 30.0]])
+&gt;&gt;&gt; b = np.array([1.0, 2.0, 3.0])
+&gt;&gt;&gt; a + b
+array([[  1.,   2.,   3.],
+        [11.,  12.,  13.],
+        [21.,  22.,  23.],
+        [31.,  32.,  33.]])
+
+&gt;&gt;&gt; b = np.array([1.0, 2.0, 3.0, 4.0])
+&gt;&gt;&gt; a + b
+Traceback (most recent call last):
+ValueError: operands could not be broadcast together with shapes (4,3) (4,)</code></pre>
+    <p>
+      为什么 <code>(4,3)</code> 加 <code>(3,)</code> 可以，加 <code>(4,)</code> 就不行？右对齐看一遍就明白：
+    </p>
+    <pre><code>(4, 3)  ← a
+(   3)  ← b = [1,2,3]，右对齐后 3 对 3 ✅，它被当成「一行」，加到每一行上
+
+(4, 3)  ← a
+(   4)  ← b = [1,2,3,4]，右对齐后 4 对 3 ❌，不等也不是 1，报错</code></pre>
+    <p>
+      这也解释了那个「反直觉」的现象：
+      <strong>在 NumPy 里，一维数组默认是「一行」，不是「一列」。</strong>
+      如果你想让它当列用，需要手动加一个轴。
+    </p>
+
+    <h3>4.6 关键机制四：<code>np.newaxis</code>——手动加轴</h3>
+    <p>官方给的例子（外积）：</p>
+    <pre><code>&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; a = np.array([0.0, 10.0, 20.0, 30.0])
+&gt;&gt;&gt; b = np.array([1.0, 2.0, 3.0])
+&gt;&gt;&gt; a[:, np.newaxis] + b
+array([[ 1.,   2.,   3.],
+       [11.,  12.,  13.],
+       [21.,  22.,  23.],
+       [31.,  32.,  33.]])</code></pre>
+    <p>官方解释：</p>
+    <blockquote>
+      Here the <code>newaxis</code> index operator inserts a new axis into <code>a</code>,
+      making it a two-dimensional <code>4x1</code> array.
+      Combining the <code>4x1</code> array with <code>b</code>, which has shape <code>(3,)</code>, yields a <code>4x3</code> array.
+      <span class="meta">——引自 NumPy 官方文档《Broadcasting》</span>
+    </blockquote>
+    <p>拆开看形状变化：</p>
+    <pre><code>a.shape              # (4,)      一维
+a[:, np.newaxis].shape   # (4, 1)    变成 4 行 1 列
+b.shape              # (3,)      一维
+
+(4, 1)  ← a[:, np.newaxis]
+(   3)  ← b，右对齐
+→ 结果是 (4, 3)：1 被撑成 3，3 被撑成 4</code></pre>
+    <p>这就是「广播同时把两个数组都撑开」的例子。官方对此的图注是：
+    「In some cases, broadcasting stretches both arrays to form an output array larger than either of the initial arrays.」</p>
+    <blockquote class="ok">
+      记忆方式：<code>np.newaxis</code>（简写 <code>None</code>）就是「在这里插一个长度为 1 的新维度」。
+      <code>a[:, None]</code> 等价于 <code>a[:, np.newaxis]</code>。
+      <strong>要「按列广播」就加在末尾，要「按行广播」就加在开头。</strong>
+    </blockquote>
+
+    <h3>4.7 关键机制五：视图与副本</h3>
+    <p>
+      这是 NumPy 里最容易埋雷的机制。<strong>切片（slice）返回的是视图，不是副本。</strong>
+    </p>
+    <pre><code>import numpy as np
+
+a = np.array([1, 2, 3, 4, 5])
+
+# 切片：返回视图
+b = a[1:4]
+b[0] = 999
+print(a)      # [  1 999   3   4   5]   ← 原数组被改了！
+
+# 布尔索引：返回副本
+c = a[a &gt; 2]
+c[0] = 0
+print(a)      # 没变   ← 布尔索引是「挑出来复制」，安全</code></pre>
+    <p>用 <code>base</code> 属性可以判断一个数组是视图还是副本：</p>
+    <pre><code>a = np.array([1, 2, 3, 4, 5])
+
+b = a[1:4]
+print(b.base is a)     # True   ← b 是 a 的视图
+
+c = a[a &gt; 2]
+print(c.base is None)  # True   ← c 是副本，不依赖任何数组
+
+d = a.copy()
+print(d.base is None)  # True   ← copy() 明确产生副本
+
+e = a.reshape(5, 1)
+print(e.base is a)     # True   ← reshape 通常是视图
+
+f = a.flatten()
+print(f.base is None)  # True   ← flatten 总是副本
+
+g = a.ravel()
+print(g.base is a)     # True   ← ravel 尽量返回视图</code></pre>
+    <p>整理成表：</p>
+    <table>
+      <thead>
+        <tr><th>操作</th><th>返回</th><th>改它会影响原数组吗</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>a[1:4]</code>（切片）</td><td>视图</td><td>✅ 会</td></tr>
+        <tr><td><code>a[a &gt; 2]</code>（布尔索引）</td><td>副本</td><td>❌ 不会</td></tr>
+        <tr><td><code>a[[0, 2]]</code>（花式索引）</td><td>副本</td><td>❌ 不会</td></tr>
+        <tr><td><code>a.reshape(...)</code></td><td>通常是视图</td><td>✅ 会（内存允许时）</td></tr>
+        <tr><td><code>a.ravel()</code></td><td>尽量视图</td><td>✅ 可能</td></tr>
+        <tr><td><code>a.flatten()</code></td><td>总是副本</td><td>❌ 不会</td></tr>
+        <tr><td><code>a.copy()</code></td><td>副本</td><td>❌ 不会</td></tr>
+        <tr><td><code>a + 1</code>（算术运算）</td><td>副本</td><td>❌ 不会</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      实践判断法：<strong>不确定就 <code>print(result.base)</code>。</strong>
+      是 <code>None</code> 就是副本（安全），不是 <code>None</code> 就是视图（改了会牵连）。
+      另一个更简单的写法：<strong>只要你要修改，就先 <code>.copy()</code>。</strong>
+      <br><br>
+      另一个重要提醒：<strong>算术运算总是返回新数组，不改原数组。</strong>
+      <code>a + 1</code> 不会改 <code>a</code>，<code>a += 1</code> 才会。
+    </blockquote>
+
+    <h3>4.8 关键机制六：聚合与 axis</h3>
+    <p>
+      数组自带一批聚合方法。<code>axis</code> 参数是新手最容易搞混的地方，
+      但其实有个很好记的口诀：<strong><code>axis</code> 指的是「要被压掉的那一维」。</strong>
+    </p>
+    <pre><code>import numpy as np
+
+# 4 条评论 × 3 个指标（阅读量、评论数、转发数）
+data = np.array([[100,  10,  5],
+                 [300,  50, 20],
+                 [ 50,   2,  1],
+                 [200,  30, 15]])
+
+print(data.shape)          # (4, 3)
+
+print(data.sum())          # 全部加起来，返回标量
+print(data.sum(axis=0))    # [650 92 41]   ← 压掉「行」这一维，得到 3 个「每列的和」
+print(data.sum(axis=1))    # [115 370  53 245]  ← 压掉「列」这一维，得到 4 个「每行的和」
+
+# ✅ 最常用：每行（每条评论）的阅读量占比
+row_sums = data.sum(axis=1, keepdims=True)   # 形状 (4,1)，为了能广播
+ratios = data / row_sums                     # 广播：(4,3) / (4,1) → (4,3)
+print(ratios.round(3))</code></pre>
+    <p>常用聚合函数速查：</p>
+    <table>
+      <thead>
+        <tr><th>函数</th><th>作用</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>a.sum(axis=...)</code></td><td>求和</td><td><code>keepdims=True</code> 保留维度，便于后续广播</td></tr>
+        <tr><td><code>a.mean()</code></td><td>平均值</td><td>数据新闻里最常用</td></tr>
+        <tr><td><code>a.std()</code> / <code>a.var()</code></td><td>标准差 / 方差</td><td>做标准化时用</td></tr>
+        <tr><td><code>a.min()</code> / <code>a.max()</code></td><td>最小值 / 最大值</td><td></td></tr>
+        <tr><td><code>a.argmin()</code> / <code>a.argmax()</code></td><td>最小值 / 最大值所在的<strong>下标</strong></td><td>找「哪一条数据最极端」</td></tr>
+        <tr><td><code>a.cumsum()</code></td><td>累积和</td><td>做「累计发布量」曲线</td></tr>
+        <tr><td><code>np.median(a)</code></td><td>中位数</td><td>注意是 <code>np.</code> 开头的函数，不是方法</td></tr>
+      </tbody>
+    </table>
+    <p>官方在《Broadcasting》里给了一个用 <code>argmin</code> 的实战例子（向量量化，找最接近的类别）：</p>
+    <pre><code>&gt;&gt;&gt; from numpy import array, argmin, sqrt, sum
+&gt;&gt;&gt; observation = array([111.0, 188.0])
+&gt;&gt;&gt; codes = array([[102.0, 203.0],
+...                [132.0, 193.0],
+...                [45.0, 155.0],
+...                [57.0, 173.0]])
+&gt;&gt;&gt; diff = codes - observation    # the broadcast happens here
+&gt;&gt;&gt; dist = sqrt(sum(diff**2,axis=-1))
+&gt;&gt;&gt; argmin(dist)
+0</code></pre>
+    <p>
+      这几行其实就是「找最相似的一条」。官方用一个形状表说明了广播在哪一步发生：
+    </p>
+    <pre><code>Observation      (1d array):      2
+Codes            (2d array):  4 x 2
+Diff             (2d array):  4 x 2</code></pre>
+    <p>
+      <code>observation</code> 从 <code>(2,)</code> 被撑成 <code>(4,2)</code>，一行行去减。
+      <strong>这个「减掉一个基准行」的模式，在数据新闻里就是「和平均值比较」。</strong>
+    </p>
+
+    <h3>4.9 关键机制七：广播的代价</h3>
+    <p>
+      官方在《Broadcasting》结尾专门警告了这一点，非常重要：
+    </p>
+    <blockquote class="warn">
+      Typically, a large number of <em>observations</em>, perhaps read from a database, are compared to a set of <em>codes</em>. Consider this scenario:
+      <pre><code>Observation      (2d array):      10 x 3
+Codes            (3d array):   5 x 1 x 3
+Diff             (3d array):  5 x 10 x 3</code></pre>
+      The three-dimensional array, <code>diff</code>, is a consequence of broadcasting, not a necessity for the calculation.
+      <strong>Large data sets will generate a large intermediate array that is computationally inefficient.</strong>
+      Instead, if each observation is calculated individually using a Python loop around the code in the two-dimensional example above,
+      a much smaller array is used.
+      <br><br>
+      Broadcasting is a powerful tool for writing short and usually intuitive code that does its computations very efficiently in C.
+      However, <strong>there are cases when broadcasting uses unnecessarily large amounts of memory for a particular algorithm.
+      In these cases, it is better to write the algorithm's outer loop in Python.</strong>
+      This may also produce more readable code, as algorithms that use broadcasting tend to become more difficult to interpret
+      as the number of dimensions in the broadcast increases.
+      <span class="meta">——引自 NumPy 官方文档《Broadcasting》"A practical example" 节</span>
+    </blockquote>
+    <p>把这段翻译成可操作的建议：</p>
+    <ul>
+      <li><strong>小心「撑大」的广播</strong>：两个小数组相加得到一个巨大的中间结果，内存会爆。</li>
+      <li>具体数字：<code>(10000, 3)</code> 和 <code>(100, 1, 3)</code> 广播 → 中间结果 <code>(100, 10000, 3)</code>，
+          是 300 万个浮点数，约 24 MB。听起来还行，但如果外层是 1000 个类别，就是 240 MB。</li>
+      <li>官方给的对策很直接：<strong>「it is better to write the algorithm's outer loop in Python」</strong>——
+          外层用循环，内层用向量化，把内存峰值控制住。</li>
+      <li>还有可读性收益：「algorithms that use broadcasting tend to become more difficult to interpret as the number of dimensions in the broadcast increases」——
+          维度一多，广播出来的代码连作者自己都读不懂。</li>
+    </ul>
+    <blockquote class="ok">
+      平衡原则：<strong>内层向量化（快），外层循环（省内存、可读）。</strong>
+      不要为了追求「一行写完」而写出一个需要几十 GB 内存的表达式。
+    </blockquote>
+
+    <h3>4.10 可运行代码：完整对错对比</h3>
+
+    <p><strong>坑 1：用列表做数学运算</strong></p>
+    <pre><code>import numpy as np
+
+lengths = [12, 300, 45]
+
+# ❌ 列表相加是「拼接」
+print(lengths * 2)       # [12, 300, 45, 12, 300, 45]
+print(lengths + 10)      # TypeError: can only concatenate list (not "int") to list
+
+# ✅ 转成数组
+arr = np.array(lengths)
+print(arr * 2)           # [ 24 600  90]
+print(arr + 10)          # [ 22 310  55]</code></pre>
+
+    <p><strong>坑 2：混入非数字导致整列变字符串</strong></p>
+    <pre><code># ❌ 一个「暂无」毁掉整列
+data = np.array([100, 200, "暂无", 300])
+print(data.dtype)        # &lt;U21  ← 全变成字符串了
+# print(data.mean())     # 报错
+
+# ✅ 用 NaN 表示缺失（float 类型）
+data = np.array([100.0, 200.0, np.nan, 300.0])
+print(data.dtype)        # float64
+print(np.nanmean(data))  # 200.0  ← 专门忽略 NaN 的求平均
+
+# 注意：普通的 mean 会被 NaN 传染
+print(data.mean())       # nan</code></pre>
+
+    <p><strong>坑 3：链式比较与 and/or</strong></p>
+    <pre><code>lengths = np.array([12, 300, 45, 88, 210])
+
+# ❌ 全部报错：ValueError: The truth value of an array with more than one element is ambiguous
+# lengths[100 &lt; lengths &lt; 400]
+# lengths[(lengths &gt; 100) and (lengths &lt; 400)]
+
+# ✅ 用 & | ~，并加括号
+lengths[(lengths &gt; 100) &amp; (lengths &lt; 400)]      # [300 210]
+lengths[(lengths &lt; 100) | (lengths &gt; 200)]       # [ 12  45  88 300 210]
+
+# ⚠️ 漏括号：语义完全错
+lengths[lengths &gt; 100 &amp; lengths &lt; 400]
+# 实际解析成：lengths &gt; (100 &amp; lengths) &lt; 400，结果不是你以为的筛选</code></pre>
+
+    <p><strong>坑 4：形状对不上，报 broadcast 错误</strong></p>
+    <pre><code>a = np.array([[1, 2, 3],
+              [4, 5, 6]])       # (2, 3)
+
+b = np.array([10, 20])          # (2,)
+
+# ❌ 想「每行减去对应行的基准」，这样写不行
+# a - b
+# ValueError: operands could not be broadcast together with shapes (2,3) (2,)
+
+# ✅ 方案一：加一个轴，让 b 变成 (2,1)
+print(a - b[:, np.newaxis])
+# [[ -9  -8  -7]
+#  [ -16 -15 -14]]
+
+# ✅ 方案二：reshape
+print(a - b.reshape(2, 1))
+
+# 理解：(2,3) 和 (2,1) 右对齐 → 3 与 1 兼容（1 撑成 3），2 与 2 相等 ✅</code></pre>
+
+    <p><strong>坑 5：一维数组「不是列」</strong></p>
+    <pre><code>row = np.array([1, 2, 3])         # (3,)
+
+# ❌ 以为是列向量转置，但一维数组转置没变化
+print(row.T.shape)                # (3,)  ← 没变！
+print(row.shape)                  # (3,)
+
+# ✅ 要列向量必须手动加轴
+col = row[:, np.newaxis]
+print(col.shape)                  # (3, 1)
+
+# 这也解释了一个奇怪现象：
+print((row * row[:, np.newaxis]).shape)   # (3, 3)  ← 得到的是外积矩阵</code></pre>
+    <blockquote class="warn">
+      <strong>一维数组没有「行」或「列」的概念</strong>，它在广播时才临时决定。
+      所以「转置」<code>.T</code> 对一维数组毫无作用——这是 NumPy 里最反直觉的一点。
+    </blockquote>
+
+    <p><strong>坑 6：切片是视图，改了会牵连原数组</strong></p>
+    <pre><code>a = np.array([1, 2, 3, 4, 5])
+
+# ❌ 想「改副本」，结果改了原数组
+b = a[1:4]
+b[0] = 999
+print(a)      # [  1 999   3   4   5]   ← a 被改了
+
+# ✅ 明确 copy
+b = a[1:4].copy()
+b[0] = 777
+print(a)      # [1 2 3 4 5]   ← 没变
+
+# 说明：布尔索引倒是安全的（返回副本）
+c = a[a &gt; 2]
+c[0] = 0
+print(a)      # [1 2 3 4 5]   ← 没变</code></pre>
+
+    <p><strong>坑 7：<code>a + 1</code> 和 <code>a += 1</code> 的区别</strong></p>
+    <pre><code>a = np.array([1, 2, 3])
+
+b = a + 1        # 创建新数组
+print(a, b)      # [1 2 3] [2 3 4]    ← a 没变
+
+a += 1           # 原地修改
+print(a)         # [2 3 4]            ← a 变了
+
+# ⚠️ 但 += 在「视图」上有陷阱
+a = np.array([1, 2, 3, 4, 5])
+b = a[1:4]       # 视图
+b += 100         # 原地修改视图 → 污染原数组
+print(a)         # [  1 102 103 104   5]
+
+# ✅ 想安全就 b = b + 100（创建新数组）
+a = np.array([1, 2, 3, 4, 5])
+b = a[1:4]
+b = b + 100
+print(a)         # [1 2 3 4 5]   ← 安全</code></pre>
+
+    <p><strong>坑 8：axis 搞反</strong></p>
+    <pre><code># 4 条评论 × 3 个指标
+data = np.array([[100,  10,  5],
+                 [300,  50, 20],
+                 [ 50,   2,  1],
+                 [200,  30, 15]])
+
+# ❌ 想要「每条评论的总分」，写成了 axis=0
+print(data.sum(axis=0))   # [650 92 41]   ← 这是「每个指标的总和」，是 3 个数
+
+# ✅ 每行（每条评论）用 axis=1
+print(data.sum(axis=1))   # [115 370  53 245]  ← 4 个数，对上了</code></pre>
+
+    <p><strong>坑 9：NaN 传染</strong></p>
+    <pre><code>data = np.array([1.0, 2.0, np.nan, 4.0])
+
+# ❌ NaN 会传染整个结果
+print(data.mean())        # nan
+print(data.sum())         # nan
+
+# ✅ 用 nan 版本函数，或先过滤
+print(np.nanmean(data))   # 2.333...
+print(np.nansum(data))    # 7.0
+print(data[~np.isnan(data)].mean())   # 2.333...   ← 手动过滤
+
+# 注意：np.isnan 只对浮点数组有效
+# 如果是 object 或字符串数组，要用 pd.isna（下一份会讲）</code></pre>
+    <blockquote class="warn">
+      <code>np.nan == np.nan</code> 的结果是 <code>False</code>！
+      所以判断 NaN 只能用 <code>np.isnan(x)</code>，不能写 <code>x == np.nan</code>。
+      这一点官方在 pandas 文档里也有专门的 Warning 说明。
+    </blockquote>
+
+    <p><strong>坑 10：整数除法的隐式行为</strong></p>
+    <pre><code>a = np.array([1, 2, 3], dtype=np.int64)
+
+# ✅ NumPy 的 / 是真除法，返回浮点
+print(a / 2)             # [0.5 1.  1.5]   ← 注意和 Python 2 的老行为不同
+
+# ✅ 整除用 //
+print(a // 2)            # [0 1 1]
+
+# ⚠️ 整数溢出：固定位宽会回绕
+big = np.array([2**62], dtype=np.int64)
+print(big * 4)           # 会回绕成负数，不报错！
+# 需要更大范围就用 dtype=np.int64 之外的方案，或转成 Python 整数
+
+# ✅ 需要精确大整数时用 Python 的 int 或 object dtype
+print(np.array([2**62], dtype=object) * 4)   # 正确结果</code></pre>
+  </section>
+
+  <section id="s5">
+    <h2>5. 应用场景（新闻传播学）</h2>
+
+    <h3>场景一：5000 条评论的互动数据画像（不用写一次循环）</h3>
+    <p>
+      真实场景：你导出了一篇报道的全部评论数据，每条有「点赞数」「回复数」。
+      主任要你说清三件事：互动量分布如何、哪几条最热、有多少条属于「无人理」的长尾。
+    </p>
+    <p>这类「整列统计 + 按条件筛选」的活儿，就是 NumPy 最擅长的。</p>
+    <pre><code>import numpy as np
+
+# 假设已从 CSV 读入两列（用 np.loadtxt 或后面 pandas 的方式）
+likes = np.array([  2, 158,   0,  45, 320,   1,  88, 210,   0,  17,
+                   5, 400,   0,  12,  63,   3,  99,   0, 145,  28])
+replies = np.array([  0,  12,   0,   3,  28,   0,   7,  15,   0,   2,
+                     1,  35,   0,   1,   5,   0,   9,   0,  11,   4])
+
+print(f"样本量：{likes.size} 条评论")
+
+# ---------- 1) 整体分布 ----------
+print("\n--- 点赞数分布 ---")
+print(f"  总量：{likes.sum()}")
+print(f"  均值：{likes.mean():.1f}")
+print(f"  中位数：{np.median(likes):.1f}")
+print(f"  标准差：{likes.std():.1f}")
+print(f"  最大：{likes.max()}（第 {likes.argmax()} 条）")
+print(f"  最小：{likes.min()}（第 {likes.argmin()} 条）")
+
+# ✅ 均值 90 多、中位数才 40 多 —— 说明被少数爆款拉高了
+# 这就是数据新闻里「平均数骗人」的经典证据，一定要同时报中位数
+
+# ---------- 2) 用布尔索引分层 ----------
+hot = likes &gt;= 100
+long_tail = likes &lt; 10
+ignored = likes == 0
+
+print("\n--- 分层统计（布尔索引）---")
+print(f"  热评（≥100 赞）：{hot.sum()} 条，占 {hot.mean():.1%}")
+print(f"  长尾（&lt;10 赞）：{long_tail.sum()} 条，占 {long_tail.mean():.1%}")
+print(f"  零互动：{ignored.sum()} 条，占 {ignored.mean():.1%}")
+
+# ✅ (条件).sum() 数个数，(条件).mean() 算占比，这是最常用的两个句式
+
+# ---------- 3) 组合条件（注意 & 和括号）----------
+medium = (likes &gt;= 10) &amp; (likes &lt; 100)
+print(f"  中等热度：{medium.sum()} 条")
+
+discussed_not_liked = (replies &gt; 0) &amp; (likes == 0)
+print(f"  有回复但零点赞：{discussed_not_liked.sum()} 条")
+
+# ---------- 4) 从多列一起筛 ----------
+print("\n--- 热评的互动结构 ---")
+print(f"  热评平均回复数：{replies[hot].mean():.1f}")
+print(f"  长尾平均回复数：{replies[long_tail].mean():.1f}")
+
+# ✅ 布尔数组可以直接用到另一列上（长度相同即可）
+# 这一招在做「分组对比」时极其常用
+
+# ---------- 5) 互动比（广播 + 除零保护）----------
+# 点赞为 0 时算比值会得到 inf 或 nan，需要处理
+safe_denom = np.where(likes == 0, np.nan, likes)
+engagement_ratio = replies / safe_denom
+print(f"\n平均互动比（每 100 个赞换来多少回复）：{np.nanmean(engagement_ratio) * 100:.1f}")
+
+# ---------- 6) 找最接近中位数的评论（广播应用）----------
+median_val = np.median(likes)
+diffs = np.abs(likes - median_val)          # 广播：标量撑成整列
+closest_idx = diffs.argmin()
+print(f"\n最接近中位数的评论是第 {closest_idx} 条（{likes[closest_idx]} 赞）")</code></pre>
+    <p>这段代码里，NumPy 的价值主要体现在三处：</p>
+    <ul>
+      <li><strong>零循环</strong>：没有一处 <code>for</code>，所有统计都是一行。</li>
+      <li><strong>布尔索引做分层</strong>：<code>likes &gt;= 100</code> 产生布尔数组，
+          直接用作 <code>replies[hot]</code> 的索引，一步完成「筛选 A 列、看 B 列」。</li>
+      <li><strong><code>(条件).mean()</code> 算占比</strong>：因为 <code>True</code> 当 1、<code>False</code> 当 0，
+          均值自然就是占比。这比手写计数器简洁太多。</li>
+    </ul>
+    <p>
+      另外注意 <code>np.where(likes == 0, np.nan, likes)</code> 这个写法：
+      它是「条件选择」的向量化版本（类似 Excel 的 IF），用来避免除零。
+      <strong>做比率类指标时一定要防除零</strong>，否则会冒出 <code>inf</code> 或 <code>nan</code> 污染整个统计。
+    </p>
+
+    <h3>场景二：把一批稿件的字数矩阵标准化，为画图表做准备</h3>
+    <p>
+      真实场景：你要做一个「各媒体在不同议题上的报道强度」对比图。
+      原始数据是一张「媒体 × 议题」的条数矩阵，但各媒体的总报道量差异很大，
+      直接画图会让高产媒体压倒性地大。所以必须先<strong>标准化</strong>（每行除以自己的总和）。
+    </p>
+    <p>这正好是「聚合 + 广播」的教科书用法。</p>
+    <pre><code>import numpy as np
+
+# 行 = 媒体，列 = 议题
+media = ["日报", "晚报", "都市报", "财经报", "电视台"]
+topics = ["改造", "环保", "交通", "医疗"]
+
+# 5 家媒体 × 4 个议题的报道条数
+counts = np.array([[120,  80,  45,  30],     # 日报
+                   [ 60,  40,  25,  15],     # 晚报
+                   [ 30,  55,  20,  10],     # 都市报
+                   [ 10,   8,   6,  50],     # 财经报
+                   [ 80,  35,  60,  20]])    # 电视台
+
+print("原始矩阵形状：", counts.shape)
+
+# ---------- 1) 各家媒体的报道总量（每行求和）----------
+totals = counts.sum(axis=1)
+print("\n各家总报道量：")
+for name, n in zip(media, totals):
+    print(f"  {name}: {n} 条")
+
+# ---------- 2) 标准化：每行除以自己的总量 ----------
+# ❌ 这样写会报错：(5,4) / (5,) 不兼容
+# ratios = counts / totals
+# ValueError: operands could not be broadcast together with shapes (5,4) (5,)
+
+# ✅ 加一个轴，把总量变成 (5,1)，才能按行广播
+ratios = counts / totals[:, np.newaxis]
+print("\n标准化后（每行合计为 1）：")
+print(np.round(ratios, 3))
+print("验证每行和：", np.round(ratios.sum(axis=1), 6))     # 全是 1.0
+
+# ✅ 或者用 keepdims 一步到位
+ratios2 = counts / counts.sum(axis=1, keepdims=True)
+print("两种写法结果相同：", np.allclose(ratios, ratios2))
+
+# ---------- 3) 找每家媒体最侧重的议题（每行最大值的下标）----------
+top_topic = counts.argmax(axis=1)
+print("\n各家最侧重的议题：")
+for name, i in zip(media, top_topic):
+    print(f"  {name}: {topics[i]}（{counts[media.index(name), i]} 条，占 {ratios[media.index(name), i]:.1%}）")
+
+# ---------- 4) 各议题的「媒体集中度」：谁最集中 ----------
+topic_totals = counts.sum(axis=0)
+topic_concentration = counts.max(axis=0) / topic_totals      # (4,) / (4,) → 广播，逐列算
+print("\n各议题的头部集中度：")
+for name, v in zip(topics, topic_concentration):
+    print(f"  {name}: 最高的那家占 {v:.1%}")
+
+# ---------- 5) 全矩阵标准化（z-score）：为热力图做准备 ----------
+global_mean = counts.mean()
+global_std = counts.std()
+z_scores = (counts - global_mean) / global_std          # 标量广播
+print(f"\n标准分范围：{z_scores.min():.2f} ~ {z_scores.max():.2f}")
+
+# 按列标准化（每个议题内部比较）
+col_means = counts.mean(axis=0, keepdims=True)      # (1,4)
+col_stds = counts.std(axis=0, keepdims=True)        # (1,4)
+z_scores_by_col = (counts - col_means) / col_stds
+print("按列标准分（每列均值≈0）：", np.round(z_scores_by_col.mean(axis=0), 6))</code></pre>
+    <p>关键的知识点在这一段：</p>
+    <pre><code>ratios = counts / totals[:, np.newaxis]
+#        (5,4)     (5,1)  ← 靠右对齐：4 和 1 兼容（1 撑成 4），5 和 5 相等 ✅</code></pre>
+    <p>
+      如果忘了写 <code>[:, np.newaxis]</code>，<code>totals</code> 的形状是 <code>(5,)</code>，
+      右对齐后会去和最后一维（也就是 4）比，5 ≠ 4 也不是 1，于是报
+      <code>ValueError: operands could not be broadcast together with shapes (5,4) (5,)</code>。
+      <strong>这就是为什么「按行广播」必须手动加轴。</strong>
+    </p>
+    <p>
+      <code>keepdims=True</code> 是另一个值得记的技巧：它让 <code>sum(axis=1)</code> 返回 <code>(5,1)</code> 而不是 <code>(5,)</code>，
+      免去手动加轴，而且意图更清楚（「我保留这个维度，是为了下一步做广播」）。
+    </p>
+    <p>
+      最后一个提醒：这段代码里的 <code>media.index(name)</code> 是个小瑕疵（O(n) 查找），
+      实际应该用 <code>enumerate</code>。这里为了演示广播才那样写——
+      这也提醒我们：<strong>NumPy 负责数值计算，Python 内建工具负责组织循环。</strong>
+      两者配合，不是非此即彼。
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2>6. 概念辨析</h2>
+
+    <h3>辨析 1：列表 vs 数组的「加号」</h3>
+    <pre><code>lst = [1, 2, 3]
+arr = np.array([1, 2, 3])
+
+print(lst + lst)     # [1, 2, 3, 1, 2, 3]   ← 拼接
+print(arr + arr)     # [2 4 6]              ← 逐元素相加
+print(lst * 2)       # [1, 2, 3, 1, 2, 3]   ← 重复
+print(arr * 2)       # [2 4 6]              ← 逐元素乘</code></pre>
+    <p>
+      同一个运算符，列表和数组的语义完全不同。
+      <strong><code>+</code> 对列表是「接起来」，对数组是「逐项相加」；<code>*</code> 对列表是「重复」，对数组是「逐项相乘」。</strong>
+      这是从列表转数组后最容易踩的第一个坑。
+    </p>
+
+    <h3>辨析 2：<code>a &gt; 5</code> 得到的是什么</h3>
+    <pre><code>a = np.array([3, 7, 2, 9])
+
+print(a &gt; 5)              # [False  True False  True]   ← 布尔数组，不是单个 True/False
+print(type(a &gt; 5))        # &lt;class 'numpy.ndarray'&gt;
+
+# ⚠️ 所以不能直接放进 if
+# if a &gt; 5:               # ValueError: truth value of an array is ambiguous
+# if (a &gt; 5).any():       # ✅ 有任何一个是 True
+# if (a &gt; 5).all():       # ✅ 全部都是 True</code></pre>
+    <p>
+      这个报错「The truth value of an array with more than one element is ambiguous」几乎每个 NumPy 新手都会遇到。
+      原因就是：<strong>比较运算返回的是数组，而 <code>if</code> 只接受单个真假值</strong>。
+      想用条件判断时，先归约成一个布尔值：<code>.any()</code>（存在）或 <code>.all()</code>（全部）。
+    </p>
+
+    <h3>辨析 3：布尔索引 vs 花式索引</h3>
+    <pre><code>a = np.array([10, 20, 30, 40, 50])
+
+# 布尔索引：给一个真假列表，挑出 True 的位置
+print(a[np.array([True, False, True, False, True])])   # [10 30 50]
+
+# 花式索引：直接给位置编号
+print(a[[0, 2, 4]])       # [10 30 50]
+
+# 两者都返回副本；切片返回视图
+print(a[0:5:2])           # [10 30 50]  但这是视图</code></pre>
+    <p>
+      三者常常能得出相同结果，但机制不同，用途也不同：
+      <strong>布尔索引是「按条件筛」，花式索引是「按编号取」，切片是「按区间割」。</strong>
+      做数据筛选时用布尔索引；做抽样、重排时用花式索引。
+    </p>
+
+    <h3>辨析 4：视图（view）vs 副本（copy）</h3>
+    <pre><code>a = np.array([1, 2, 3, 4, 5])
+
+b = a[1:4]           # 视图
+c = a[1:4].copy()    # 副本
+d = a[a &gt; 2]         # 副本（布尔索引）
+
+b[0] = 0
+print(a)             # [1 0 3 4 5]   ← 被视图影响了
+
+a = np.array([1, 2, 3, 4, 5])
+c = a[1:4].copy()
+c[0] = 0
+print(a)             # [1 2 3 4 5]   ← 副本不影响</code></pre>
+    <p>
+      为什么要有视图？因为<strong>不复制数据才能快</strong>。切片 100 万行的数组，如果每次复制会慢得无法接受。
+      但代价是你得记住：<strong>切片是「同一块内存的不同窗口」。</strong>
+      <code>print(b.base)</code> 能验证这一点——是 <code>None</code> 才是独立的。
+    </p>
+
+    <h3>辨析 5：<code>axis=0</code> vs <code>axis=1</code></h3>
+    <pre><code>data = np.array([[1, 2, 3],
+                 [4, 5, 6]])       # shape (2, 3)
+
+print(data.sum(axis=0))   # [5 7 9]     ← 沿着「行」的方向压下去 → 得到 3 个「每列和」
+print(data.sum(axis=1))   # [ 6 15]     ← 沿着「列」的方向压下去 → 得到 2 个「每行和」
+print(data.sum())         # 21          ← 全部</code></pre>
+    <p>
+      记法：<strong><code>axis</code> 是「被消掉的那个维度」。</strong>
+      <code>axis=0</code> 消掉第 0 维（行），所以剩下的是「每一列一个数」；
+      <code>axis=1</code> 消掉第 1 维（列），剩下的是「每一行一个数」。
+    </p>
+    <p>
+      如果你习惯「按行求和」这种说法，容易搞混。更稳的判断方式是<strong>看结果形状</strong>：
+      <code>(2,3)</code> 做 <code>axis=0</code> 得到长度 3 的结果，做 <code>axis=1</code> 得到长度 2 的结果。
+    </p>
+
+    <h3>辨析 6：广播 vs 循环——什么时候该用哪个</h3>
+    <pre><code>observation = np.array([111.0, 188.0])       # (2,)
+codes = np.array([[102., 203.],
+                  [132., 193.],
+                  [ 45., 155.],
+                  [ 57., 173.]])             # (4, 2)
+
+# ✅ 小规模：广播写法（得到 (4,2) 的中间结果，可接受）
+dist = np.sqrt(((codes - observation) ** 2).sum(axis=-1))
+print(dist.argmin())                         # 0
+
+# ✅ 大规模：外层循环 + 内层广播
+big_observation = np.random.rand(10000, 3)   # 1 万条
+big_codes = np.random.rand(500, 1, 3)        # 500 个类别
+
+# ❌ 直接广播：(500,1,3) 和 (10000,3) → 中间结果 (500,10000,3) = 1500 万个浮点数
+# dist = np.sqrt(((big_codes - big_observation) ** 2).sum(axis=-1))    # 内存吃紧
+
+# ✅ 外层循环：每次只算 (10000,3) 的中间结果
+min_dists = np.empty(10000)
+for i in range(500):
+    min_dists = np.minimum(min_dists, np.sqrt(((big_observation - big_codes[i, 0]) ** 2).sum(axis=-1)))</code></pre>
+    <p>
+      官方对此的原话是：「This may also produce more readable code, as algorithms that use broadcasting
+      tend to become more difficult to interpret as the number of dimensions in the broadcast increases.」
+      <strong>一句话：内层向量化，外层循环。</strong>
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7. 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：</b><code>[1, 2, 3] * 2</code> 和 <code>np.array([1, 2, 3]) * 2</code> 结果一样吗？为什么？
+      <div class="ans">
+        不一样。列表的 <code>*</code> 是<strong>重复</strong>，结果是 <code>[1, 2, 3, 1, 2, 3]</code>；
+        数组的 <code>*</code> 是<strong>逐元素相乘</strong>，结果是 <code>[2 4 6]</code>。
+        同理 <code>+</code> 对列表是拼接、对数组是逐项相加。
+        这是从列表转到数组后最容易踩的坑。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：</b><code>a = np.array([3, 7, 2, 9])</code>，为什么 <code>if a &gt; 5:</code> 会报错？该怎么改？
+      <div class="ans">
+        因为 <code>a &gt; 5</code> 返回的是布尔<strong>数组</strong> <code>[False True False True]</code>，
+        而 <code>if</code> 只接受单个布尔值，于是抛
+        <code>ValueError: The truth value of an array with more than one element is ambiguous</code>。
+        改成 <code>if (a &gt; 5).any():</code>（存在满足的）或 <code>if (a &gt; 5).all():</code>（全部满足）。
+        想筛选就用索引：<code>a[a &gt; 5]</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：</b><code>np.array([[1,2,3],[4,5,6]])</code>（形状 <code>(2,3)</code>）加上 <code>np.array([10, 20])</code>（形状 <code>(2,)</code>）能成功吗？为什么？
+      <div class="ans">
+        <strong>不能</strong>，会报 <code>ValueError: operands could not be broadcast together with shapes (2,3) (2,)</code>。
+        因为广播规则是从<strong>最右边</strong>开始对齐比较：<code>(2,3)</code> 和 <code>(2,)</code> 右对齐后是 <code>3</code> 对 <code>2</code>，
+        既不相等、也不是 1，所以不兼容。
+        如果本意是「每行减去对应行的基准」，要加轴：<code>a - b[:, np.newaxis]</code>，把 <code>b</code> 变成 <code>(2,1)</code>，
+        这时右对齐是 <code>3</code> 对 <code>1</code>（兼容）和 <code>2</code> 对 <code>2</code>（相等），就能算了。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：</b>官方为什么说广播可能「是个坏主意」？什么情况下该改用循环？
+      <div class="ans">
+        官方原话：「There are, however, cases where broadcasting is a bad idea because it leads to inefficient use of memory
+        that slows computation」，并在实例中说明「Large data sets will generate a large intermediate array that is computationally inefficient」。
+        具体来说，两个形状差异大的数组广播时会产生一个巨大的<strong>中间数组</strong>，
+        比如 <code>(500,1,3)</code> 和 <code>(10000,3)</code> 广播会生成 <code>(500,10000,3)</code>，内存可能爆掉。
+        对策是官方给出的：「it is better to write the algorithm's outer loop in Python」——
+        <strong>外层用 Python 循环，内层用向量化</strong>，把内存峰值控制住。官方还补充说这样往往可读性也更好。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：</b><code>b = a[1:4]</code> 之后改 <code>b</code> 会影响 <code>a</code> 吗？<code>c = a[a &gt; 2]</code> 之后改 <code>c</code> 呢？
+      <div class="ans">
+        <strong>切片是视图，会影响；布尔索引是副本，不影响。</strong>
+        <code>b = a[1:4]</code> 得到的是 a 的一块内存窗口，改 b 就是改 a。
+        <code>c = a[a &gt; 2]</code> 是把满足条件的元素<strong>挑出来复制</strong>成新数组，改 c 与 a 无关。
+        验证方法：<code>print(b.base is a)</code> 得 <code>True</code>（视图），<code>print(c.base is None)</code> 得 <code>True</code>（副本）。
+        只要拿不准，或准备修改，就先 <code>.copy()</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：</b>数据形状是 <code>(4, 3)</code>（4 条评论 × 3 个指标），想算「每条评论的总分」，用 <code>axis=0</code> 还是 <code>axis=1</code>？
+      <div class="ans">
+        用 <code>axis=1</code>。
+        记法是「<code>axis</code> 是要<strong>被消掉</strong>的那个维度」：<code>axis=1</code> 消掉列这一维，
+        得到 4 个数，每个是「这一行所有列的和」= 每条评论的总分。
+        用 <code>axis=0</code> 会消掉行这一维，得到 3 个数，那是「每个指标的总和」，不是你要的。
+        另一种验证方式：<code>(4,3)</code> 的 <code>axis=1</code> 结果长度是 4，和「4 条评论」对上了。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：</b>一维数组 <code>a = np.array([1,2,3])</code> 的 <code>a.T</code> 是什么？为什么「转置」没效果？
+      <div class="ans">
+        <code>a.T</code> 还是 <code>(3,)</code>，形状完全没变。
+        因为<strong>一维数组在 NumPy 里没有「行」或「列」的方向</strong>，
+        它只在参与广播时才根据位置临时决定自己是「像行」还是「像列」。
+        要对一维数组做真正的「行列变换」，必须先加轴：<code>a[:, np.newaxis]</code> 得到 <code>(3,1)</code> 的列，
+        <code>a[np.newaxis, :]</code> 得到 <code>(1,3)</code> 的行。
+        顺带一提，这也是为什么 <code>a * a[:, np.newaxis]</code> 得到的是 <code>(3,3)</code> 的外积矩阵。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8. 可核查参考来源</h2>
+    <table>
+      <thead>
+        <tr><th>来源</th><th>URL</th><th>用到的内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>NumPy 官方文档《Broadcasting》</td>
+          <td><a href="https://numpy.org/doc/stable/user/basics.broadcasting.html">numpy.org/doc/stable/user/basics.broadcasting.html</a></td>
+          <td>broadcasting 的定义与「vectorizing array operations so that looping occurs in C instead of Python」；「It does this without making needless copies of data」；「There are, however, cases where broadcasting is a bad idea because it leads to inefficient use of memory that slows computation」；标量广播示例 <code>a * b</code>；「stretched」比喻与「NumPy is smart enough to use the original scalar value without actually making copies」；<strong>通用广播规则原文</strong>（从最右维开始、相等或为 1、<code>ValueError: operands could not be broadcast together</code>、「missing dimensions are assumed to have size one」）；全部形状对照示例（含 <code>8 x 1 x 6 x 1</code> 与两条不可广播的反例）；<code>(4,3)</code> 加 <code>(4,)</code> 的报错示例与 <code>(4,3)</code> 加 <code>(3,)</code> 的成功示例；<code>np.newaxis</code> 外积示例与形状 <code>4x1</code> 的说明；向量量化实战示例（<code>observation</code>/<code>codes</code>/<code>diff</code>/<code>argmin</code>）与形状表；大规模场景下「large intermediate array that is computationally inefficient」的警告与「it is better to write the algorithm's outer loop in Python」的建议；维度增加导致可读性下降的说明；脚注中关于归一化的提醒</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      本条来源在撰写前已通过 WebFetch 实际抓取页面内容，页面返回成功。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9. 核查记录</h2>
+    <table>
+      <thead>
+        <tr><th>核查项</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>来源 URL 可访问性</td><td>✅ 已核</td><td>撰写前实际抓取成功</td></tr>
+        <tr><td>broadcasting 的定义原文</td><td>✅ 已核（直接引用）</td><td>「how NumPy treats arrays with different shapes during arithmetic operations」「the smaller array is "broadcast" across the larger array」</td></tr>
+        <tr><td>「looping occurs in C instead of Python」</td><td>✅ 已核（直接引用）</td><td>文档开头原文，本文件 4.3 节据此展开</td></tr>
+        <tr><td>「without making needless copies of data」</td><td>✅ 已核（直接引用）</td><td>文档开头与「stretching analogy is only conceptual」段落</td></tr>
+        <tr><td><strong>广播两条规则</strong></td><td>✅ 已核（直接引用）</td><td>「It starts with the trailing (i.e. rightmost) dimension and works its way left」「they are equal, or one of them is 1」「missing dimensions are assumed to have size one」</td></tr>
+        <tr><td>广播失败的错误信息</td><td>✅ 已核（直接引用）</td><td><code>ValueError: operands could not be broadcast together</code>，含 <code>(4,3) (4,)</code> 的具体实例</td></tr>
+        <tr><td>全部形状对照示例</td><td>✅ 已核（官方原文）</td><td>含 <code>5x4</code>/<code>4</code>、<code>15x3x5</code>/<code>15x1x5</code>、<code>8x1x6x1</code>/<code>7x1x5</code> 与两组不可广播反例</td></tr>
+        <tr><td><code>np.newaxis</code> 的作用与形状变化</td><td>✅ 已核（直接引用 + 官方示例）</td><td>外积示例与「inserts a new axis into a, making it a two-dimensional 4x1 array」原文</td></tr>
+        <tr><td>向量量化实战示例</td><td>✅ 已核（官方示例）</td><td><code>observation</code>/<code>codes</code>/<code>diff</code>/<code>argmin</code> 完整代码与形状表均为原文</td></tr>
+        <tr><td>广播的内存警告与「外层用循环」建议</td><td>✅ 已核（直接引用）</td><td>「Large data sets will generate a large intermediate array that is computationally inefficient」「it is better to write the algorithm's outer loop in Python」「algorithms that use broadcasting tend to become more difficult to interpret」</td></tr>
+        <tr><td>「广播拉伸只是概念上的」</td><td>✅ 已核（直接引用）</td><td>「The stretching analogy is only conceptual.」</td></tr>
+        <tr><td><code>shape</code> / <code>ndim</code> / <code>dtype</code> 的含义与示例输出</td><td>⚠ 未在本页来源中核到</td><td>本次抓取的是《Broadcasting》页，未包含 ndarray 属性说明。<strong><code>a.shape</code> 为 <code>(3,)</code>、<code>dtype</code> 为 <code>float64</code>、混入字符串后 <code>dtype</code> 为 <code>&lt;U21</code> 等信息</strong>来自 NumPy 入门文档与实践，未逐条对照官方原文，建议以 <code>np.array.html</code> 与 <code>basics.creation.html</code> 为准</td></tr>
+        <tr><td>布尔索引（掩码、<code>(条件).sum()</code> 数个数）</td><td>⚠ 未在本页来源中核到</td><td>《Broadcasting》页未涉及索引章节。文中布尔索引相关表述（含「<code>&amp;</code>/<code>|</code>/<code>~</code> 必须加括号」「<code>and</code>/<code>or</code> 报 ambiguous 错误」「布尔索引返回副本」）来自实践与 numpy 索引文档，未在本次来源中逐条核实</td></tr>
+        <tr><td>视图 vs 副本（<code>base</code> 属性、切片返回视图）</td><td>⚠ 未在本页来源中核到</td><td>本次来源不含 copies/views 章节。文中表格与 <code>base</code> 判断方法来自 <code>basics.copies-and-views.html</code> 的通用知识，未在本次抓取中核实</td></tr>
+        <tr><td>聚合函数与 <code>axis</code> 语义（含 <code>keepdims</code>）</td><td>⚠ 未在本页来源中核到</td><td>《Broadcasting》页未涉及。文中 <code>axis</code> 相关示例输出（如 <code>(4,3).sum(axis=0)</code> 得 <code>[650 92 41]</code>）为按规则手算，<strong>未实际运行</strong></td></tr>
+        <tr><td><code>np.nanmean</code> / <code>np.nansum</code> / <code>np.isnan</code></td><td>⚠ 未在本页来源中核到</td><td>属 NumPy 缺失值处理内容，本次来源未覆盖。<code>np.nan == np.nan</code> 为 <code>False</code> 这一点在 pandas 缺失值文档中有明确的 Warning 佐证（见第 14 份），NumPy 侧未核实</td></tr>
+        <tr><td>整数溢出回绕（<code>int64</code>）</td><td>⚠ 非本页内容</td><td>属 NumPy 数据类型行为，本次来源未覆盖。文中表述建议在本地实测后再引用</td></tr>
+        <tr><td>「矩阵标准化」中 <code>(5,4)/(5,1)</code> 的广播推演</td><td>✅ 已核（规则推演）</td><td>推演依据是官方两条规则，结论可靠；但文中示例的具体数值输出（如「每行和全是 1.0」）为手算，<strong>未实际运行</strong></td></tr>
+        <tr><td>文中第 4.10 节与第 5 节全部代码</td><td>⚠ 未实测运行</td><td>代码按 NumPy 语法与官方示例风格编写，形状推演已逐处核对；但本文件生成环境未实际执行。<strong>所有示例的数值输出都是按规则推导的，不是运行结果</strong>，建议你在本地逐段跑一遍验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      诚实说明：本文件关于<strong>广播机制</strong>的部分（4.5–4.9 节、第 6 节辨析 6、Q3、Q4）
+      全部来自 NumPy 官方《Broadcasting》页面的实际抓取内容，引号内英文句子、形状对照表、
+      <code>np.newaxis</code> 示例与向量量化示例均可对照原文逐字核实。
+      <br><br>
+      但需要明确告知：<strong>本次只抓取了一个来源页面，而它只覆盖 broadcasting。</strong>
+      因此以下三块内容没有官方原文本文件内可对照：
+      ① <strong>布尔索引</strong>（4.4 节）——这是本节的重点之一，但依据来自实践与 NumPy 索引文档，未在本次来源中核实；
+      ② <strong>视图与副本</strong>（4.7 节）——<code>base</code> 属性、切片返回视图等结论未在本次来源中核实；
+      ③ <strong>聚合与 <code>axis</code></strong>（4.8 节）——同样未在本次来源中核实。
+      <br><br>
+      此外，文中所有代码的具体输出值（包括第 4 节的对错对比与第 5 节的两个场景）
+      都是按语法规则和广播规则<strong>推导</strong>出来的，不是实际运行结果。
+      NumPy 的数值输出对 dtype 很敏感，建议你逐段在本地执行验证，再用于正式工作。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <a href="index.html">概念目录</a> ·
+      <a href="python-learning-map.html">学习地图</a> ·
+      <a href="https://github.com/Yym113/big-data-ai">GitHub 仓库</a>
+    </p>
+    <p>生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

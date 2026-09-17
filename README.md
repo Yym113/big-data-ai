@@ -29,13 +29,31 @@
 ```
 big-data-ai/
 ├── .workbuddy/
-│   └── skills/
-│       └── concept-unpacker/            # 项目级 Skill · 把任意概念拆成 8 段式中文学习包
-├── learning-materials/                  # 由 concept-unpacker 生成的 3 份概念学习资料 + 关系图
-│   ├── agent.html
-│   ├── llm-context.html
-│   ├── skill.html
-│   └── concept-relationship.html
+│   ├── skills/
+│   │   └── concept-unpacker/            # 项目级 Skill · 把任意概念拆成 9 段式中文学习包
+│   └── memory/                          # 工作日志
+├── learning-materials/
+│   ├── index.html                       # 概念目录（15 份 Python 概念资料的总入口 + 跨概念联系）
+│   ├── python-learning-map.html         # Python 基础学习地图（13 次课 · 新闻传播学零基础版）
+│   ├── vars-and-types.html              # 01 变量与数据类型
+│   ├── strings.html                     # 02 字符串
+│   ├── lists.html                       # 03 列表
+│   ├── dicts.html                       # 04 字典
+│   ├── conditionals.html                # 05 条件判断
+│   ├── loops.html                       # 06 循环
+│   ├── functions.html                   # 07 函数
+│   ├── comprehensions.html              # 08 推导式与内置函数
+│   ├── file-io.html                     # 09 文件读写
+│   ├── exceptions.html                  # 10 异常处理与调试
+│   ├── regex.html                       # 11 正则表达式
+│   ├── modules-and-packages.html        # 12 模块与包
+│   ├── numpy.html                       # 13 numpy 数组
+│   ├── pandas.html                      # 14 pandas 数据表
+│   ├── matplotlib.html                  # 15 matplotlib 绘图
+│   ├── agent.html                       # 作业 1 概念资料：Agent
+│   ├── llm-context.html                 # 作业 1 概念资料：大模型的上下文
+│   ├── skill.html                       # 作业 1 概念资料：Skill
+│   └── concept-relationship.html        # 作业 1：三概念关系图
 ├── assignments/                         # 课程作业（作业 1 交付物在 learning-materials/）
 ├── .gitignore
 └── README.md                            # 本文件
@@ -45,13 +63,31 @@ big-data-ai/
 
 | Skill 名 | 路径 | 用途 |
 |---|---|---|
-| `concept-unpacker` | `.workbuddy/skills/concept-unpacker/SKILL.md` | 把任意陌生概念拆成 8 段式中文学习包（学习目标 / 结构化解释 / 边界辨析 / 自测 / 可核查来源 / 核查记录） |
+| `concept-unpacker` | `.workbuddy/skills/concept-unpacker/SKILL.md` | 把任意陌生概念拆成 9 段式中文学习包（学习目标 / 结构化解释 / 边界辨析 / 自测 / 可核查来源 / 核查记录） |
 
 调用方式：在 WorkBuddy 里说「用 `concept-unpacker` 帮我学一下 `RAG`」即可；它会自动生成 `learning-materials/rag.html`，并附核查记录。
+
+代码示例规范（已写入 skill）：代码标识符一律用英文，中文只出现在字符串字面量、注释和正文里。
 
 ## 学习资料
 
 `learning-materials/` 目录下的概念学习资料：
+
+### Python 概念系列（15 份 + 目录页）
+
+从 [`index.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/index.html) 进入 —— 它是总入口，含依赖主线图与 6 组**跨概念联系**。
+
+| 阶段 | 编号与文件 |
+|---|---|
+| 一 · 语言入门 | `01` vars-and-types · `02` strings · `03` lists · `04` dicts |
+| 二 · 组织逻辑 | `05` conditionals · `06` loops · `07` functions · `08` comprehensions · `09` file-io · `10` exceptions |
+| 三 · 文本与数据实战 | `11` regex · `12` modules-and-packages · `13` numpy · `14` pandas · `15` matplotlib |
+
+配套 [`python-learning-map.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/python-learning-map.html)：13 次课 × 90 分钟的学习地图（课次与上述编号对应）。
+
+每份遵循统一的 9 段结构：个人理解 / 学习目标 / 核心问题 / 结构化解释 / 应用场景 / 概念辨析 / 自测问题 / 可核查来源 / 核查记录。
+
+### 作业 1 概念资料
 
 | 文件 | 主参考 |
 |---|---|
@@ -59,8 +95,6 @@ big-data-ai/
 | `llm-context.html` | "Lost in the Middle" 论文 (arXiv:2307.03172)、Anthropic 上下文工程博客 |
 | `skill.html` | Anthropic Agent Skills 公告 (2025-10-16)、agentskills.io 开放规范 |
 | `concept-relationship.html` | 三概念关系（Mermaid 流程图 + 对照表 + 链路例子） |
-
-每份都遵循同一个 9 分节结构：个人理解 / 学习目标 / 核心问题 / 结构化解释 / 应用场景 / 概念辨析 / 自测问题 / 可核查来源 / 核查记录。
 
 ## 课程作业
 
@@ -71,7 +105,7 @@ big-data-ai/
 ## 学习进度
 
 - [ ] 大数据基础
-- [ ] Python 编程基础
+- [x] Python 编程基础（学习地图 + 15 份概念资料已就绪，待按 13 次课逐节学习）
 - [ ] 数据处理与分析
 - [ ] 机器学习
 - [ ] 深度学习

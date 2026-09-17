@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模块与包 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>模块与包</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 12 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景（新闻传播学）</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1. 个人理解（先说人话）</h2>
+    <p>
+      前三节课你写的代码，都是一个文件从头跑到尾。但真实项目不会这样：
+      抓取、清洗、统计、出图，四个步骤各自几十上百行，全塞一个文件里，改一处要翻十分钟。
+    </p>
+    <p>
+      <strong>「模块」就是把代码拆成多个 <code>.py</code> 文件。「包」就是把这些文件放进文件夹分层组织。</strong>
+      拆开的直接好处是：<strong>不用把函数定义复制到每个程序里</strong>——
+      这是官方在《模块》一章开头给出的第一句理由：「编写脚本还有一个好处，不同程序调用同一个函数时，不用把函数定义复制到各个程序。」
+    </p>
+    <p>
+      而 <code>import</code> 就是这个「拆」和「用」之间的接口。它看起来只有一行，但背后的机制有三层：
+    </p>
+    <ol>
+      <li><strong>找</strong>：Python 从哪里去搜 <code>import</code> 的那个名字？（<code>sys.path</code>）</li>
+      <li><strong>跑</strong>：找到之后，它执行了什么？执行几次？（整个文件被<em>执行一遍</em>，且只执行一次）</li>
+      <li><strong>挂</strong>：执行完的东西挂在哪？（模块自己的命名空间，你用 <code>modname.itemname</code> 访问）</li>
+    </ol>
+    <p>
+      新手会被 <code>import</code> 折磨，几乎都是因为这三层里有一层没想清楚。
+      最典型的三个症状：
+    </p>
+    <ul>
+      <li><strong><code>ModuleNotFoundError</code></strong>——「我明明装了 pandas 啊！」（第二层：装到了别的 Python 里）</li>
+      <li><strong><code>ImportError: cannot import name ...</code></strong>——「它就在那个文件里啊！」（第一层：循环导入或文件名冲突）</li>
+      <li><strong>「为什么我 import 之后程序自己跑起来了？」</strong>（第二层：被导入的模块的顶层代码会被执行）</li>
+    </ul>
+    <p>
+      第三个症状的解法，就是那句你见过无数次但可能没深究的话：
+      <code>if __name__ == "__main__":</code>。
+    </p>
+  </section>
+
+  <section id="s2">
+    <h2>2. 学习目标</h2>
+    <p>学完这一份，你应该能做到：</p>
+    <ul>
+      <li>能说清模块（<code>.py</code> 文件）和包（文件夹 + <code>__init__.py</code>）的区别。</li>
+      <li>能写出四种 import 形式（<code>import m</code> / <code>from m import x</code> / <code>import m as n</code> / <code>from m import x as y</code>），并说出各自的命名空间效果。</li>
+      <li>能说出 <code>import</code> 时 Python 的查找顺序（内置 → <code>sys.path</code> 及各部分），并会<b>动手排查</b> <code>ModuleNotFoundError</code>。</li>
+      <li>能默写 <code>if __name__ == "__main__":</code> 并解释它的作用与「为什么需要它」。</li>
+      <li>知道「模块只在第一次被 import 时执行，之后走缓存」，以及 <code>importlib.reload()</code> 的用途。</li>
+      <li>知道为什么不要写 <code>from m import *</code>。</li>
+      <li>能解释为什么会 <code>ModuleNotFoundError</code>——「明明是同一个包，命令行能跑、IDE 不能跑」；并知道虚拟环境如何解决。</li>
+      <li>能用 <code>python -m venv</code> 创建虚拟环境，会激活/退出，能说清 Windows 与 macOS/Linux 的区别。</li>
+      <li>能用 <code>python -m pip install / list / show / freeze / install -r</code>，知道 <code>requirements.txt</code> 的作用。</li>
+      <li>知道国内下载慢时该怎么换镜像源（以及为什么官方文档不涉及这件事）。</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <h2>3. 核心问题清单</h2>
+    <ol>
+      <li>什么是「模块」？它和「脚本」「包」是什么关系？</li>
+      <li><code>import fibo</code> 之后，为什么不能直接写 <code>fib(500)</code>，必须写 <code>fibo.fib(500)</code>？</li>
+      <li><code>import</code> 语句执行的时候，Python 到底做了什么？</li>
+      <li>模块会被执行几次？改代码后为什么必须重启解释器？</li>
+      <li><code>sys.path</code> 是按什么顺序初始化的？为什么「脚本所在的目录」会排在标准库前面？这有什么风险？</li>
+      <li><code>sys.builtin_module_names</code> 是干什么的？</li>
+      <li><code>ModuleNotFoundError</code> 和 <code>ImportError</code> 是什么关系？分别什么时候抛？</li>
+      <li><code>if __name__ == "__main__":</code> 到底在判断什么？不加会怎样？</li>
+      <li>为什么 <code>from m import *</code> 不推荐？<code>__all__</code> 又是做什么的？</li>
+      <li>包里的 <code>__init__.py</code> 是必须的吗？它是空的吗？里面可以写什么？</li>
+      <li><code>from sound.effects import echo</code> 和 <code>import sound.effects.echo</code> 有什么差别？</li>
+      <li>相对导入的 <code>.</code> 和 <code>..</code> 是什么意思？为什么「直接运行的脚本不能使用相对导入」？</li>
+      <li>什么是虚拟环境？为什么每个项目都该有自己的虚拟环境？</li>
+      <li>Windows 和 macOS/Linux 激活虚拟环境的命令为什么不一样？</li>
+      <li><code>pip freeze &gt; requirements.txt</code> 有什么用？别人拿到这个文件怎么装？</li>
+      <li>国内 pip 下载慢怎么办？换镜像源有什么风险？</li>
+      <li><code>__pycache__</code> 是什么？可以删吗？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4. 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>官方对模块的定义：</p>
+    <blockquote>
+      模块是包含 Python 定义和语句的文件。其文件名是模块名加后缀名 <code>.py</code>。
+      在模块内部，通过全局变量 <code>__name__</code> 可以获取模块名（即字符串）。
+      <span class="meta">——引自 Python 官方教程《模块》开头</span>
+    </blockquote>
+    <p>官方还给出了「为什么要拆模块」的完整逻辑链：</p>
+    <blockquote>
+      退出 Python 解释器后，再次进入时，之前在 Python 解释器中定义的函数和变量就丢失了。
+      因此，编写较长程序时，最好用文本编辑器代替解释器，执行文件中的输入内容，这就是编写<em>脚本</em>。
+      随着程序越来越长，为了方便维护，最好把脚本拆分成多个文件。编写脚本还有一个好处，
+      <strong>不同程序调用同一个函数时，不用把函数定义复制到各个程序</strong>。
+      <br><br>
+      为实现这些需求，Python 把各种定义存入一个文件，在脚本或解释器的交互式实例中使用。这个文件就是<em>模块</em>；
+      模块中的定义可以<em>导入</em>到其他模块或<em>主</em>模块。
+      <span class="meta">——引自 Python 官方教程《模块》开头</span>
+    </blockquote>
+    <p>包的定义：</p>
+    <blockquote>
+      包是通过使用「带点号模块名」来构造 Python 模块命名空间的一种方式。
+      例如，模块名 <code>A.B</code> 表示名为 <code>A</code> 的包中名为 <code>B</code> 的子模块。
+      就像使用模块可以让不同模块的作者不必担心彼此的全局变量名一样，
+      使用带点号模块名也可以让 NumPy 或 Pillow 等多模块包的作者也不必担心彼此的模块名冲突。
+      <span class="meta">——引自 Python 官方教程《模块》6.4 节</span>
+    </blockquote>
+
+    <h3>4.2 最小模型：模块是「工具柜」，包是「工具箱」</h3>
+    <p>
+      想象你在做一个新闻数据项目。你有四类工具：抓取的、清洗的、统计的、画图的。
+    </p>
+    <ul>
+      <li><strong>模块 = 一个抽屉。</strong> 一个 <code>fetch.py</code> 就是一个装「抓取工具」的抽屉。</li>
+      <li><strong>包 = 一个工具箱。</strong> <code>newstools/</code> 文件夹下面有 <code>fetch.py</code>、<code>clean.py</code>、<code>stats.py</code>、<code>charts.py</code> 四个抽屉。</li>
+      <li><strong><code>import</code> = 打开工具箱去拿工具。</strong> <code>from newstools import fetch</code> 就是「打开 newstools 工具箱，拿出 fetch 这个抽屉」。</li>
+      <li><strong><code>modname.itemname</code> = 先指明抽屉，再说工具名。</strong> 官方原话：「您可以使用与引用模块函数相同的语法去访问一个模块的全局变量，即 <code>modname.itemname</code>」。</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>现实类比</th><th>Python 里对应什么</th><th>注意点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>一个抽屉（<code>fetch.py</code>）</td><td>模块</td><td>文件名就是模块名</td></tr>
+        <tr><td>工具箱（<code>newstools/</code> 文件夹）</td><td>包</td><td>需要 <code>__init__.py</code></td></tr>
+        <tr><td>工具箱的登记牌（<code>__init__.py</code>）</td><td>包的初始化文件</td><td>官方：「需要有 <code>__init__.py</code> 文件才能让 Python 将包含该文件的目录当作包来处理」</td></tr>
+        <tr><td>抽屉上的标签（<code>fetch</code>）</td><td>模块的 <code>__name__</code></td><td>用 <code>__name__</code> 能拿到这个名字</td></tr>
+        <tr><td>每个抽屉有自己的一套摆放规则</td><td>模块的私有符号表</td><td>官方：「每个模块都有它自己的私有符号表」</td></tr>
+        <tr><td>第一次开抽屉时会「装配」一下</td><td>模块顶层代码被执行</td><td>只执行一次，之后就记住状态了</td></tr>
+      </tbody>
+    </table>
+    <p>
+      「每个抽屉有自己的摆放规则」这一点非常关键。官方原文：
+    </p>
+    <blockquote class="ok">
+      每个模块都有它自己的私有符号表，该表被定义在该模块里的所有函数当作全局符号表使用。
+      因此，一个模块的作者可以在模块内放心使用全局变量，而不必担心它们会和模块使用者的全局变量发生意外冲突。
+      <span class="meta">——引自 Python 官方教程《模块》6.1 节</span>
+    </blockquote>
+    <p>
+      这意味着：你在 <code>fetch.py</code> 里写 <code>timeout = 10</code>，
+      和在 <code>main.py</code> 里写 <code>timeout = 30</code>，
+      <strong>是两个完全不同的变量</strong>，互不影响。这就是「不用把函数定义复制到各个程序」也不必担心命名冲突的原因。
+    </p>
+
+    <h3>4.3 关键机制一：import 做什么、执行几次</h3>
+    <p>官方对「模块里的语句什么时候执行」的说明：</p>
+    <blockquote>
+      模块包含可执行语句及函数定义。这些语句用于初始化模块，
+      且<strong>仅在 import 语句<em>第一次</em>遇到模块名时执行</strong>。
+      （文件作为脚本运行时，也会执行这些语句。）
+      <span class="meta">——引自 Python 官方教程《模块》6.1 节</span>
+    </blockquote>
+    <p>官方还有一条重要的备注：</p>
+    <blockquote class="warn">
+      为了保证运行效率，<strong>每次解释器会话只导入一次模块</strong>。
+      如果更改了模块内容，必须重启解释器；仅交互测试一个模块时，
+      也可以使用 <code>importlib.reload()</code>，例如 <code>import importlib; importlib.reload(modulename)</code>。
+      <span class="meta">——引自 Python 官方教程《模块》6.1 节备注</span>
+    </blockquote>
+    <p>这两条合起来解释了两个高频困惑：</p>
+    <ul>
+      <li><strong>「我在 <code>fetch.py</code> 里加了 print，为什么只打印一次？」</strong> 因为模块只执行一次，第一次 import 时。</li>
+      <li><strong>「我改了 <code>fetch.py</code>，为什么 Jupyter 里效果没变？」</strong> 因为模块已经导入过了，用的是旧版本。重启内核，或 <code>importlib.reload()</code>。</li>
+    </ul>
+    <p>官方给的 <code>fibo.py</code> 示例说明了命名空间效果：</p>
+    <pre><code># fibo.py
+def fib(n):
+    """Write Fibonacci series up to n."""
+    a, b = 0, 1
+    while a &lt; n:
+        print(a, end=' ')
+        a, b = b, a+b
+    print()
+
+def fib2(n):
+    """Return Fibonacci series up to n."""
+    result = []
+    a, b = 0, 1
+    while a &lt; n:
+        result.append(a)
+        a, b = b, a+b
+    return result</code></pre>
+    <pre><code>&gt;&gt;&gt; import fibo
+&gt;&gt;&gt; fibo.fib(1000)
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+&gt;&gt;&gt; fibo.__name__
+'fibo'</code></pre>
+    <p>官方对这个行为有一句明确说明：</p>
+    <blockquote>
+      此操作<strong>不会</strong>直接把 <code>fibo</code> 中定义的函数名称添加到当前 namespace 中；
+      它只是将模块名称 <code>fibo</code> 添加到那里。使用该模块名称你可以访问其中的函数。
+      <span class="meta">——引自 Python 官方教程《模块》开头</span>
+    </blockquote>
+    <p>这解释了「为什么 <code>import fibo</code> 之后写 <code>fib(500)</code> 会报 <code>NameError</code>」。
+    想直接用函数名，有三种方式：</p>
+    <pre><code># 方式一：给函数起个别名（官方示例）
+&gt;&gt;&gt; fib = fibo.fib
+&gt;&gt;&gt; fib(500)
+
+# 方式二：from ... import ...
+&gt;&gt;&gt; from fibo import fib, fib2
+&gt;&gt;&gt; fib(500)
+# 官方说明：「这条语句不会将所导入的模块的名称引入到局部命名空间中（因此在本示例中，fibo 将是未定义的名称）」
+
+# 方式三：import ... as ...
+&gt;&gt;&gt; import fibo as fib
+&gt;&gt;&gt; fib.fib(500)
+# 官方说明：「与 import fibo 一样，这种方式也可以有效地导入模块，唯一的区别是，导入的名称是 fib」
+
+&gt;&gt;&gt; from fibo import fib as fibonacci
+&gt;&gt;&gt; fibonacci(500)
+# 官方说明：「from 中也可以使用这种方式，效果类似」</code></pre>
+
+    <h3>4.4 关键机制二：模块搜索路径</h3>
+    <p>这是排查 <code>ModuleNotFoundError</code> 时必须知道的一节。官方原文：</p>
+    <blockquote>
+      当导入一个名为 <code>spam</code> 的模块时，解释器首先会搜索具有该名称的<strong>内置模块</strong>。
+      这些模块的名称在 <code>sys.builtin_module_names</code> 中列出。
+      如果未找到，它将在变量 <code>sys.path</code> 所给出的目录列表中搜索名为 <code>spam.py</code> 的文件。
+      <code>sys.path</code> 是从这些位置初始化的：
+      <ul>
+        <li>被命令行直接运行的脚本所在的目录（或未指定文件时的当前目录）。</li>
+        <li><code>PYTHONPATH</code>（目录列表，与 shell 变量 <code>PATH</code> 的语法一样）。</li>
+        <li>依赖于安装的默认值（按照惯例包括一个 <code>site-packages</code> 目录，由 <code>site</code> 模块处理）。</li>
+      </ul>
+      <span class="meta">——引自 Python 官方教程《模块》6.1.2 节</span>
+    </blockquote>
+    <p>官方还给了一条很容易踩的警告：</p>
+    <blockquote class="warn">
+      初始化后，Python 程序可以更改 <code>sys.path</code>。脚本所在的目录<strong>先于</strong>标准库所在的路径被搜索。
+      这意味着，脚本所在的目录如果有和标准库同名的文件，那么加载的是该目录里的，而不是标准库的。
+      这一般是一个错误，除非这样的替换是你有意为之。
+      <span class="meta">——引自 Python 官方教程《模块》6.1.2 节</span>
+    </blockquote>
+    <p>这条警告解释了一类非常隐蔽的 bug：</p>
+    <pre><code>项目目录/
+├── main.py
+├── random.py      ← 你自己写的文件
+└── utils.py</code></pre>
+    <pre><code># main.py
+import random          # 你以为是标准库的 random
+print(random.randint(1, 10))
+# AttributeError: module 'random' has no attribute 'randint'
+# 因为加载的是你自己的 random.py，而它里面没有 randint
+
+# 更糟的情况：如果你自己的文件叫 csv.py、json.py、re.py、email.py……
+# 会破坏大量第三方库（它们内部 import 的也是同名的标准库）</code></pre>
+    <blockquote class="ok">
+      避坑守则：<strong>不要用标准库模块名给文件命名。</strong>
+      写完一个文件后，用 <code>python -c "import sys; print([p for p in sys.path])"</code> 看看搜索路径，
+      或者直接 <code>import</code> 一下试试。
+    </blockquote>
+    <p>关于 <code>sys.path</code> 可修改这一点，官方在 6.2 节也给了例子：</p>
+    <pre><code>&gt;&gt;&gt; import sys
+&gt;&gt;&gt; sys.path.append('/ufs/guido/lib/python')</code></pre>
+    <p>还有一条关于符号链接的备注：</p>
+    <blockquote>
+      在支持符号链接的文件系统中，「被命令行直接运行的脚本所在的目录」是符号链接最终指向的目录。
+      换句话说，符号链接所在的目录并没<strong>有</strong>被添加至模块搜索路径。
+      <span class="meta">——引自 Python 官方教程《模块》6.1.2 节备注</span>
+    </blockquote>
+    <p>官方还给了一个实用函数 <code>dir()</code>（6.3 节）：</p>
+    <blockquote>
+      内置函数 <code>dir()</code> 用于查找模块定义的名称。返回结果是经过排序的字符串列表。
+      <br><br>
+      没有参数时，<code>dir()</code> 列出当前已定义的名称。
+      <br><br>
+      注意它列出所有类型的名称：变量、模块、函数……
+      <br><br>
+      <code>dir()</code> 不会列出内置函数和变量的名称。这些内容的定义在标准模块 <code>builtins</code> 中。
+      <span class="meta">——引自 Python 官方教程《模块》6.3 节</span>
+    </blockquote>
+    <pre><code>&gt;&gt;&gt; import fibo, sys
+&gt;&gt;&gt; dir(fibo)
+['__name__', 'fib', 'fib2']</code></pre>
+    <p>
+      <strong>实战用法</strong>：不确定一个模块装没装上、名字对不对时，先用 <code>dir()</code> 看一眼。
+      比反复重装快得多。
+    </p>
+
+    <h3>4.5 关键机制三：<code>if __name__ == "__main__":</code></h3>
+    <p>官方对这一句的说明（6.1.1 节「以脚本方式执行模块」）：</p>
+    <blockquote>
+      可以用以下方式运行 Python 模块：<code>python fibo.py &lt;arguments&gt;</code>
+      <br><br>
+      这项操作将执行模块里的代码，和导入模块一样，但<strong>会把 <code>__name__</code> 赋值为 <code>"__main__"</code></strong>。
+      也就是把下列代码添加到模块末尾：
+      <pre><code>if __name__ == "__main__":
+    import sys
+    fib(int(sys.argv[1]))</code></pre>
+      这个文件既能被用作脚本，又能被用作一个可供导入的模块，
+      因为解析命令行参数的那两行代码<strong>只有在模块作为"main"文件执行时才会运行</strong>：
+      <pre><code>$ python fibo.py 50
+0 1 1 2 3 5 8 13 21 34</code></pre>
+      当这个模块被导入到其它模块时，那两行代码不运行：
+      <pre><code>&gt;&gt;&gt; import fibo
+&gt;&gt;&gt;</code></pre>
+      这常用于为模块提供一个便捷的用户接口，或用于测试（把模块作为执行测试套件的脚本运行）。
+      <span class="meta">——引自 Python 官方教程《模块》6.1.1 节</span>
+    </blockquote>
+    <p>把它拆开看，只有两个事实：</p>
+    <table>
+      <thead>
+        <tr><th>这个文件是…</th><th>运行时 <code>__name__</code> 的值是</th><th><code>if</code> 里的代码</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>被当作脚本直接运行（<code>python fetch.py</code>）</td><td><code>"__main__"</code></td><td>✅ 执行</td></tr>
+        <tr><td>被别处 <code>import</code>（<code>import fetch</code>）</td><td><code>"fetch"</code></td><td>❌ 不执行</td></tr>
+      </tbody>
+    </table>
+    <p>
+      <code>__name__</code> 是 Python 自动给每个模块设置的全局变量（官方定义：「在模块内部，通过全局变量 <code>__name__</code> 可以获取模块名（即字符串）」）。
+      判断它的值，就等于在问：「我现在是主程序，还是被别人调用的零件？」
+    </p>
+    <blockquote class="ok">
+      实践模板：每个「既可能被运行、也可能被导入」的文件，都应该这样写：
+      <pre><code>def main():
+    ...
+
+if __name__ == "__main__":
+    main()</code></pre>
+      把逻辑都放进函数里，<code>if</code> 下面只留一行调用。
+      这样既能当脚本跑，又能被 import，而且被 import 时不会产生副作用。
+    </blockquote>
+    <p>如果不写这句会怎样？看这个例子：</p>
+    <pre><code># ❌ fetch.py
+print("开始抓取…")
+url_list = [f"https://example.com/{i}" for i in range(100)]
+results = [fetch(u) for u in url_list]      # 一 import 就跑了 100 次请求！
+print("抓完了")
+
+# 现在换个文件：只想用里面的一个函数
+# main.py
+import fetch        # 直接开始抓 100 个页面…… 而且你没有说要抓
+
+# ✅ fetch.py
+def main():
+    print("开始抓取…")
+    ...
+
+if __name__ == "__main__":
+    main()
+
+# main.py
+import fetch        # 安静，什么都没发生
+fetch.main()        # 需要时才跑</code></pre>
+
+    <h3>4.6 关键机制四：包与 <code>__init__.py</code></h3>
+    <p>官方给出的包结构示例（完整保留）：</p>
+    <pre><code>sound/                          最高层级的包
+      __init__.py               初始化 sound 包
+      formats/                  用于文件格式转换的子包
+              __init__.py
+              wavread.py
+              wavwrite.py
+              aiffread.py
+              aiffwrite.py
+              auread.py
+              auwrite.py
+              ...
+      effects/                  用于音效的子包
+              __init__.py
+              echo.py
+              surround.py
+              reverse.py
+              ...
+      filters/                  用于过滤器的子包
+              __init__.py
+              equalizer.py
+              vocoder.py
+              karaoke.py
+              ...</code></pre>
+    <p>关于 <code>__init__.py</code>，官方原文：</p>
+    <blockquote>
+      需要有 <code>__init__.py</code> 文件才能让 Python 将包含该文件的目录当作包来处理
+      （除非使用 namespace package，这是一个相对高级的特性）。
+      这可以防止重名的目录如 <code>string</code> 在无意中屏蔽后继出现在模块搜索路径中的有效模块。
+      <br><br>
+      在最简单的情况下，<code>__init__.py</code> 可以只是一个空文件，
+      但它也可以执行包的初始化代码或设置 <code>__all__</code> 变量。
+      <span class="meta">——引自 Python 官方教程《模块》6.4 节</span>
+    </blockquote>
+    <p>三种导入子模块的方式，官方给了对照：</p>
+    <pre><code># 方式一：完整路径，必须用全名引用
+import sound.effects.echo
+sound.effects.echo.echofilter(input, output, delay=0.7, atten=4)
+
+# 方式二：加载子模块，不用加包前缀
+from sound.effects import echo
+echo.echofilter(input, output, delay=0.7, atten=4)
+
+# 方式三：直接导入函数
+from sound.effects.echo import echofilter
+echofilter(input, output, delay=0.7, atten=4)</code></pre>
+    <p>官方对 <code>from package import item</code> 的机制有明确说明：</p>
+    <blockquote>
+      注意，使用 <code>from package import item</code> 时，item 可以是包的子模块（或子包），
+      也可以是包中定义的函数、类或变量等其他名称。
+      <code>import</code> 语句首先测试包中是否定义了 item；如果未在包中定义，则假定 item 是模块，并尝试加载。
+      <strong>如果找不到 item，则触发 <code>ImportError</code> 异常。</strong>
+      <br><br>
+      相反，使用 <code>import item.subitem.subsubitem</code> 句法时，除最后一项外，
+      每个 item 都必须是包；最后一项可以是模块或包，但不能是上一项中定义的类、函数或变量。
+      <span class="meta">——引自 Python 官方教程《模块》6.4 节</span>
+    </blockquote>
+    <p>
+      注意最后一句：<code>import a.b.c</code> 里 <code>c</code> 必须是模块或包，
+      <strong>不能是 <code>a.b</code> 里定义的函数</strong>。这是很多人写错的地方。
+      <code>import mypackage.utils.save_csv</code>——如果 <code>save_csv</code> 是 <code>utils.py</code> 里的函数，这行会报错。
+    </p>
+
+    <h3>4.7 关键机制五：<code>import *</code> 与 <code>__all__</code></h3>
+    <p>官方对 <code>from fibo import *</code> 的评价非常直接：</p>
+    <blockquote class="warn">
+      这种方式会导入所有不以下划线（<code>_</code>）开头的名称。
+      <strong>大多数情况下，不要用这个功能</strong>，这种方式向解释器导入了一批未知的名称，可能会覆盖已经定义的名称。
+      <br><br>
+      注意，一般情况下，不建议从模块或包内导入 <code>*</code>，因为，这项操作经常让代码变得难以理解。
+      不过，为了在交互式会话中少打几个字，这么用也没问题。
+      <span class="meta">——引自 Python 官方教程《模块》6.1 节</span>
+    </blockquote>
+    <p>在包这一层，官方还揭示了 <code>import *</code> 的另一个反直觉行为：</p>
+    <blockquote>
+      使用 <code>from sound.effects import *</code> 时会发生什么？你可能希望它会查找并导入包的所有子模块，
+      但<strong>事实并非如此</strong>。因为这将花费很长的时间，并且可能会产生你不想要的副作用。
+      <br><br>
+      唯一的解决办法是提供包的显式索引。<code>import</code> 语句使用如下惯例：
+      如果包的 <code>__init__.py</code> 代码定义了列表 <code>__all__</code>，
+      运行 <code>from package import *</code> 时，它就是被导入的模块名列表。
+      <span class="meta">——引自 Python 官方教程《模块》6.4.1 节</span>
+    </blockquote>
+    <pre><code># sound/effects/__init__.py
+__all__ = ["echo", "surround", "reverse"]</code></pre>
+    <p>官方还提醒了一个「本地定义会遮挡子模块」的坑：</p>
+    <blockquote class="warn">
+      请注意子模块可能会受到本地定义名称的影响。例如，如果你在 <code>sound/effects/__init__.py</code> 文件中
+      添加了一个 <code>reverse</code> 函数，<code>from sound.effects import *</code> 将只导入 <code>echo</code> 和 <code>surround</code> 这两个子模块，
+      但<strong>不会</strong>导入 <code>reverse</code> 子模块，因为它被本地定义的 <code>reverse</code> 函数所遮挡。
+      <span class="meta">——引自 Python 官方教程《模块》6.4.1 节</span>
+    </blockquote>
+    <p>而如果没定义 <code>__all__</code>：</p>
+    <blockquote>
+      如果没有定义 <code>__all__</code>，<code>from sound.effects import *</code> 语句<strong>不会</strong>把包 <code>sound.effects</code> 中的所有子模块都导入到当前命名空间；
+      它只是确保包 <code>sound.effects</code> 已被导入（可能还会运行 <code>__init__.py</code> 中的任何初始化代码），
+      然后再导入包中定义的任何名称。
+      <span class="meta">——引自 Python 官方教程《模块》6.4.1 节</span>
+    </blockquote>
+    <p>最后，官方给了明确的推荐：</p>
+    <blockquote class="ok">
+      记住，使用 <code>from package import specific_submodule</code> 没有任何问题！
+      实际上，除了导入模块使用不同包的同名子模块之外，这种方式是推荐用法。
+      <span class="meta">——引自 Python 官方教程《模块》6.4.1 节</span>
+    </blockquote>
+
+    <h3>4.8 关键机制六：相对导入</h3>
+    <p>官方说明：</p>
+    <blockquote>
+      你还可以编写相对导入代码，即使用 <code>from module import name</code> 形式的 import 语句。
+      这些导入使用<strong>前导点号</strong>来表示相对导入所涉及的当前包和上级包。
+      例如对于 <code>surround</code> 模块，可以使用：
+      <pre><code>from . import echo
+from .. import formats
+from ..filters import equalizer</code></pre>
+      需要注意的是，相对导入是基于当前模块所属包的名称进行的。
+      由于<strong>主模块（即直接运行的脚本）没有所属包</strong>，
+      因此那些打算作为 Python 应用程序主模块使用的模块，<strong>必须始终使用绝对导入</strong>。
+      <span class="meta">——引自 Python 官方教程《模块》6.4.2 节</span>
+    </blockquote>
+    <table>
+      <thead>
+        <tr><th>写法</th><th>含义</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>from . import echo</code></td><td>同一个包里（当前包的 <code>echo</code>）</td></tr>
+        <tr><td><code>from .. import formats</code></td><td>上一级包里（父包的 <code>formats</code>）</td></tr>
+        <tr><td><code>from ..filters import equalizer</code></td><td>父包下的 <code>filters</code> 子包里的 <code>equalizer</code></td></tr>
+        <tr><td><code>from sound.effects import echo</code></td><td>绝对导入（推荐，最不会出错）</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      最常见的报错：<code>ImportError: attempted relative import with no known parent package</code>。
+      原因就是官方说的那句——你直接运行的这个脚本没有「所属包」，
+      所以它里面的 <code>from . import xxx</code> 无从定位。
+      <strong>解决：直接运行的入口文件一律用绝对导入；相对导入只用在库文件之间。</strong>
+    </blockquote>
+
+    <h3>4.9 关键机制七：虚拟环境——为什么必须有</h3>
+    <p>官方在《虚拟环境和包》一章把问题说得很清楚：</p>
+    <blockquote>
+      这意味着一个 Python 安装可能无法满足每个应用程序的要求。
+      <strong>如果应用程序 A 需要特定模块的 1.0 版本但应用程序 B 需要 2.0 版本，则需求存在冲突，
+      安装版本 1.0 或 2.0 将导致某一个应用程序无法运行。</strong>
+      <br><br>
+      这个问题的解决方案是创建一个 virtual environment，一个目录树，其中安装有特定 Python 版本，以及许多其他包。
+      <br><br>
+      然后，不同的应用将可以使用不同的虚拟环境。要解决先前需求相冲突的例子，
+      应用程序 A 可以拥有自己的安装了 1.0 版本的虚拟环境，而应用程序 B 则拥有安装了 2.0 版本的另一个虚拟环境。
+      如果应用程序 B 要求将某个库升级到 3.0 版本，也不会影响应用程序 A 的环境。
+      <span class="meta">——引自 Python 官方教程《虚拟环境和包》12.1 节</span>
+    </blockquote>
+    <p>创建与激活（官方原文）：</p>
+    <blockquote>
+      用于创建和管理虚拟环境的模块是 <code>venv</code>。<code>venv</code> 将安装运行命令所使用的 Python 版本（即 <code>--version</code> 选项所报告的版本）。
+      例如，使用 <code>python3.12</code> 执行命令将会安装 3.12 版。
+      <br><br>
+      要创建虚拟环境，请确定要放置它的目录，并将 <code>venv</code> 模块作为脚本运行目录路径：
+      <pre><code>python -m venv tutorial-env</code></pre>
+      这将创建 <code>tutorial-env</code> 目录，如果它不存在的话，并在其中创建包含 Python 解释器副本和各种支持文件的目录。
+      <br><br>
+      虚拟环境的常用目录位置是 <code>.venv</code>。这个名称通常会令该目录在你的终端中保持隐藏，
+      从而避免需要对所在目录进行额外解释的一般名称。它还能防止与某些工具所支持的 <code>.env</code> 环境变量定义文件发生冲突。
+      <span class="meta">——引自 Python 官方教程《虚拟环境和包》12.2 节</span>
+    </blockquote>
+    <pre><code># Windows
+tutorial-env\Scripts\activate
+
+# Unix 或 macOS
+source tutorial-env/bin/activate
+
+# 退出
+deactivate</code></pre>
+    <p>官方对激活的说明：</p>
+    <blockquote>
+      激活虚拟环境将改变你所用终端的提示符，以显示你正在使用的虚拟环境，
+      并修改环境以使 <code>python</code> 命令所运行的将是已安装的特定 Python 版本。
+      <br><br>
+      请注意，激活的虚拟环境不会以任何方式更改 <code>PYTHONPATH</code> 变量。
+      如果该路径包含与虚拟环境所使用的 Python 版本不兼容的代码引用，这可能会导致意外结果。
+      最佳实践是在 bash 中执行 <code>unset PYTHONPATH</code>，或者在你所使用的 shell 中执行等效命令。
+      <span class="meta">——引自 Python 官方教程《虚拟环境和包》12.2 节</span>
+    </blockquote>
+    <blockquote class="warn">
+      Windows 与 macOS/Linux 命令不同的原因：Windows 的激活脚本在 <code>Scripts\</code> 目录下的 <code>activate</code>（批处理/PowerShell），
+      macOS/Linux 在 <code>bin/</code> 下的 <code>activate</code>（shell 脚本），需要 <code>source</code> 来<strong>在当前 shell 中</strong>执行它。
+      这也是为什么在 macOS/Linux 上直接敲 <code>./activate</code> 不生效——那会在子 shell 里执行，激活效果跟你就没关系了。
+      <br><br>
+      你会在命令行提示符前面看到 <code>(tutorial-env)</code>，这是「已激活」的视觉标志。
+    </blockquote>
+
+    <h3>4.10 关键机制八：pip 与 requirements.txt</h3>
+    <p>官方说明：</p>
+    <blockquote>
+      你可以使用一个名为 <strong>pip</strong> 的程序来安装、升级和移除软件包。
+      默认情况下 <code>pip</code> 将从 Python Package Index 安装软件包。
+      <br><br>
+      <code>pip</code> 有许多子命令："install", "uninstall", "freeze" 等等。
+      <span class="meta">——引自 Python 官方教程《虚拟环境和包》12.3 节</span>
+    </blockquote>
+    <p>官方给出的常用命令（原文命令，注意官方一律写成 <code>python -m pip</code>）：</p>
+    <pre><code># 安装最新版本
+python -m pip install novas
+
+# 安装指定版本（用 == 指定）
+python -m pip install requests==2.6.0
+
+# 升级到最新版本
+python -m pip install --upgrade requests
+
+# 卸载
+python -m pip uninstall 包名
+
+# 查看某个包的信息
+python -m pip show requests
+
+# 列出已安装的所有包
+python -m pip list
+
+# 生成依赖清单（官方称之为「一个常见的约定」）
+python -m pip freeze &gt; requirements.txt
+
+# 按照清单一次装齐
+python -m pip install -r requirements.txt</code></pre>
+    <p>官方对「重复安装同一版本」的行为也有说明：</p>
+    <blockquote>
+      如果你重新运行这个命令，<code>pip</code> 会注意到已经安装了所请求的版本因而不做任何事。
+      你可以提供不同的版本号来获取相应版本，或者你可以运行 <code>python -m pip install --upgrade</code> 以将软件包升级到最新版本。
+      <span class="meta">——引自 Python 官方教程《虚拟环境和包》12.3 节</span>
+    </blockquote>
+    <p>官方给出的 <code>requirements.txt</code> 内容样例与用途说明：</p>
+    <pre><code>(tutorial-env) $ python -m pip freeze &gt; requirements.txt
+(tutorial-env) $ cat requirements.txt
+novas==3.1.1.3
+numpy==1.9.2
+requests==2.7.0</code></pre>
+    <blockquote class="ok">
+      然后可以将 <code>requirements.txt</code> 提交给版本控制并作为应用程序的一部分提供。
+      然后用户可以使用 <code>install -r</code> 安装所有必需的包。
+      <span class="meta">——引自 Python 官方教程《虚拟环境和包》12.3 节</span>
+    </blockquote>
+    <p><strong>为什么 <code>python -m pip</code> 比直接写 <code>pip</code> 更稳？</strong></p>
+    <p>
+      写 <code>python -m pip</code> 时，<code>python</code> 和 <code>pip</code> 是<strong>同一个</strong> Python 环境，不可能错位。
+      而直接写 <code>pip</code> 时，如果机器上有多个 Python（系统自带 + Anaconda + 官网安装版），
+      <code>pip</code> 可能指向 A 而 <code>python</code> 指向 B，
+      于是「我明明装了 pandas」而 <code>import pandas</code> 却报 <code>ModuleNotFoundError</code>。
+      <strong>这是新手遇到 <code>ModuleNotFoundError</code> 的第一大原因。</strong>
+      官方文档全程使用 <code>python -m pip</code> 的形式，也是为了这个原因。
+    </p>
+    <blockquote class="warn">
+      关于<strong>国内镜像源</strong>：官方文档不涉及这一话题（PyPI 默认源是 pypi.org，国内访问常较慢）。
+      实践中的做法是加 <code>-i</code> 参数指向国内镜像，例如：
+      <pre><code>python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple requests</code></pre>
+      但请注意：<strong>镜像源是第三方提供的服务，官方文档不作背书</strong>；
+      且镜像同步有延迟，偶尔会出现「镜像上没有最新版本」的情况。
+      另外，镜像只解决「下载慢」，不解决「装到了别的 Python 里」——后者要靠虚拟环境 <code>python -m pip</code> 解决。
+    </blockquote>
+
+    <h3>4.11 关键机制九：<code>__pycache__</code></h3>
+    <p>官方说明：</p>
+    <blockquote>
+      为了快速加载模块，Python 把模块的编译版本缓存在 <code>__pycache__</code> 目录中，
+      文件名为 <code>module.version.pyc</code>，version 对编译文件格式进行编码，一般是 Python 的版本号。
+      例如，CPython 的 3.3 发行版中，<code>spam.py</code> 的编译版本缓存为 <code>__pycache__/spam.cpython-33.pyc</code>。
+      这种命名惯例让不同 Python 版本编译的模块可以共存。
+      <br><br>
+      Python 对比编译版与源码的修改日期，查看编译版是否已过期，是否要重新编译。此进程完全是自动的。
+      <br><br>
+      Python 在两种情况下不检查缓存。一，从命令行直接载入的模块，每次都会重新编译，且不储存编译结果；
+      二，没有源模块，就不会检查缓存。
+      <span class="meta">——引自 Python 官方教程《模块》6.1.3 节</span>
+    </blockquote>
+    <p>官方还给了一条实用建议和一个易误解的澄清：</p>
+    <blockquote>
+      <ul>
+        <li>在 Python 命令中使用 <code>-O</code> 或 <code>-OO</code> 开关，可以减小编译模块的大小。<code>-O</code> 去除断言语句，<code>-OO</code> 去除断言语句和 <code>__doc__</code> 字符串。有些程序可能依赖于这些内容，因此，没有十足的把握，不要使用这两个选项。</li>
+        <li><strong>从 <code>.pyc</code> 文件读取的程序不比从 <code>.py</code> 读取的执行速度快，<code>.pyc</code> 文件只是加载速度更快。</strong></li>
+        <li><code>compileall</code> 模块可以为一个目录下的所有模块创建 <code>.pyc</code> 文件。</li>
+      </ul>
+      <span class="meta">——引自 Python 官方教程《模块》6.1.3 节</span>
+    </blockquote>
+    <p>
+      所以：<code>__pycache__</code> 可以随便删（删了下次会自动重建），
+      也不该提交到 Git（因为它只是缓存）。删它不会让程序跑得更快，也不会让程序跑不动。
+    </p>
+
+    <h3>4.12 可运行代码：完整对错对比</h3>
+
+    <p><strong>坑 1：<code>import</code> 后直接用函数名</strong></p>
+    <pre><code># ❌ NameError: name 'fib' is not defined
+import fibo
+fib(500)
+
+# ✅ 三种正确写法，选一种
+import fibo
+fibo.fib(500)
+
+from fibo import fib
+fib(500)
+
+import fibo as f
+f.fib(500)</code></pre>
+
+    <p><strong>坑 2：文件名撞上标准库</strong></p>
+    <pre><code># 你的项目里有个 csv.py（不幸与标准库同名）
+
+# ❌ 你自己想读 CSV
+import csv
+csv.reader(...)      # AttributeError: module 'csv' has no attribute 'reader'
+
+# ❌ 更糟：第三方库内部 import csv 时拿到的也是你的文件，整个库坏掉
+import pandas        # 可能报奇怪的错误
+
+# ✅ 改名！改成 read_csv_data.py / csv_utils.py 之类
+# ✅ 或者确保脚本目录不在 sys.path 首位（但很难做，不如改名）</code></pre>
+
+    <p><strong>坑 3：忘记 <code>if __name__ == "__main__":</code></strong></p>
+    <pre><code># ❌ fetch.py：一 import 就发请求
+import time
+
+urls = ["https://example.com/1", "https://example.com/2"]
+
+for u in urls:
+    time.sleep(1)      # 一被 import，先睡 2 秒
+    print("抓取", u)
+
+# main.py
+import fetch           # 打印了两行，还睡了两秒。你只是想用个函数而已
+
+# ✅ fetch.py 用 main 收起来
+def fetch_all(url_list):
+    for u in url_list:
+        print("抓取", u)
+
+def main():
+    fetch_all(["https://example.com/1", "https://example.com/2"])
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+    <p><strong>坑 4：<code>from m import *</code> 覆盖已有名称</strong></p>
+    <pre><code># utils.py
+def clean(s): return s.strip()
+def clean_all(items): return [clean(x) for x in items]
+timeout = 10
+
+# ❌ 主文件里已经有自己的 clean，被 import * 覆盖了
+def clean(s):
+    return s.replace(" ", "")
+
+from utils import *
+print(clean(" a b "))     # 'a b' ← 用的是 utils 的，你的定义被静默覆盖了！
+
+# ✅ 显式导入
+from utils import clean_all
+# 或者
+import utils
+print(utils.clean(" a b "))</code></pre>
+
+    <p><strong>坑 5：相对导入用在直接运行的脚本里</strong></p>
+    <pre><code>项目/
+├── main.py
+└── newstools/
+    ├── __init__.py
+    ├── fetch.py
+    └── clean.py</code></pre>
+    <pre><code># newstools/clean.py
+from . import fetch          # ✅ 可以：clean.py 属于 newstools 包
+
+# main.py
+from . import fetch          # ❌ ImportError: attempted relative import with no known parent package
+# 因为 main.py 是被直接运行的脚本，没有「所属包」
+
+# ✅ main.py 用绝对导入
+from newstools import fetch</code></pre>
+
+    <p><strong>坑 6：包结构对了但缺 <code>__init__.py</code></strong></p>
+    <pre><code># ❌ 少了 __init__.py
+newstools/
+    fetch.py          ← 没有 __init__.py
+
+# main.py
+from newstools import fetch
+# ModuleNotFoundError: No module named 'newstools'
+# （在新版本 Python 中命名空间包可能侥幸成功，但行为不可依赖）
+
+# ✅ 补上（可以是空文件）
+newstools/
+    __init__.py
+    fetch.py</code></pre>
+
+    <p><strong>坑 7：装了包却 import 不到</strong></p>
+    <pre><code># 症状
+# $ pip install requests
+# $ python main.py
+# ModuleNotFoundError: No module named 'requests'
+
+# ① 先确认 pip 和 python 是不是同一个环境
+python -c "import sys; print(sys.executable)"
+python -m pip -V
+
+# 两个输出里的路径应该指向同一个 Python。不一致就是这个原因。
+
+# ✅ 正确做法：永远用 python -m pip
+python -m pip install requests
+
+# ② 或者确认是不是装了但装在了全局、而你在虚拟环境里跑
+# 激活虚拟环境后重新装一次
+
+# ③ 再确认模块名和包名是否一致（有些包名和 import 名不同）
+# 例如：pip install beautifulsoup4  →  import bs4
+#       pip install Pillow          →  import PIL
+#       pip install opencv-python   →  import cv2
+# 用 pip show 包名 和 dir() 验证</code></pre>
+
+    <p><strong>坑 8：循环导入</strong></p>
+    <pre><code># a.py
+import b            # ① 开始导入 b
+def fa():
+    return b.fb()
+
+# b.py
+import a            # ② 又回来导入 a —— 此时 a 还没定义完，fa 可能还不存在
+def fb():
+    return a.fa()
+
+# main.py
+import a
+# ImportError: cannot import name 'fa' from partially initialized module 'a'
+# （most likely due to a circular import）
+
+# ✅ 解决思路一：把公共部分的代码抽到第三个模块 c.py，各自 import c
+
+# ✅ 解决思路二：在函数内部 import（延迟到调用时）
+def fb():
+    import a          # 放到函数里，等真正调用时 a 已经加载完了
+    return a.fa()</code></pre>
+    <blockquote class="warn">
+      报错信息里出现 <code>partially initialized module</code> 和 <code>circular import</code>，
+      就基本可以确定是循环导入。这不是「Python 有 bug」，而是你的模块依赖关系成了环。
+      最好的解法是<strong>重构依赖关系</strong>（抽出公共模块），函数内 import 是权宜之计。
+    </blockquote>
+
+    <p><strong>坑 9：改了模块代码但没生效</strong></p>
+    <pre><code># ❌ 交互式环境 / Jupyter 里已经 import 过的模块，改文件不会自动重载
+import newstools.fetch
+newstools.fetch.抓取("https://...")     # 用的还是旧代码
+
+# ✅ 方案一：重启解释器 / 重启 Jupyter 内核（最稳）
+
+# ✅ 方案二：手动重载（官方推荐做法）
+import importlib
+import newstools.fetch
+importlib.reload(newstools.fetch)</code></pre>
+
+    <p><strong>坑 10：完整的项目结构模板</strong></p>
+    <pre><code>新闻数据项目/
+├── .venv/                     ← 虚拟环境（不提交到 Git）
+├── .gitignore                 ← 里面写 .venv/ __pycache__/ *.pyc
+├── requirements.txt           ← 依赖清单
+├── README.md
+├── main.py                    ← 入口，只做「流程编排」
+├── config.py                  ← 所有路径、常量
+└── newstools/                 ← 自建包
+    ├── __init__.py
+    ├── fetch.py
+    ├── clean.py
+    ├── stats.py
+    └── charts.py</code></pre>
+    <pre><code># main.py —— 入口文件：绝对导入，只编排不实现
+from newstools import fetch, clean, stats, charts
+import config
+
+def main():
+    raw = fetch.fetch_all(config.URL_LIST)
+    records = clean.clean(raw)
+    summary = stats.summarize(records)
+    charts.plot(summary, config.OUTPUT_DIR)
+    print(f"完成：{len(records)} 条")
+
+if __name__ == "__main__":
+    main()</code></pre>
+    <pre><code># newstools/__init__.py —— 明确导出清单，并给出包的版本
+__all__ = ["fetch", "clean", "stats", "charts"]
+__version__ = "0.1.0"</code></pre>
+    <pre><code># 从零开始跑起来
+# 1) 创建并激活虚拟环境
+python -m venv .venv
+.venv\Scripts\activate                # Windows
+# source .venv/bin/activate           # macOS / Linux
+
+# 2) 装依赖（用 python -m pip，不要只写 pip）
+python -m pip install -r requirements.txt
+
+# 3) 跑
+python main.py</code></pre>
+  </section>
+
+  <section id="s5">
+    <h2>5. 应用场景（新闻传播学）</h2>
+
+    <h3>场景一：把「抓取—清洗—统计」拆成包，让每周的选题监测能重复跑</h3>
+    <p>
+      现实情况：你做了一个舆情周报脚本，第一次写的时候全在一个 <code>report.py</code> 里，500 行。
+      第二周要改的时候，你花了 20 分钟才找到「统计词频」那段在哪。
+      第三周主任说「再加个来源分布」——你决定重构。
+    </p>
+    <p>这就是模块化真正的价值：<strong>不是为了「高级」，是为了每周改的时候少痛苦 20 分钟。</strong></p>
+    <pre><code># ---------- config.py：所有会变的东西集中在这里 ----------
+from pathlib import Path
+
+OUTPUT_DIR = Path("output")
+DATA_DIR = Path("data")
+URL_LIST = [f"https://example.com/news/{i}" for i in range(1, 51)]
+
+KEYWORDS = ["改造", "环保", "交通", "医疗", "教育"]
+
+COLUMNS = ["标题", "来源", "日期", "正文"]</code></pre>
+    <pre><code># ---------- newstools/fetch.py ----------
+"""抓取层：只负责「把页面拿到手」。"""
+from urllib.request import urlopen
+
+class FetchError(Exception):
+    pass
+
+def fetch_one(url, timeout=10):
+    try:
+        with urlopen(url, timeout=timeout) as resp:
+            return resp.read().decode("utf-8", errors="replace")
+    except OSError as exc:
+        raise FetchError(f"{url} 抓取失败") from exc
+
+def fetch_all(url_list):
+    """返回 [(url, html), ...]，失败的会被记录但不中断。"""
+    ok, failed = [], []
+    for u in url_list:
+        try:
+            ok.append((u, fetch_one(u)))
+        except FetchError as exc:
+            print(f"[跳过] {exc}")
+            failed.append(u)
+    print(f"抓取完成：成功 {len(ok)}，失败 {len(failed)}")
+    return ok
+
+
+def main():
+    """单独测试这一层时用：python -m newstools.fetch"""
+    for u, html in fetch_all(["https://example.com"])[:1]:
+        print(u, len(html))
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+    <pre><code># ---------- newstools/clean.py ----------
+"""清洗层：只负责「把脏数据变成整齐的记录」。"""
+import re
+from datetime import date
+
+DATE_PATTERN = re.compile(r"(?P&lt;year&gt;\d{4})\D(?P&lt;month&gt;\d{1,2})\D(?P&lt;day&gt;\d{1,2})")
+
+def extract_title(html):
+    m = re.search(r"&lt;title&gt;(.*?)&lt;/title&gt;", html, re.DOTALL)
+    return m.group(1).strip() if m else "(无标题)"
+
+def normalize_date(text):
+    m = DATE_PATTERN.search(text)
+    if not m:
+        return None
+    try:
+        return date(int(m["year"]), int(m["month"]), int(m["day"])).isoformat()
+    except ValueError:
+        return None      # 非法日期（如 2 月 30 日）
+
+def clean(fetch_result):
+    """把 [(url, html), ...] 变成 [{"标题":..., "日期":...}, ...]"""
+    records = []
+    for url, html in fetch_result:
+        records.append({
+            "标题": extract_title(html),
+            "日期": normalize_date(html),
+            "网址": url,
+        })
+    return records</code></pre>
+    <pre><code># ---------- newstools/stats.py ----------
+"""统计层：只负责「从记录算出数字」。"""
+from collections import Counter
+
+def keyword_counts(records, keywords):
+    """统计每个关注词在多少条记录的标题里出现过。"""
+    counts = Counter()
+    for r in records:
+        title = r.get("标题") or ""
+        for w in keywords:
+            if w in title:
+                counts[w] += 1
+    return counts
+
+def date_distribution(records):
+    """按日期统计条数，顺带统计「日期缺失」的条数。"""
+    counts = Counter(r["日期"] or "(日期缺失)" for r in records)
+    return dict(sorted(counts.items()))</code></pre>
+    <pre><code># ---------- main.py ----------
+"""入口：只做流程编排，不做具体实现。"""
+import config
+from newstools import fetch, clean, stats
+
+def main():
+    raw = fetch.fetch_all(config.URL_LIST)      # 注意：这里只是为了演示结构
+    records = clean.clean(raw)
+
+    print(f"\n共清洗出 {len(records)} 条")
+    print("\n--- 关注词命中 ---")
+    for word, n in stats.keyword_counts(records, config.KEYWORDS).most_common():
+        print(f"  {word}: {n} 条")
+
+    print("\n--- 日期分布 ---")
+    for d, n in stats.date_distribution(records).items():
+        print(f"  {d}: {n} 条")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+    <p>这个结构带来的实际好处：</p>
+    <ul>
+      <li><strong>改一处不影响别处</strong>：主任说「统计口径不对」，你只打开 <code>stats.py</code>，20 行，一眼看完。</li>
+      <li><strong>各层可以单独测</strong>：每个文件都有 <code>if __name__ == "__main__":</code>，可以直接 <code>python -m newstools.clean</code> 单独调试这一层。</li>
+      <li><strong>能复用</strong>：下周做另一个部门的报表，<code>fetch.py</code> 和 <code>clean.py</code> 直接复制过去用，只改 <code>config.py</code>。</li>
+      <li><strong>依赖清楚</strong>：<code>main.py</code> 里三行 import 就把整个数据流讲清楚了。</li>
+    </ul>
+    <p>
+      注意 <code>main.py</code> 里的导入写法：<code>from newstools import fetch, clean, stats</code>——
+      官方说这是「推荐用法」。而不是 <code>from newstools import *</code>（官方说「大多数情况下，不要用这个功能」）。
+    </p>
+
+    <h3>场景二：用虚拟环境 + requirements.txt 把项目交给同事</h3>
+    <p>
+      现实情况：你在自己的电脑上做了个数据看板，要交给同事一起维护。
+      你发过去，同事 <code>python main.py</code>，报了一堆 <code>ModuleNotFoundError</code>。
+      你「我记得你装过 pandas 啊」——他装的是去年做别的项目时装的 pandas 1.5，你的代码需要 2.x。
+    </p>
+    <p>这是数据新闻团队里最常见的协作事故。<strong>虚拟环境 + requirements.txt 就是标准解法。</strong></p>
+    <pre><code># ---------- 你这边：把环境定下来 ----------
+
+# 1) 在项目目录下创建虚拟环境（官方推荐用 .venv 这个名字）
+python -m venv .venv
+
+# 2) 激活
+# Windows:
+.venv\Scripts\activate
+# macOS / Linux:
+source .venv/bin/activate
+
+# 激活后命令行前面会出现 (.venv)
+
+# 3) 装项目需要的包（一律用 python -m pip）
+python -m pip install pandas requests beautifulsoup4 openpyxl matplotlib
+
+# 4) 生成依赖清单（官方：「一个常见的约定是将此列表放在 requirements.txt 文件中」）
+python -m pip freeze &gt; requirements.txt
+
+# requirements.txt 大概长这样：
+# beautifulsoup4==4.12.3
+# matplotlib==3.9.2
+# numpy==2.1.1
+# openpyxl==3.1.5
+# pandas==2.2.3
+# requests==2.32.3
+
+
+# ---------- 同事那边：一条命令还原环境 ----------
+
+git clone 项目地址
+cd 项目
+
+python -m venv .venv
+.venv\Scripts\activate                # Windows
+python -m pip install -r requirements.txt
+python main.py</code></pre>
+    <p>几个关键点：</p>
+    <ul>
+      <li><strong><code>.venv/</code> 不要提交到 Git</strong>。它是本机专用的（里面有指向你机器上 Python 解释器的路径），体积也大。
+          在 <code>.gitignore</code> 里写 <code>.venv/</code>、<code>__pycache__/</code>、<code>*.pyc</code>。</li>
+      <li><strong><code>requirements.txt</code> 要提交</strong>。官方说「然后可以将 <code>requirements.txt</code> 提交给版本控制并作为应用程序的一部分提供」。</li>
+      <li><strong><code>pip freeze</code> 会导出当前环境的全部包</strong>（包括依赖的依赖），所以清单可能比你主动装的更长。
+          这对「精确复现」是好事，但如果你只是想要精简列表，需要手工整理。</li>
+      <li><strong>国内下载慢</strong>时可以临时指定镜像源，但要意识到这只是加速手段，不是环境管理手段：
+          <pre><code>python -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre></li>
+      <li><strong>验证环境对不对</strong>：激活虚拟环境后，<code>python -c "import sys; print(sys.executable)"</code>，
+          输出路径里应该包含你项目的 <code>.venv</code>。</li>
+    </ul>
+    <blockquote class="ok">
+      最后一条实践建议：<strong>requirements.txt 里写死版本号（<code>==</code>），不要写 <code>&gt;=</code>。</strong>
+      因为你这次跑通的是具体这个版本，写 <code>&gt;=</code> 意味着下次同事装到新版本，
+      可能因为 API 变更而报错——那就又回到「我这边明明能跑」的老问题上了。
+    </blockquote>
+  </section>
+
+  <section id="s6">
+    <h2>6. 概念辨析</h2>
+
+    <h3>辨析 1：<code>import m</code> vs <code>from m import x</code></h3>
+    <pre><code># import m：把模块名放进命名空间，用 m.x 访问
+import math
+math.sqrt(16)          # ✅
+sqrt(16)               # ❌ NameError
+math.__name__          # 'math'
+
+# from m import x：把 x 拿到当前命名空间，直接用
+from math import sqrt
+sqrt(16)               # ✅
+math.sqrt(16)          # ❌ NameError（math 这个名字根本没进来）
+
+# from m import x as y：避免重名
+from math import sqrt as sq_root
+sq_root(16)            # 4.0</code></pre>
+    <p>
+      官方对 <code>from ... import ...</code> 的说明是：「这条语句不会将所导入的模块的名称引入到局部命名空间中」。
+      所以 <code>from math import sqrt</code> 之后写 <code>math.sqrt</code> 会报错——很多人以为两者同时可用，不是的。
+    </p>
+
+    <h3>辨析 2：<code>from m import *</code> vs 显式导入</h3>
+    <pre><code># ❌ import *：不知道来了什么，可能覆盖已有名字
+from newstools.clean import *
+clean(" a ")           # 能用，但谁知道 clean 是谁家的
+
+# ✅ 显式：意图清楚，静态检查工具也能分析
+from newstools.clean import clean
+# 或者更好：保留模块前缀
+import newstools.clean
+newstools.clean.clean(" a ")</code></pre>
+    <p>
+      官方原话：「大多数情况下，不要用这个功能，这种方式向解释器导入了一批未知的名称，可能会覆盖已经定义的名称」，
+      以及「一般情况下，不建议从模块或包内导入 <code>*</code>，因为，这项操作经常让代码变得难以理解。
+      不过，为了在交互式会话中少打几个字，这么用也没问题」。
+      注意官方给了唯一的合法场景：<strong>交互式会话里图省事</strong>。
+    </p>
+
+    <h3>辨析 3：<code>ModuleNotFoundError</code> vs <code>ImportError</code></h3>
+    <pre><code># ModuleNotFoundError：根本找不到这个模块
+import 不存在的包
+# ModuleNotFoundError: No module named 'no_such_package'
+
+# ImportError：找到了模块，但里面的名字找不到
+from math import no_such_name
+# ImportError: cannot import name 'no_such_name' from 'math'
+
+# 从类关系看，ModuleNotFoundError 是 ImportError 的子类
+# 所以 except ImportError 能同时接住两者
+try:
+    import optional_pkg
+except ImportError:
+    optional_pkg = None</code></pre>
+    <p>
+      官方对 <code>ModuleNotFoundError</code> 的定义：「<code>ImportError</code> 的子类，
+      由 <code>import</code> 在找不到模块时引发。它也会在 <code>sys.modules</code> 中找到 <code>None</code> 时引发。」
+      对 <code>ImportError</code> 的定义：「<code>import</code> 语句加载模块出问题时引发。
+      当 <code>from ... import</code> 里的名字找不到时也引发。」
+    </p>
+    <p>
+      <strong>排查思路：</strong>看是「找不到模块」（装没装、装哪了、名字对不对）
+      还是「找不到名字」（模块里真有这个东西吗、是不是循环导入、是不是写错大小写）。
+    </p>
+
+    <h3>辨析 4：<code>__name__</code> 的两个值</h3>
+    <pre><code># greet.py
+print("被执行的代码")
+print("__name__ =", __name__)
+
+if __name__ == "__main__":
+    print("我是主程序")
+
+# 直接运行：python greet.py
+# 被执行的代码
+# __name__ = __main__
+# 我是主程序
+
+# 被导入：import greet
+# 被执行的代码
+# __name__ = greet
+# （"我是主程序" 不打印）</code></pre>
+    <p>
+      注意：<strong>print 那两行在两种情况下都执行了</strong>（因为它们在模块顶层），
+      只有 <code>if</code> 里面那句区别对待。官方解释：「这些语句用于初始化模块，且仅在 import 语句第一次遇到模块名时执行」。
+      所以「模块顶层代码会被执行」这件事是不可避免的，只能靠 <code>if __name__ == "__main__":</code> 把「只在当脚本时该跑的东西」隔开。
+    </p>
+
+    <h3>辨析 5：包（package）vs 模块（module）</h3>
+    <pre><code># 模块：一个 .py 文件
+fetch.py
+
+# 包：一个含 __init__.py 的文件夹
+newstools/
+    __init__.py
+    fetch.py
+    clean.py
+
+# 导入语法上的差异
+import fetch                    # 模块：直接名字
+from newstools import fetch     # 包中的模块：带点号
+import newstools.fetch          # 等价写法，但要写全名
+newstools.fetch.抓取()</code></pre>
+    <p>
+      判断标准很简单：<strong><code>import</code> 的东西是文件就是模块，是含 <code>__init__.py</code> 的目录就是包。</strong>
+      官方对 <code>__init__.py</code> 的作用解释得很清楚：「需要有 <code>__init__.py</code> 文件才能让 Python 将包含该文件的目录当作包来处理……
+      这可以防止重名的目录如 <code>string</code> 在无意中屏蔽后继出现在模块搜索路径中的有效模块。」
+    </p>
+
+    <h3>辨析 6：虚拟环境 vs 全局环境</h3>
+    <pre><code># 全局环境：所有项目共用一个 Python 和一套包
+python -m pip install pandas==2.0
+# 项目 A 需要 pandas 2.0 ✅
+# 项目 B 需要 pandas 1.5 ❌ —— 装不上，或者装上后 A 挂了
+
+# 虚拟环境：每个项目一套独立的包
+cd 项目A
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install pandas==2.0        # 只影响项目 A
+
+cd ../项目B
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install pandas==1.5        # 只影响项目 B</code></pre>
+    <p>
+      官方在 12.1 节把冲突场景讲得很具体：「如果应用程序 A 需要特定模块的 1.0 版本但应用程序 B 需要 2.0 版本，
+      则需求存在冲突，安装版本 1.0 或 2.0 将导致某一个应用程序无法运行」。
+      虚拟环境的价值就是<strong>把版本冲突从「不可解」变成「各管各的」</strong>。
+    </p>
+    <p>
+      还有一个新手容易忽略的细节：官方提醒「激活的虚拟环境不会以任何方式更改 <code>PYTHONPATH</code> 变量……
+      最佳实践是在 bash 中执行 <code>unset PYTHONPATH</code>」。
+      如果你之前手工设过 <code>PYTHONPATH</code>，可能会干扰虚拟环境的行为。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7. 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：</b><code>import fibo</code> 之后，为什么写 <code>fib(500)</code> 会报 <code>NameError</code>？
+      <div class="ans">
+        因为 <code>import fibo</code> 只会把<strong>模块名 <code>fibo</code></strong> 加进当前命名空间，
+        不会把模块里的函数名加进来。官方原文：「此操作不会直接把 <code>fibo</code> 中定义的函数名称添加到当前 namespace 中；
+        它只是将模块名称 <code>fibo</code> 添加到那里。」
+        正确写法是 <code>fibo.fib(500)</code>，或者用 <code>from fibo import fib</code>，
+        或者 <code>fib = fibo.fib</code> 起个别名。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：</b>模块顶层的 <code>print()</code> 会在什么时候执行？执行几次？
+      <div class="ans">
+        在模块<strong>第一次被 import 时</strong>执行一次；如果这个文件本身被当作脚本直接运行，也会执行。
+        官方原文：「这些语句用于初始化模块，且仅在 import 语句第一次遇到模块名时执行」，
+        以及备注「为了保证运行效率，每次解释器会话只导入一次模块」。
+        所以：改代码后需要重启解释器（或用 <code>importlib.reload()</code>），否则用的还是旧版本。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：</b><code>if __name__ == "__main__":</code> 中 <code>__name__</code> 在两个场景下分别是什么值？
+      <div class="ans">
+        ① 文件被直接运行（<code>python fibo.py</code>）时是 <code>"__main__"</code>，<code>if</code> 里的代码会执行；
+        ② 文件被别处 <code>import</code> 时是模块名（比如 <code>"fibo"</code>），<code>if</code> 里的代码不执行。
+        官方对直接运行的解释是：「这项操作将执行模块里的代码，和导入模块一样，但会把 <code>__name__</code> 赋值为 <code>"__main__"</code>」。
+        这个写法常用于「为模块提供一个便捷的用户接口，或用于测试」。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：</b>你在项目目录下建了一个 <code>csv.py</code>，然后 <code>import csv</code> 报 <code>AttributeError: module 'csv' has no attribute 'reader'</code>。为什么？怎么修？
+      <div class="ans">
+        因为 <code>sys.path</code> 里「被命令行直接运行的脚本所在的目录」排在标准库路径<strong>前面</strong>，
+        所以你的 <code>csv.py</code> 把标准库的 <code>csv</code> 屏蔽了。
+        官方原话：「脚本所在的目录先于标准库所在的路径被搜索。这意味着，脚本所在的目录如果有和标准库同名的文件，
+        那么加载的是该目录里的，而不是标准库的。这一般是一个错误，除非这样的替换是你有意为之。」
+        修法：<strong>改文件名</strong>。绝不要用 <code>csv.py</code>、<code>json.py</code>、<code>re.py</code>、<code>random.py</code>、<code>email.py</code> 这类名字。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：</b>同事说「我明明 <code>pip install pandas</code> 了，为什么 <code>import pandas</code> 还是报 ModuleNotFoundError」？给他三条排查建议。
+      <div class="ans">
+        ① <strong>确认 pip 和 python 是不是同一个环境</strong>：分别跑
+        <code>python -c "import sys; print(sys.executable)"</code> 和 <code>python -m pip -V</code>，
+        比较输出里的路径。不一致就是这个原因。以后统一用 <code>python -m pip install</code>（官方文档全程就是这个写法）。
+        <br>
+        ② <strong>确认是不是装在了全局，而实际跑在虚拟环境里</strong>：激活虚拟环境后重新装一次。
+        <br>
+        ③ <strong>确认包名和 import 名是否不同</strong>：比如 <code>pip install beautifulsoup4</code> 对应 <code>import bs4</code>，
+        <code>pip install Pillow</code> 对应 <code>import PIL</code>。用 <code>python -m pip show 包名</code> 和 <code>dir()</code> 验证。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：</b>为什么 macOS/Linux 上激活虚拟环境要写 <code>source activate</code>，而 Windows 上直接写 <code>activate</code>？
+      <div class="ans">
+        因为激活的本质是<strong>修改当前 shell 的环境变量</strong>（主要是 <code>PATH</code>），
+        所以脚本必须在<strong>当前 shell 中执行</strong>而不能在子进程里执行——<code>source</code> 正是这个作用。
+        Windows 上的 <code>activate</code> 是批处理/PowerShell 脚本，改的就是当前会话的环境。
+        官方给出的命令是：Windows 用 <code>tutorial-env\Scripts\activate</code>，
+        Unix 或 macOS 用 <code>source tutorial-env/bin/activate</code>。
+        在 macOS/Linux 上如果写 <code>./activate</code>，会在子 shell 里执行，激活效果对你当前的 shell 无效。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：</b><code>__pycache__</code> 目录可以删吗？删了程序会不会变慢？它该提交到 Git 吗？
+      <div class="ans">
+        可以删，删了下次导入时 Python 会自动重新生成（官方：「此进程完全是自动的」）。
+        不会变慢到影响使用——而且官方明确澄清了一个常见误解：「<strong>从 <code>.pyc</code> 文件读取的程序不比从 <code>.py</code> 读取的执行速度快，<code>.pyc</code> 文件只是加载速度更快</strong>」。
+        不该提交到 Git，它是本机缓存，而且带 Python 版本号（如 <code>spam.cpython-33.pyc</code>），换机器换版本就会失效。
+        在 <code>.gitignore</code> 里写 <code>__pycache__/</code> 和 <code>*.pyc</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8. 可核查参考来源</h2>
+    <table>
+      <thead>
+        <tr><th>来源</th><th>URL</th><th>用到的内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Python 官方教程《6. 模块》</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/modules.html">docs.python.org/zh-cn/3/tutorial/modules.html</a></td>
+          <td>模块的定义与「不用把函数定义复制到各个程序」；<code>fibo.py</code> 完整示例；「不会直接把函数名称添加到当前 namespace」；四种 import 形式（<code>import m</code> / <code>from m import x</code> / <code>import m as n</code> / <code>from m import x as y</code>）；<code>__name__</code> 的定义；「仅在 import 语句第一次遇到模块名时执行」；「每个模块都有它自己的私有符号表」；<code>import *</code> 的官方警告；「每次解释器会话只导入一次模块」与 <code>importlib.reload()</code> 备注；6.1.1 节以脚本方式执行模块与 <code>if __name__ == "__main__":</code> 的完整原文与示例；6.1.2 节 <code>sys.path</code> 三个初始化位置、<code>sys.builtin_module_names</code>、「脚本所在的目录先于标准库所在的路径被搜索」警告、符号链接备注；6.1.3 节 <code>__pycache__</code> 机制、<code>-O</code>/<code>-OO</code> 提示、「<code>.pyc</code> 只是加载速度更快」；6.2 节标准模块与 <code>sys.ps1</code>/<code>sys.ps2</code>、<code>sys.path.append</code> 示例；6.3 节 <code>dir()</code> 的完整说明与 <code>dir(fibo)</code>、<code>dir()</code>、<code>dir(builtins)</code> 示例；6.4 节包的 <code>sound/</code> 完整目录结构、<code>__init__.py</code> 的必要性与作用、三种子模块导入方式对比、「<code>from package import item</code> 若找不到则触发 <code>ImportError</code>」、「<code>import item.subitem.subsubitem</code> 的最后一项不能是类/函数/变量」；6.4.1 节 <code>import *</code> 在包层的行为、<code>__all__</code> 的作用与本地名称遮挡子模块的示例、<code>from package import specific_submodule</code> 是推荐用法；6.4.2 节相对导入的 <code>.</code>/<code>..</code> 写法与「主模块必须始终使用绝对导入」</td>
+        </tr>
+        <tr>
+          <td>Python 官方教程《12. 虚拟环境和包》</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/venv.html">docs.python.org/zh-cn/3/tutorial/venv.html</a></td>
+          <td>12.1 节版本冲突场景的完整表述与 virtual environment 的解决方案；12.2 节「<code>venv</code> 将安装运行命令所使用的 Python 版本」、<code>python -m venv tutorial-env</code>、虚拟环境常用目录 <code>.venv</code> 及其两条理由、Windows 的 <code>tutorial-env\Scripts\activate</code> 与 Unix/macOS 的 <code>source tutorial-env/bin/activate</code>、<code>activate.csh</code>/<code>activate.fish</code> 提示、激活后的提示符变化与 <code>sys.path</code> 示例、「激活的虚拟环境不会以任何方式更改 <code>PYTHONPATH</code>」与 <code>unset PYTHONPATH</code> 建议、<code>deactivate</code>；12.3 节 pip 说明与 <code>install</code> / <code>install 包==版本</code> / <code>--upgrade</code> / <code>uninstall</code> / <code>show</code> / <code>list</code> / <code>freeze</code> / <code>install -r</code> 全部命令与输出样例；「重复运行同一版本 pip 不做任何事」；<code>requirements.txt</code> 的约定与提交版本控制的建议</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      以上 2 条来源在撰写前均已通过 WebFetch 实际抓取页面内容，页面均返回成功。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9. 核查记录</h2>
+    <table>
+      <thead>
+        <tr><th>核查项</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>2 条来源 URL 可访问性</td><td>✅ 已核</td><td>撰写前均实际抓取成功</td></tr>
+        <tr><td>模块的定义与拆分理由</td><td>✅ 已核（直接引用）</td><td>《模块》开头「模块是包含 Python 定义和语句的文件」与「不同程序调用同一个函数时，不用把函数定义复制到各个程序」</td></tr>
+        <tr><td>四种 import 形式与命名空间效果</td><td>✅ 已核（直接引用 + 官方示例）</td><td>含「不会直接把 <code>fibo</code> 中定义的函数名称添加到当前 namespace 中」「这条语句不会将所导入的模块的名称引入到局部命名空间中」「唯一的区别是，导入的名称是 <code>fib</code>」</td></tr>
+        <tr><td>「模块第一次被 import 时执行」与「每次会话只导入一次」</td><td>✅ 已核（直接引用）</td><td>6.1 节正文与备注原文，含 <code>importlib.reload()</code> 示例</td></tr>
+        <tr><td>「每个模块有自己的私有符号表」</td><td>✅ 已核（直接引用）</td><td>6.1 节原文，含 <code>modname.itemname</code> 访问方式</td></tr>
+        <tr><td><code>if __name__ == "__main__":</code> 的机制</td><td>✅ 已核（直接引用 + 官方示例）</td><td>6.1.1 节全文，「会把 <code>__name__</code> 赋值为 <code>"__main__"</code>」「只有在模块作为"main"文件执行时才会运行」「这常用于为模块提供一个便捷的用户接口，或用于测试」</td></tr>
+        <tr><td><code>sys.path</code> 三个初始化位置</td><td>✅ 已核（逐条引用）</td><td>6.1.2 节三条列表；<code>sys.builtin_module_names</code> 也已核到</td></tr>
+        <tr><td>「脚本目录先于标准库被搜索」的警告</td><td>✅ 已核（直接引用）</td><td>6.1.2 节原文；文中「不要用标准库名给文件命名」是据此推导的实践建议，已如此标注</td></tr>
+        <tr><td>符号链接目录不会被加入搜索路径</td><td>✅ 已核（直接引用）</td><td>6.1.2 节备注</td></tr>
+        <tr><td><code>dir()</code> 的三条说明</td><td>✅ 已核（直接引用 + 官方示例）</td><td>6.3 节「注意它列出所有类型的名称」「<code>dir()</code> 不会列出内置函数和变量的名称」与三组示例</td></tr>
+        <tr><td><code>__init__.py</code> 的必要性与作用</td><td>✅ 已核（直接引用）</td><td>6.4 节「需要有 <code>__init__.py</code> 文件才能让 Python 将包含该文件的目录当作包来处理……这可以防止重名的目录如 <code>string</code> 在无意中屏蔽……」</td></tr>
+        <tr><td>三种导入子模块方式的差别</td><td>✅ 已核（官方示例）</td><td><code>sound.effects.echo</code> 三组写法与说明</td></tr>
+        <tr><td><code>from package import item</code> 的解析规则与 <code>ImportError</code></td><td>✅ 已核（直接引用）</td><td>6.4 节原文；<code>import item.subitem.subsubitem</code> 的约束也已核到</td></tr>
+        <tr><td><code>import *</code> 的官方警告</td><td>✅ 已核（直接引用）</td><td>6.1 节「大多数情况下，不要用这个功能」与「不建议从模块或包内导入 <code>*</code>」；6.4.1 节的包层行为与 <code>__all__</code> 说明、本地名称遮挡 <code>reverse</code> 子模块的示例、<code>from package import specific_submodule</code> 是推荐用法</td></tr>
+        <tr><td>相对导入的写法与限制</td><td>✅ 已核（直接引用）</td><td>6.4.2 节三行示例与「主模块……必须始终使用绝对导入」原文</td></tr>
+        <tr><td><code>__pycache__</code> 机制</td><td>✅ 已核（直接引用）</td><td>6.1.3 节 <code>module.version.pyc</code> 命名、自动比对修改日期、两种不检查缓存的情况、「<code>.pyc</code> 只是加载速度更快」、<code>-O</code>/<code>-OO</code> 说明</td></tr>
+        <tr><td>虚拟环境的必要性（版本冲突场景）</td><td>✅ 已核（直接引用）</td><td>12.1 节应用程序 A/B 的 1.0 与 2.0 冲突原文</td></tr>
+        <tr><td><code>python -m venv</code> 与各平台激活命令</td><td>✅ 已核（直接引用）</td><td>12.2 节原文；<code>.venv</code> 名称的两条理由也已核到；<code>activate.csh</code>/<code>activate.fish</code> 提示也已核到</td></tr>
+        <tr><td>「激活不会更改 <code>PYTHONPATH</code>」与 <code>unset</code> 建议</td><td>✅ 已核（直接引用）</td><td>12.2 节原文</td></tr>
+        <tr><td>pip 全部命令与 <code>requirements.txt</code> 约定</td><td>✅ 已核（直接引用 + 官方输出样例）</td><td>12.3 节全部命令与输出；「重复运行同一版本 pip 不做任何事」；「然后可以将 <code>requirements.txt</code> 提交给版本控制」原文</td></tr>
+        <tr><td>「<code>python -m pip</code> 比 <code>pip</code> 更稳」的原因</td><td>⚠ 部分核</td><td>官方文档全程使用 <code>python -m pip</code> 形式（可核实）；但文档<strong>没有明文解释</strong>「因为可能指向不同环境」这一理由。文中该段属于技术推断与教学归纳，已作为解释而非引文呈现</td></tr>
+        <tr><td>Windows 与 macOS/Linux 激活命令不同的原因（<code>source</code> 的作用）</td><td>⚠ 部分核</td><td>两个平台的具体命令有官方原文（12.2 节）；但「因为要在当前 shell 中执行」这一机制解释不在文档中，属于 shell 通用知识</td></tr>
+        <tr><td>国内镜像源（<code>-i</code> 参数与清华源地址）</td><td>⚠ 未能核到官方来源</td><td>Python 官方文档与此来源<strong>均不涉及</strong>镜像源话题（官方只说「默认情况下 pip 将从 Python Package Index 安装软件包」）。文中已明确标注「官方文档不作背书」并提示同步延迟风险。具体镜像 URL 需以镜像站官方说明为准</td></tr>
+        <tr><td>循环导入与 <code>partially initialized module</code> 报错</td><td>⚠ 未在本页来源中核到</td><td>该报错文本与「circular import」提示在本次抓取的两个页面中没有出现。文中相关表述来自实践，未作为官方引文呈现；如需官方依据可另查 <code>ImportError</code> 与 import 系统文档</td></tr>
+        <tr><td>「包名与 import 名不同」的三个例子（<code>beautifulsoup4</code>→<code>bs4</code> 等）</td><td>⚠ 非官方</td><td>属实践常识，不在官方文档中；具体对应关系请以各包自身文档为准</td></tr>
+        <tr><td><code>importlib.reload()</code> 只在「交互测试单模块」时推荐</td><td>✅ 已核</td><td>官方备注中的语境是「仅交互测试一个模块时」，文中未将其写成通用解决方案</td></tr>
+        <tr><td>文中第 4.12 节与第 5 节全部代码</td><td>⚠ 未实测运行</td><td>代码按 Python 3.12+ 语法与官方示例风格编写，导入关系与包结构已逐处检查；但本文件生成环境未实际创建文件树并运行。<code>newstools</code> 包模板与 <code>config.py</code> 的配合建议你在本地搭一遍再套用</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      诚实说明：本文件关于模块定义、<code>import</code> 四种形式、<code>__name__</code> 机制、
+      <code>sys.path</code> 搜索顺序、<code>__init__.py</code> 与包、<code>import *</code> 与 <code>__all__</code>、
+      相对导入、虚拟环境创建与激活、pip 命令与 <code>requirements.txt</code>、<code>__pycache__</code> 机制的部分，
+      全部基于《模块》与《虚拟环境和包》两章官方文档的实际抓取内容，引号内句子与命令均可对照原文核实。
+      <br><br>
+      需要你留意三处：① <strong>国内镜像源</strong>（<code>-i</code> 与清华源）在官方文档中完全没有涉及，
+      文中已标注为「第三方服务，官方不作背书」，具体 URL 请以镜像站自身说明为准；
+      ② 「<code>python -m pip</code> 更稳的原因」「<code>source</code> 的作用」「循环导入报错文本」都属于机制解释或实践经验，
+      文档中有现象（官方用 <code>python -m pip</code>、两平台命令不同）但没有成文的因果说明，文中已作区分；
+      ③ 第 5 节的包结构模板与全部代码未在本机实际搭建运行，建议你在本地把目录建出来跑一遍再用于真实项目。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <a href="index.html">概念目录</a> ·
+      <a href="python-learning-map.html">学习地图</a> ·
+      <a href="https://github.com/Yym113/big-data-ai">GitHub 仓库</a>
+    </p>
+    <p>生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

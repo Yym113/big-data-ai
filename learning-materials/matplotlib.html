@@ -1,0 +1,1425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>matplotlib 数据可视化 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>matplotlib 数据可视化</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 15 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景（新闻传播学）</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1. 个人理解（先说人话）</h2>
+    <p>
+      前面几节你已经能拿到数据、清理数据、算出结果了。但算出来的结果如果只是屏幕上的一串数字，
+      <strong>没有读者会看，也没有编委会会通过</strong>。新闻稿里那张「三年来某类投诉量变化」的折线图，
+      才是读者真正会记住的东西。
+    </p>
+    <p>
+      matplotlib 就是干这件事的：<strong>把数据画成图</strong>。它是 Python 数据可视化里最老牌、最基础的库，
+      pandas 的 <code>df.plot()</code>、seaborn 的统计图，底层全都跑在 matplotlib 上。
+      学会它，等于学会了这套生态的通用底座。
+    </p>
+    <p>你想一下自己见过的图表，其实都由同几个零件拼起来：</p>
+    <table>
+      <thead>
+        <tr><th>零件</th><th>matplotlib 里的名字</th><th>类比</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>整张画布 / 一整页纸</td><td><code>Figure</code></td><td>A4 纸</td></tr>
+        <tr><td>画布上的一个坐标系</td><td><code>Axes</code></td><td>纸上画的一个坐标格</td></tr>
+        <tr><td>坐标轴上的刻度尺</td><td><code>Axis</code></td><td>直尺的刻度线</td></tr>
+        <tr><td>图上的任何可见元素</td><td><code>Artist</code></td><td>纸上的线条、文字、色块</td></tr>
+      </tbody>
+    </table>
+    <p>
+      这里有个中文翻译很容易搞混的坑：<strong><code>Axes</code> 不是「坐标轴」，<code>Axis</code> 才是</strong>。
+      <code>Axes</code> 应该理解成「一个绘图区」，一个 <code>Axes</code> 里通常包含两个（3D 图里三个）<code>Axis</code>。
+      官方快速入门指南专门提醒过要注意区分这两个词。
+    </p>
+    <p>
+      然后是最容易把人绊倒的一点：<strong>matplotlib 有两套写法</strong>。
+      一套是「隐式」的 <code>plt.plot(...)</code>，一套是「显式」的 <code>fig, ax = plt.subplots(); ax.plot(...)</code>。
+      你在网上抄代码时，十有八九会抄到两套混在一起的代码，然后一头雾水。
+      官方给的建议很明确：<strong>一般建议用显式（OO）那套</strong>，尤其是复杂图和要复用的脚本。
+    </p>
+    <blockquote>
+      官方原话：<em>「Overall, it is useful to understand the explicit "Axes" interface since it is the most flexible
+      and underlies the other interfaces.」</em>（理解显式 Axes 接口很有用，因为它最灵活，而且是其他接口的底层。）
+      同时官方也承认：<em>「While the explicit interface can be a bit more verbose to setup, complicated plots will
+      often end up simpler than trying to use the implicit "pyplot" interface.」</em>
+      （显式接口起步时啰嗦一些，但复杂图形往往反而更简单。）
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2. 学习目标</h2>
+    <p>学完这一节，你应该能做到：</p>
+    <ol>
+      <li>说清 <code>Figure</code>、<code>Axes</code>、<code>Axis</code>、<code>Artist</code> 四者的关系，不再把 <code>Axes</code> 当「坐标轴」。</li>
+      <li>用 <code>fig, ax = plt.subplots()</code> 写出一张带标题、轴标签、图例的折线图或者柱状图。</li>
+      <li>知道 <code>plt.plot()</code>（隐式）和 <code>ax.plot()</code>（显式）怎么互相翻译，能读懂两种风格的代码。</li>
+      <li><strong>能解决中文显示成方块的问题</strong>——知道为什么要设 <code>font.family</code>，知道 Windows 和 macOS 该填什么字体名，知道怎么查自己电脑上有什么字体。</li>
+      <li>知道 <code>show()</code> 和 <code>savefig()</code> 的<strong>调用顺序</strong>，不会存出一张空白图。</li>
+      <li>知道 <code>savefig()</code> 的 <code>dpi</code>、<code>bbox_inches</code>、<code>format</code> 三个参数各管什么，能导出一张能印的图。</li>
+      <li>知道 pandas 的 <code>df.plot()</code> 和 matplotlib 是什么关系，什么时候直接用 pandas、什么时候必须回到 matplotlib。</li>
+      <li>知道什么图该配什么数据（折线 vs 柱状 vs 散点），不犯「用饼图比较 12 个类别」这种低级错。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3. 核心问题清单</h2>
+    <p>下面 10 个问题，是这一节要一个个拆掉的。先自己心里答一遍，再看后面的解释。</p>
+    <ol>
+      <li>为什么我画出来的中文标题是一排方块 <code>□□□</code>？怎么修？</li>
+      <li><code>plt.plot()</code> 和 <code>ax.plot()</code> 到底有什么区别？我该用哪个？</li>
+      <li><code>fig, ax = plt.subplots()</code> 里的 <code>fig</code> 和 <code>ax</code> 分别是什么？为什么有时候返回的是一个数组？</li>
+      <li>为什么我先 <code>plt.show()</code> 再 <code>plt.savefig()</code>，存出来的是一张空白图？</li>
+      <li>我要把图放进微信公众号或者印在报纸上，<code>dpi</code> 该设多少？为什么图旁边总是被切掉一点？</li>
+      <li>在 Jupyter 里画图，到底要不要写 <code>plt.show()</code>？</li>
+      <li>怎么在图上打出 <code>x̄</code>、<code>σ</code> 这类数学符号？为什么要写成 <code>r"$\sigma_i=15$"</code>？</li>
+      <li><code>ax.legend()</code> 为什么有时候空着不显示？</li>
+      <li><code>df.plot()</code> 和 <code>plt.plot()</code> 是什么关系？为什么我的 pandas 图中文也是方块？</li>
+      <li>怎么在一张画布上放两个子图？为什么 <code>axs[0].plot()</code> 那套写法比 <code>plt.subplot(1,2,1)</code> 更省心？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4. 结构化解释</h2>
+
+    <h3>4.1 定义：它到底是什么</h3>
+    <p>
+      matplotlib 是一个绘图库。官方快速入门指南对它的核心概念给了这样一段定义，值得逐字读一遍：
+    </p>
+    <blockquote>
+      <em>「Matplotlib plots data on Figures (e.g. windows, Jupyter widgets, etc.), each of which can contain one or
+      more Axes, an area where points can be specified in terms of x-y coordinates (or theta-r in a polar plot, or
+      x-y-z in a 3D plot, etc.). The simplest way of creating a Figure with an Axes is using
+      </em><code>pyplot.subplots</code><em>. We can then use </em><code>Axes.plot</code><em> to draw some data on the
+      Axes, and </em><code>show</code><em> to display the figure.」</em>
+    </blockquote>
+    <p>
+      翻译成人话：<strong>数据画在 Figure 上；Figure 里可以有一个或多个 Axes；Axes 是「可以用坐标指定点的区域」。</strong>
+      创建带 Axes 的 Figure 最简单的方式是 <code>pyplot.subplots</code>，然后用 <code>Axes.plot</code> 画数据，
+      用 <code>show</code> 显示。
+    </p>
+    <p>官方对四个零件的定义分别如下（均引自快速入门指南）：</p>
+    <table>
+      <thead>
+        <tr><th>名字</th><th>官方定义（意译）</th><th>你可以怎么记</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>Figure</code></td>
+          <td>「<em>The whole figure. The Figure tracks all the child Axes, a bunch of 'special' Artists (titles, figure legends, colorbars, etc.), and even nested subfigures.</em>」<br>整张图。Figure 跟踪所有子 Axes、一组「特殊」Artist（标题、图形图例、颜色条等），甚至嵌套的子图。</td>
+          <td>一整张纸，管着纸上所有的图</td>
+        </tr>
+        <tr>
+          <td><code>Axes</code></td>
+          <td>「<em>An Axes is an Artist attached to a Figure that contains a region for plotting data, and usually includes two (or three in the case of 3D) Axis objects</em>」<br>Axes 是挂在 Figure 上的一个 Artist，包含用于绘制数据的区域，通常还包括两个（3D 时三个）Axis 对象。</td>
+          <td>一个绘图区；<strong>不是坐标轴</strong></td>
+        </tr>
+        <tr>
+          <td><code>Axis</code></td>
+          <td>「<em>These objects set the scale and limits and generate ticks (the marks on the Axis) and ticklabels</em>」<br>设置比例和范围，生成刻度（轴上的标记）和刻度标签。刻度位置由 <code>Locator</code> 决定，标签字符串由 <code>Formatter</code> 格式化。</td>
+          <td>那把刻度尺</td>
+        </tr>
+        <tr>
+          <td><code>Artist</code></td>
+          <td>「<em>Basically everything visible on the Figure is an Artist (even the Figure, Axes, and Axis objects).</em>」<br>Figure 上所有可见的东西都是 Artist，连 Figure、Axes、Axis 自己都是。</td>
+          <td>纸上任何你看得见的东西</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      官方还特别强调了一句关于 Axes 的地位：<strong><em>「Axes methods are the primary interface for configuring most
+      parts of the plot」</em></strong>——Axes 上的方法就是配置图形绝大部分内容的主接口（加数据、控制坐标轴比例和范围、加标签）。
+      这句话解释了为什么下面 4.3 节一直推荐你用 <code>ax.xxx()</code>。
+    </p>
+
+    <h3>4.2 最小模型：一张能跑的最小图</h3>
+    <p>官方给出的最小示例，只有四行（注释是官方原文）：</p>
+    <pre><code>import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots()             # Create a figure containing a single Axes.
+ax.plot([1, 2, 3, 4], [1, 4, 2, 3])  # Plot some data on the Axes.
+plt.show()                           # Show the figure.</code></pre>
+    <p>
+      这四行是这一整节的骨架。<strong>注意官方注释里那句「Create a figure containing a single Axes」</strong>——
+      <code>subplots()</code>（复数，带 s）一次帮你把「纸」和「绘图区」都建好并递到你手里。
+      而单数的 <code>plt.subplot(1, 2, 1)</code> 是「切一个子图并把它设为当前」，两者不是一回事。
+    </p>
+    <p>把这四行扩成一张新闻稿能用的图，加上标题、轴标签、图例：</p>
+    <pre><code>import matplotlib.pyplot as plt
+
+x = [2021, 2022, 2023, 2024, 2025]
+complaints = [1200, 1580, 1420, 2100, 2650]
+
+fig, ax = plt.subplots(figsize=(6, 3.6))   # 纸的大小，单位英寸
+ax.plot(x, complaints, marker="o", label="某类消费投诉量")
+ax.set_xlabel("年份")
+ax.set_ylabel("件数")
+ax.set_title("近五年某类消费投诉量变化")
+ax.legend()          # 图例内容来自 plot() 里的 label=
+plt.show()</code></pre>
+    <blockquote class="warn">
+      <strong>这时候中文全是方块。</strong>别急，4.5 节专门处理。
+      这里先记住一件事：<strong>图的逻辑和中文显示是两个独立问题</strong>，先让逻辑跑通，再修字体。
+    </blockquote>
+
+    <h3>4.3 关键机制一：两套接口怎么互相翻译</h3>
+    <p>官方文档把两套接口叫「显式 Axes 接口」和「隐式 pyplot 接口」：</p>
+    <blockquote>
+      <em>「An explicit "Axes" interface that uses methods on a Figure or Axes object to create other Artists, and
+      build a visualization step by step. This has also been called an "object-oriented" interface.」</em><br>
+      显式 Axes 接口：通过在 Figure 或 Axes 对象上调用方法，一步步构建可视化。也叫「面向对象」接口。<br><br>
+      <em>「An implicit "pyplot" interface that keeps track of the last Figure and Axes created, and adds Artists to
+      the object it thinks the user wants.」</em><br>
+      隐式 pyplot 接口：记住最近创建的 Figure 和 Axes，把 Artist 加到「它以为你想要」的那个对象上。
+    </blockquote>
+    <p>
+      最后半句是重点：<strong>「加到它以为你想要的那个对象上」</strong>。
+      这就是为什么隐式写法一旦图多了就会出乱子——你以为是画在 A 图上，实际画到了 B 图上。
+    </p>
+    <p>官方给的对照表（抄录如下）：</p>
+    <table>
+      <thead>
+        <tr><th>操作</th><th>Axes 接口（显式，推荐）</th><th>pyplot 接口（隐式）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>创建图形</td><td><code>fig, ax = plt.subplots()</code></td><td><code>plt.subplots()</code></td></tr>
+        <tr><td>画数据</td><td><code>ax.plot(x, y)</code></td><td><code>plt.plot(x, y)</code></td></tr>
+        <tr><td>取属性</td><td><code>label = ax.get_xlabel()</code></td><td><code>label = plt.xlabel()</code></td></tr>
+        <tr><td>设属性</td><td><code>ax.set_xlabel("time")</code></td><td><code>plt.xlabel("time")</code></td></tr>
+      </tbody>
+    </table>
+    <p>
+      规律很清楚：<strong>画图函数两边名字完全一样（<code>plot</code> 就是 <code>plot</code>）；
+      取属性的在 Axes 上前缀 <code>get_</code>，设属性的前缀 <code>set_</code>。</strong>
+      你在网上看到的 <code>plt.title("xx")</code>，翻译过来就是 <code>ax.set_title("xx")</code>。
+    </p>
+    <p>官方还举了一个「同样一张双轴图，三种写法」的例子，非常能说明问题：</p>
+    <pre><code># 隐式写法一：完全不管对象
+plt.subplot(1, 2, 1)
+plt.plot([1, 2, 3], [0, 0.5, 0.2])
+
+plt.subplot(1, 2, 2)
+plt.plot([3, 2, 1], [0, 0.5, 0.2])
+
+# 隐式写法二：靠 gca()（get current axes）去捞当前轴
+plt.subplot(1, 2, 1)
+ax = plt.gca()
+ax.plot([1, 2, 3], [0, 0.5, 0.2])
+
+plt.subplot(1, 2, 2)
+ax = plt.gca()
+ax.plot([3, 2, 1], [0, 0.5, 0.2])
+
+# 显式写法（官方推荐）
+fig, axs = plt.subplots(1, 2)
+axs[0].plot([1, 2, 3], [0, 0.5, 0.2])
+axs[1].plot([3, 2, 1], [0, 0.5, 0.2])</code></pre>
+    <p>
+      官方给了一个特别真实的场景来说明显式写法为什么好——「如果你想回头改一个已经不在 <code>plt.gca()</code> 里的旧轴怎么办？」
+      官方列了两种「凑合的办法」：再次调用 <code>plt.subplot</code> 传一样的参数；或者自己存一个 handle 列表然后用 <code>plt.sca()</code> 切回去。
+      官方对第一种的评价是 <em>「However, that quickly becomes inelegant.」</em>（很快就变得不优雅了），
+      对第二种的评价是 <em>「but if you do that, why not simply create all the Axes objects at the start?」</em>
+      （既然都要存 handle 了，为什么不一开始就把所有 Axes 都创建出来？）
+    </p>
+    <blockquote class="ok">
+      <strong>结论：默认就用 <code>fig, ax = plt.subplots()</code> 这一套。</strong>
+      只有在你做探索性的一行行试算、或者写三行的临时脚本时，才用 <code>plt.plot()</code> 图省事。
+    </blockquote>
+    <p>顺便，官方明确点名了一个必须避开的写法：</p>
+    <blockquote class="warn">
+      <em>「There is one further interface that is highly discouraged, and that is to basically do
+      </em><code>from matplotlib.pylab import *</code><em>. ... Such a pattern is considered bad practice in modern
+      python, as it clutters the global namespace. Even more severely, in the case of </em><code>pylab</code><em>,
+      this will overwrite some builtin functions (e.g. the builtin </em><code>sum</code><em> will be replaced by
+      </em><code>numpy.sum</code><em>), which can lead to unexpected behavior.」</em>
+      <br><br>
+      <strong>人话：</strong>别用 <code>from matplotlib.pylab import *</code>。它会把内置的 <code>sum</code> 偷换成
+      <code>numpy.sum</code>，导致一些莫名其妙的 bug。老教程里看到这种写法，绕开。
+    </blockquote>
+
+    <h3>4.4 关键机制二：中文方块是怎么来的，怎么修</h3>
+    <p>这是零基础同学第一个必然撞上的墙，也是这一节最重要的一块。官方文档把原因说得很清楚：</p>
+    <blockquote>
+      <em>「As of v2.0 the default font, DejaVu, contains glyphs for many western alphabets, but not other scripts,
+      such as Chinese, Korean, or Japanese.」</em><br>
+      从 v2.0 起，默认字体 DejaVu 包含许多西方字母的字形，但<strong>不包含</strong>中文、韩文、日文等其他文字。
+    </blockquote>
+    <p>
+      所以方块不是「乱码」，也不是编码问题——是 <strong>字体里根本没有这个汉字长什么样</strong>。
+      渲染器找不到字形，只好画个空心方框占位。这也解释了为什么有些字正常、有些字是方块：
+      通常是一整片中文全变方块，而同一串里的英文数字正常。
+    </p>
+    <p>官方给的第一种改法（推荐）：把中文字体名<strong>加到 <code>font.family</code> 的最前面</strong>。</p>
+    <pre><code># first method
+matplotlib.rcParams['font.family'] = ['Source Han Sans TW', 'sans-serif']</code></pre>
+    <p>官方给的第二种改法：改「通用族名」对应的具体字体列表。</p>
+    <pre><code># second method
+matplotlib.rcParams['font.family'] = ['sans-serif']
+matplotlib.rcParams['sans-serif'] = ['Source Han Sans TW', ...]</code></pre>
+    <p>
+      这里的原理，官方在「默认字体」一节解释得很细：<code>font.family</code> 接受的是
+      <strong>「用户机器上已安装的字体族名」和/或 <code>{'cursive', 'fantasy', 'monospace', 'sans', 'sans serif', 'sans-serif', 'serif'}</code> 这些通用族名</strong>这两类东西。
+      而通用族名到具体字体的映射，由另外几个 rcParam 控制：
+    </p>
+    <table>
+      <thead>
+        <tr><th>通用族别名</th><th>对应的 rcParam（映射表）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>'serif'</code></td><td><code>'font.serif'</code></td></tr>
+        <tr><td><code>'monospace'</code></td><td><code>'font.monospace'</code></td></tr>
+        <tr><td><code>'fantasy'</code></td><td><code>'font.fantasy'</code></td></tr>
+        <tr><td><code>'cursive'</code></td><td><code>'font.cursive'</code></td></tr>
+        <tr><td><code>{'sans', 'sans serif', 'sans-serif'}</code></td><td><code>'font.sans-serif'</code></td></tr>
+      </tbody>
+    </table>
+    <p>官方还给了一段「替换规则」的说明和一个例子，看懂它你就明白第一种改法和第二种改法为什么等价：</p>
+    <blockquote>
+      <em>「If any of generic family names appear in </em><code>'font.family'</code><em>, we replace that entry by all
+      the entries in the corresponding rcParam mapping.」</em>
+    </blockquote>
+    <pre><code>matplotlib.rcParams['font.family'] = ['Family1', 'serif', 'Family2']
+matplotlib.rcParams['font.serif'] = ['SerifFamily1', 'SerifFamily2']
+
+# This is effectively translated to:
+matplotlib.rcParams['font.family'] = ['Family1', 'SerifFamily1', 'SerifFamily2', 'Family2']</code></pre>
+    <p>
+      也就是说：<strong>你在 <code>font.family</code> 里写的 <code>'serif'</code> 会被原地展开成
+      <code>font.serif</code> 那一整串具体字体</strong>。所以「第一种方法」和「第二种方法」本质是在改同一张表，
+      只是改的位置不同。
+    </p>
+    <p>官方还有一条很实用的实践建议：</p>
+    <blockquote class="ok">
+      <em>「A good practice when setting custom font families is to append a generic-family to the font-family list as
+      a last resort.」</em><br>
+      <strong>设自定义字体时，最好在列表最后加一个通用族名兜底。</strong>
+      比如 <code>['Microsoft YaHei', 'sans-serif']</code>——万一这台机器没有微软雅黑，至少还有 sans-serif 兜着，
+      不至于连英文都画不出来。
+    </blockquote>
+
+    <h3>4.5 关键机制三：Windows 和 macOS 该填什么字体名</h3>
+    <p>
+      官方文档有一句非常诚实的话，解释了为什么没有一份「万能字体配置」可以直接抄：
+    </p>
+    <blockquote>
+      <em>「Matplotlib can use font families installed on the user's computer, i.e. Helvetica, Times, etc.」</em><br>
+      matplotlib 用的是<strong>你电脑上已安装的字体族</strong>。所以同一份代码，在你电脑上正常、在同事电脑上变方块，是完全可能的。
+    </blockquote>
+    <p>先解决最要紧的事：<strong>怎么知道我这台机器上有哪些中文字体？</strong></p>
+    <p>官方给了一个方法（这是替代老教程里那个已经过时的 <code>font_manager.fontManager.ttflist</code> 写法的现役 API）：</p>
+    <pre><code>matplotlib.font_manager.get_font_names()   # 返回当前可用字体名的完整列表</code></pre>
+    <p>把结果打印出来，搜索中文常见字体名，看到什么就填什么。<strong>注意：必须填「字体族名」，不能填文件路径。</strong></p>
+    <p>官方在 Linux 上给的排查示范是 <code>fc-list</code>，用来列出支持中文的字体：</p>
+    <pre><code>$ fc-list :lang=zh family
+Noto to Sans Mono CJK TC,Noto Sans Mono CJK TC Bold
+Noto Sans CJK TC,Noto Sans CJK TC Medium
+Noto Sans CJK TC,Noto Sans CJK TC DemiLight
+Noto Sans CJK KR,Noto Sans CJK KR Black
+Noto Sans CJK TC,Noto Sans CJK TC Black
+Noto Sans Mono CJK TC,Noto Sans Mono CJK TC Regular
+Noto Sans CJK SC,Noto Sans CJK SC Light</code></pre>
+    <p>
+      这个例子的输出格式很有信息量：逗号前是<strong>族名</strong>，逗号后是<strong>具体的 face（字重/风格）</strong>。
+      比如 <code>Noto Sans CJK TC,Noto Sans CJK TC Bold</code> 这一行，族名是 <code>Noto Sans CJK TC</code>，
+      你往 <code>font.family</code> 里填的应该是前者（族名），不是 <code>Noto Sans CJK TC Bold</code>（那是某个字重）。
+      填错会出现「明明装了字体但报找不到字体」的怪事。
+    </p>
+    <p>三个平台的具体做法，都基于同一条规则——<strong>把中文字体名写在 <code>font.family</code> 列表的最前面</strong>：</p>
+    <table>
+      <thead>
+        <tr><th>平台</th><th>常见中文字体族名</th><th>写法</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Windows</td>
+          <td><code>Microsoft YaHei</code>（微软雅黑）、<code>SimHei</code>（黑体）、<code>SimSun</code>（宋体）、<code>KaiTi</code>（楷体）</td>
+          <td><code>plt.rcParams['font.family'] = ['Microsoft YaHei', 'SimHei', 'sans-serif']</code></td>
+        </tr>
+        <tr>
+          <td>macOS</td>
+          <td><code>PingFang SC</code>（苹方）、<code>Hiragino Sans GB</code>（冬青黑体）、<code>Heiti SC</code>、<code>STHeiti</code></td>
+          <td><code>plt.rcParams['font.family'] = ['PingFang SC', 'Hiragino Sans GB', 'sans-serif']</code></td>
+        </tr>
+        <tr>
+          <td>Linux</td>
+          <td><code>Noto Sans CJK SC</code>、<code>Source Han Sans TW</code>（思源黑体）、<code>WenQuanYi Micro Hei</code>（文泉驿微米黑）</td>
+          <td><code>plt.rcParams['font.family'] = ['Noto Sans CJK SC', 'sans-serif']</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      <strong>这里必须说清楚一件事：</strong>上表里的 Windows / macOS 字体名和具体写法，
+      <strong>不是 matplotlib 官方文档给出的明文（官方文档的例子用的是 Linux 上的 Noto / Source Han）</strong>。
+      这一部分是依据官方「<code>font.family</code> = 具体字体族名列表」这条规则推出的常见配置，
+      请你在自己机器上用 <code>get_font_names()</code> 核实一遍再用。
+      好在即使字体名填错，因为有 <code>'sans-serif'</code> 兜底，代码也不会崩，只是中文继续显示方块——
+      所以「中文还是方块」这个症状，第一嫌疑就是字体名填错了。
+    </blockquote>
+    <p>另外官方给了一个「一次设好、整段脚本生效」的写法，还有写进配置文件的做法：</p>
+    <pre><code># 在脚本最开头（import 之后立刻）设，后续所有图都生效
+import matplotlib.pyplot as plt
+
+plt.rcParams['font.family'] = ['Microsoft YaHei', 'sans-serif']
+plt.rcParams['axes.unicode_minus'] = False   # 顺带解决负号显示成方块的问题
+
+# 或者写进 .matplotlibrc 配置文件，全局永久生效：
+# font.family: Source Han Sans TW, Arial, sans-serif</code></pre>
+    <p>
+      上面那行 <code>axes.unicode_minus</code> 是很多老教程都会带的一句。<strong>诚实标注：它不在本次核实的来源页里</strong>
+      （官方「Fonts in Matplotlib」和「Text properties」两页都没提到这个参数），
+      所以请把它当成一个「社区常见经验」而非官方要求。如果你设了中文字体之后 y 轴负号变成方块，可以加上试试。
+    </p>
+    <p>
+      还有一件很值得知道的事：<strong>从 Matplotlib 3.6 起，同一段文字内部可以混用多种字体</strong>。
+      官方给的例子（把中英混排的字符串交给一串字体，每个字形用「列表里第一个有它的字体」来渲染）：
+    </p>
+    <pre><code>fig, ax = plt.subplots()
+ax.text(
+    .5, .5, "There are 几个汉字 in between!",
+    family=['DejaVu Sans', 'Noto Sans CJK JP', 'Noto Sans TC'],
+    ha='center'
+)</code></pre>
+    <p>
+      官方对这个机制的解释是：<em>「Each glyph of the string is rendered using the first font in the list that
+      contains that glyph.」</em>——<strong>每个字形用列表里第一个包含它的字体来渲染。</strong>
+      在 3.6 之前，一个 <code>Text</code> 实例只能用一种字体，所以「中英混排要显示正确」曾经很折腾。
+      现在你只需要给 <code>family=</code> 传一个列表就行。注意这个能力对 Agg、SVG、PDF、PS 后端都有效。
+    </p>
+    <blockquote class="ok">
+      <strong>修中文的完整流程，三步：</strong>
+      <ol>
+        <li>先确认方块是「字体缺字形」而不是「编码错误」——如果你是在脚本里读文件，先确认文件读进来是对的（见 file-io 那节）。</li>
+        <li><code>matplotlib.font_manager.get_font_names()</code> 查出你机器上真实的中文字体族名。</li>
+        <li>把族名写在 <code>plt.rcParams['font.family']</code> 列表最前面，末尾留一个 <code>'sans-serif'</code> 兜底。</li>
+      </ol>
+    </blockquote>
+
+    <h3>4.6 关键机制四：show() 和 savefig() 的顺序（存出空白图的真相）</h3>
+    <p>
+      这是第二个几乎人人都会撞的墙。官方在 <code>pyplot.show()</code> 的文档里专门开了一节讲这件事，
+      标题就是「Saving figures to file and showing a window at the same time」，原文如下：
+    </p>
+    <blockquote class="warn">
+      <em>「If you want an image file as well as a user interface window, use </em><code>pyplot.savefig</code><em>
+      before </em><code>pyplot.show</code><em>. At the end of (a blocking) </em><code>show()</code><em> the figure is
+      closed and unregistered from pyplot. Calling </em><code>pyplot.savefig</code><em> afterwards would save a new and
+      thus empty figure. This limitation does not apply if </em><code>show</code><em> is non-blocking; or if you keep
+      a reference to the figure and use </em><code>Figure.savefig</code><em> instead of </em><code>pyplot.savefig</code><em>.」</em>
+    </blockquote>
+    <p>拆成三句人话：</p>
+    <ol>
+      <li><strong>想要文件又要看窗口，就先 <code>savefig()</code> 再 <code>show()</code>。</strong></li>
+      <li>阻塞式 <code>show()</code> 结束时，图会被<strong>关闭并从 pyplot 注销</strong>。这时候再调
+        <code>pyplot.savefig()</code>，它去 pyplot 里找「当前图」，找不到旧的就新建一张空图，于是你存出一个白板。</li>
+      <li>这个限制<strong>不适用</strong>于两种情况：<code>show</code> 是非阻塞的；或者你自己留了 figure 引用、
+        改用 <code>Figure.savefig</code>（也就是 <code>fig.savefig()</code>）而不是 <code>pyplot.savefig</code>。</li>
+    </ol>
+    <pre><code># ❌ 错误顺序：存出来是一张空白图
+plt.show()
+plt.savefig("投诉趋势.png")
+
+# ✅ 正确顺序
+plt.savefig("投诉趋势.png")
+plt.show()
+
+# ✅ 另一条安全路线：用 fig.savefig()，顺序就不那么要紧了
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [1, 4, 2])
+fig.savefig("投诉趋势.png")   # 注意是 fig. 不是 plt.
+plt.show()</code></pre>
+    <p>
+      第 3 条里的「保留引用 + 用 <code>fig.savefig()</code>」这条路，正好和 4.3 节推荐的显式接口对上——
+      <strong>你用显式接口，顺手就拿到了 <code>fig</code>，于是这个坑天然绕过去了。</strong>
+      这是「推荐显式接口」的一个很实际的好处。
+    </p>
+    <p>另外 <code>show()</code> 本身还有一个参数值得知道：</p>
+    <table>
+      <thead>
+        <tr><th>参数</th><th>含义</th><th>默认值</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>block</code></td>
+          <td>是否等到所有图形窗口都关掉才返回。<code>True</code> 会阻塞并运行 GUI 主循环；
+            <code>False</code> 会确保窗口显示后立即返回，此时<strong>你需要自己保证事件循环在跑</strong>，图才保持可响应。</td>
+          <td>非交互模式为 <code>True</code>；交互模式为 <code>False</code>（交互模式状态见 <code>pyplot.isinteractive</code>）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>签名是 <code>matplotlib.pyplot.show(*, block=None)</code>——注意那个 <code>*</code>，<code>block</code> 是
+      <strong>仅关键字参数</strong>，必须写成 <code>plt.show(block=False)</code>，不能写 <code>plt.show(False)</code>。</p>
+    <p>还有一个环境差异：</p>
+    <blockquote>
+      <em>「Depending on the environment you are working in, </em><code>plt.show()</code><em> can be left out. This is
+      for example the case with Jupyter notebooks, which automatically show all figures created in a code cell.」</em><br>
+      <strong>在 Jupyter 里，<code>plt.show()</code> 可以省掉</strong>，它会自动显示每个单元格里创建的所有图。官方还补充说，
+      Jupyter 后端（通过 <code>%matplotlib inline</code>、<code>%matplotlib notebook</code> 或
+      <code>%matplotlib widget</code> 激活）默认会在<strong>每个 cell 结束时</strong>调用 <code>show()</code>，所以通常不需要显式调用。
+    </blockquote>
+    <blockquote class="ok">
+      <strong>一句总结：</strong>在脚本里跑（<code>python xxx.py</code>）就写 <code>plt.show()</code>；
+      在 Jupyter 里想省就省。不管在哪，<strong><code>savefig</code> 永远写在 <code>show</code> 前面</strong>，或者直接用 <code>fig.savefig()</code>。
+    </blockquote>
+
+    <h3>4.7 关键机制五：savefig() 的三个关键参数</h3>
+    <p>官方签名（注意 <code>fname</code> 之后是 <code>*</code>，其余参数全部仅关键字）：</p>
+    <pre><code>savefig(fname, *, transparent=None, dpi='figure', format=None,
+        metadata=None, bbox_inches=None, pad_inches=0.1,
+        facecolor='auto', edgecolor='auto', backend=None,
+        **kwargs
+       )</code></pre>
+    <p>对新闻出图，最要紧的是这三个：</p>
+    <table>
+      <thead>
+        <tr><th>参数</th><th>官方说明（摘）</th><th>你该怎么填</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>dpi</code></td>
+          <td>float 或 <code>'figure'</code>，默认 <code>rcParams["savefig.dpi"]</code>（默认值 <code>'figure'</code>）。<em>「The resolution in dots per inch. If 'figure', use the figure's dpi value.」</em>——每英寸点数（分辨率）。填 <code>'figure'</code> 就用图形自己的 dpi。</td>
+          <td>屏幕/网页用默认或 <code>150</code>；要送去印刷用 <code>300</code>。<strong>不要以为调大 dpi 能救一张低质量图——它只是把同一张图放大输出。</strong></td>
+        </tr>
+        <tr>
+          <td><code>bbox_inches</code></td>
+          <td>str 或 <code>Bbox</code>，默认 <code>rcParams["savefig.bbox"]</code>（默认 <code>None</code>）。<em>「Bounding box in inches: only the given portion of the figure is saved. If 'tight', try to figure out the tight bbox of the figure.」</em>——以英寸为单位的包围盒，只保存给定部分；填 <code>'tight'</code> 会试着算出紧凑包围盒。</td>
+          <td>填 <code>"tight"</code>。这是解决「标题被切掉一半」「x 轴标签跑出画布」的标准做法。</td>
+        </tr>
+        <tr>
+          <td><code>format</code></td>
+          <td>str，如 <code>'png'</code>、<code>'pdf'</code>、<code>'svg'</code>。若已设置，输出格式由它决定，文件按 <em>fname</em> 保存。</td>
+          <td>见下面那条「不会自动改后缀」的坑。</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>关于 <code>format</code>，官方有一条极容易踩的说明，原文如下：</p>
+    <blockquote class="warn">
+      <em>「If </em><code>format</code><em> is set, it determines the output format, and the file is saved as
+      </em><code>fname</code><em>. Note that </em><code>fname</code><em> is used verbatim, and there is no attempt to
+      make the extension, if any, of </em><code>fname</code><em> match </em><code>format</code><em>, and no extension
+      is appended.」</em>
+      <br><br>
+      <strong>人话：</strong><code>fname</code> 是<strong>原样使用</strong>的——matplotlib <strong>不会</strong>帮你把扩展名改成跟
+      <code>format</code> 一致，也不会自动补扩展名。
+    </blockquote>
+    <p>而如果不设 <code>format</code>，规则是：</p>
+    <blockquote>
+      <em>「If </em><code>format</code><em> is not set, then the format is inferred from the extension of
+      </em><code>fname</code><em>, if there is one. If </em><code>format</code><em> is not set and </em><code>fname</code><em>
+      has no extension, then the file is saved with </em><code>rcParams["savefig.format"]</code><em> (default:
+      </em><code>'png'</code><em>) and the appropriate extension is appended to </em><code>fname</code><em>.」</em>
+    </blockquote>
+    <pre><code># 会存出一个叫 report.png 的 PNG（从扩展名推断）
+fig.savefig("report.png")
+
+# 会存出一个叫 report 的文件（无扩展名！），内容是 PNG
+fig.savefig("report")
+
+# 会存出一个叫 report.png 的文件，内容其实是 PDF —— 后缀在骗人
+fig.savefig("report.png", format="pdf")
+
+# 稳妥写法：扩展名和 format 一致
+fig.savefig("report.pdf", format="pdf")</code></pre>
+    <p>
+      「后缀在骗人」这种文件交出去，最坑的是<strong>别人双击打不开，或者打开了发现是另一个东西</strong>。
+      做媒体工作尤其要在乎这个——一个后缀不对的图，可能在排版环节被当成 PDF 处理，直接崩掉。
+    </p>
+    <p>另外两个常用的：</p>
+    <ul>
+      <li><code>transparent</code>：默认为 <code>rcParams["savefig.transparent"]</code>（<code>False</code>）。
+        填 <code>True</code> 时 Axes 的 patch 全部透明，Figure 的 patch 也透明（除非你用 <code>facecolor</code>/<code>edgecolor</code> 指定了）。
+        官方说这个<em>「is useful, for example, for displaying a plot on top of a colored background on a web page.」</em>——
+        放在网页彩色背景上的图，用这个。
+        注意官方还说明透明设置在函数退出时会被还原，不会污染你的 figure。</li>
+      <li><code>pad_inches</code>：默认 <code>rcParams["savefig.pad_inches"]</code>（<code>0.1</code>）。
+        <em>「Amount of padding in inches around the figure when bbox_inches is 'tight'.」</em>——
+        只在 <code>bbox_inches='tight'</code> 时才生效，是紧包围盒外留的边距。
+        觉得 <code>tight</code> 切得太贴肉就调大它。</li>
+    </ul>
+    <p>关于格式选择，还有一个官方在「Fonts in Matplotlib」里讲到的知识点，对印务很有用：
+      PDF 和 PS 会<strong>把字体嵌进文件</strong>，所以别人电脑上没装你的字体也能正常显示，而且放大不会虚。
+      但完整嵌入 CJK 字体（字形特别多）会让文件非常大，所以 matplotlib 只嵌入<strong>实际用到的字形</strong>，
+      这叫 font subsetting（字体子集化）。所以你导出的中文 PDF 通常并不巨大。</p>
+    <p>官方另有一个 SVG 相关的参数值得一提：<code>rcParams["svg.fonttype"]</code> 默认 <code>'path'</code>，
+      也就是把字形转成矢量路径写进 SVG——好处是任何电脑打开都一样，代价是文字<strong>不可再编辑</strong>；
+      设成 <code>'none'</code> 则文字作为文本写在标记里，文件更小、文字可编辑，但显示效果会依赖观看方有哪些字体。</p>
+
+    <h3>4.8 关键机制六：pandas 的 plot 和 matplotlib 的关系</h3>
+    <p>官方 pandas 的「Chart visualization」文档开头就把关系说透了：</p>
+    <blockquote>
+      <em>「We provide the basics in pandas to easily create decent looking plots.」</em><br>
+      <em>「The </em><code>plot</code><em> method on Series and DataFrame is just a simple wrapper around
+      </em><code>plt.plot()</code><em>.」</em>
+    </blockquote>
+    <p>
+      <strong>「Series 和 DataFrame 上的 plot 方法只是一个围绕 plt.plot() 的简单封装。</strong>」
+      这句话解释了两件你可能困惑的事：
+    </p>
+    <ol>
+      <li><strong>为什么 <code>df.plot()</code> 的中文也是方块？</strong>因为它底层就是 matplotlib，
+        你设的 <code>plt.rcParams['font.family']</code> 对它是生效的（前提是同一段脚本里设，且设在画图之前）。</li>
+      <li><strong>为什么 pandas 文档说「我们只提供基础功能」？</strong>因为复杂定制必须回到 matplotlib 的 Axes 上去做。
+        官方在讲第三方库的 <code>data.plot()</code> 接口时也点明了这个出口：库把 Axes 还给你，
+        「understanding the explicit Axes interface, we could call: <code>ax.set_title('My preferred title')</code>
+        to customize the title.」——理解显式 Axes 接口，你就能接着改标题。</li>
+    </ol>
+    <p>pandas 画图的入口是 <code>kind</code> 参数，官方列出的取值：</p>
+    <table>
+      <thead>
+        <tr><th><code>kind</code> 值</th><th>图类型</th><th>新闻里什么时候用</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>'bar'</code> / <code>'barh'</code></td><td>柱状图 / 水平柱状图</td><td>比较几个类别的量（各部门发布量、各平台占比）。类别名长时用 <code>barh</code></td></tr>
+        <tr><td><code>'hist'</code></td><td>直方图</td><td>看一个连续量的分布（稿件字数分布）</td></tr>
+        <tr><td><code>'box'</code></td><td>箱线图</td><td>看分布和异常值（各家媒体阅读量分布对比）</td></tr>
+        <tr><td><code>'kde'</code> / <code>'density'</code></td><td>密度图</td><td>平滑版的分布曲线</td></tr>
+        <tr><td><code>'area'</code></td><td>面积图</td><td>看累积和构成变化</td></tr>
+        <tr><td><code>'scatter'</code></td><td>散点图</td><td>看两个量的关系（发布时长 vs 阅读量）</td></tr>
+        <tr><td><code>'hexbin'</code></td><td>六边形分箱图</td><td>散点太多糊成一团时的替代</td></tr>
+        <tr><td><code>'pie'</code></td><td>饼图</td><td><strong>类别数 ≤ 5 时勉强可用，超过就别用</strong></td></tr>
+      </tbody>
+    </table>
+    <p>两种等价写法，官方说第二种更便于发现可用方法和它自己的参数：</p>
+    <pre><code>df.iloc[5].plot(kind="bar")   # 写法一：kind 参数
+df.plot.bar()                 # 写法二：df.plot.&lt;kind&gt; —— 在 Jupyter 里敲 df.plot. 再按 Tab 能列出全部</code></pre>
+    <p>官方还列出了一张 Tab 补全的实际输出（说明还有这些方法可用）：</p>
+    <pre><code>df.plot.area     df.plot.barh     df.plot.density  df.plot.hist     df.plot.line     df.plot.scatter
+df.plot.bar      df.plot.box      df.plot.hexbin   df.plot.kde      df.plot.pie</code></pre>
+    <p>另外，官方特别提醒了 pandas 绘图里一个「参数名不一致」的坑：</p>
+    <blockquote class="warn">
+      <em>「Most pandas plots use the </em><code>label</code><em> and </em><code>color</code><em> arguments (note the
+      lack of "s" on those). To be consistent with </em><code>matplotlib.pyplot.pie()</code><em> you must use
+      </em><code>labels</code><em> and </em><code>colors</code><em>.」</em><br><br>
+      <strong>人话：</strong>大多数 pandas 图用单数的 <code>label</code> / <code>color</code>，
+      但为了跟 <code>matplotlib.pyplot.pie()</code> 保持一致，<strong>饼图必须用复数的 <code>labels</code> / <code>colors</code></strong>。
+      记错就会报 <code>TypeError</code>。
+    </blockquote>
+    <p>关于 pandas 图 x 轴日期的一个便利：官方说如果索引由日期组成，它会调用 <code>gcf().autofmt_xdate()</code> 尝试把 x 轴格式化成好看的样子。这就是为什么你直接 <code>ts.plot()</code>，日期轴往往已经斜排整齐了。</p>
+    <p>最后，pandas 还支持切换绘图后端（<code>backend="backend.module"</code> 或全局 <code>pd.options.plotting.backend</code>），
+      可以换用 Bokeh、Altair、hvplot 等出交互图。不过官方文档对它的定位只是「可以扩展」，
+      <strong>这一节不展开；你要交静态图（报纸、PDF 报告），matplotlib 这条默认路线就够了。</strong></p>
+
+    <h3>4.9 一张图里放多个子图</h3>
+    <p>官方给的创建 Figure 的常用方式（原文代码）：</p>
+    <pre><code>fig = plt.figure()             # an empty figure with no Axes
+fig, ax = plt.subplots()       # a figure with a single Axes
+fig, axs = plt.subplots(2, 2)  # a figure with a 2x2 grid of Axes
+# a figure with one Axes on the left, and two on the right:
+fig, axs = plt.subplot_mosaic([['left', 'right_top'],
+                               ['left', 'right_bottom']])</code></pre>
+    <p>
+      注意第二行和第三行的差别：<strong><code>subplots()</code> 返回单个 <code>ax</code>，
+      <code>subplots(2, 2)</code> 返回的是 <code>axs</code>（一个二维数组）</strong>，
+      得用 <code>axs[0, 0]</code>、<code>axs[0, 1]</code> 这样取。
+      如果你写 <code>fig, ax = plt.subplots(2, 2)</code> 然后 <code>ax.plot(...)</code>，
+      会报「numpy.ndarray 没有 plot 方法」这类错——因为 <code>ax</code> 现在是个数组。
+      这是新手特别容易犯的一个错，遇到时<strong>先看 <code>subplots()</code> 传了几个参数</strong>。
+    </p>
+    <p><code>subplot_mosaic</code> 那个写法很妙：用「字符串拼出来的布局图」决定排布，
+      重复出现的标签表示同一个 Axes 横跨多格（上例里 <code>'left'</code> 占左边整列，右边上下各一格）。
+      图上还能用字典按名字取：<code>axd['upleft'].set_title('upleft')</code>。
+      做「一主图 + 两侧小图」的新闻版式，这个比算坐标省事得多。
+    </p>
+    <p>顺手记一个官方给的、很实用的「辅助函数」模式——把「往某个 ax 上画一种图」封装成函数，方便批量画：</p>
+    <pre><code>def my_plotter(ax, data1, data2, param_dict):
+    """
+    A helper function to make a graph.
+    """
+    out = ax.plot(data1, data2, **param_dict)
+    return out
+
+data1, data2, data3, data4 = np.random.randn(4, 100)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(5, 2.7))
+my_plotter(ax1, data1, data2, {'marker': 'x'})
+my_plotter(ax2, data3, data4, {'marker': 'o'})</code></pre>
+    <blockquote class="ok">
+      这个模式值得记下来：<strong>函数收一个 <code>ax</code>，往里画，返回结果</strong>。
+      因为你把「画哪儿」当参数传进去了，同一个函数可以复用到不同的 Axes 上，不会串图。
+      这正是显式接口的好处。官方在讲第三方库接口时也提到同样的思路——库的 <code>plot</code> 方法通常也接受一个可选的
+      <code>ax</code> 参数，让你把图放进自己安排好的位置。
+    </blockquote>
+
+    <h3>4.10 边界：什么时候不该用 matplotlib</h3>
+    <p>matplotlib 是静态图库，有它不擅长的领域。诚实地说清楚：</p>
+    <table>
+      <thead>
+        <tr><th>你想要的</th><th>matplotlib 合适吗</th><th>更合适的选择</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>报纸、PDF 报告里的静态图</td><td>✅ 正合适</td><td>—</td></tr>
+        <tr><td>网页上鼠标悬停看数值、可缩放</td><td>❌ 不是它的强项</td><td>Plotly、Bokeh、Altair（pandas 也支持换后端）</td></tr>
+        <tr><td>统计分布、回归拟合这类统计图</td><td>⚠️ 能画，但要自己调不少</td><td>seaborn（底层仍基于 matplotlib）</td></tr>
+        <tr><td>地图 / 空间数据</td><td>❌ 不直接支持</td><td>GeoPandas、folium；<strong>注意地图还涉及合规审查，不能随便用非标准地图数据</strong></td></tr>
+        <tr><td>实时刷新的数据大屏</td><td>❌ 不合适</td><td>专门的 dashboard 工具</td></tr>
+      </tbody>
+    </table>
+    <p>另外一个边界值得单独说：<strong>图不能替代统计判断</strong>。</p>
+    <blockquote class="warn">
+      把「三年投诉量上升」画成一条漂亮的上升折线，是非常容易的事；但这张图对不对，取决于
+      <strong>你算的是绝对数还是比例、口径有没有变、有没有把不同来源的数据混在一起</strong>。
+      matplotlib 会把任何数字画得很好看，<strong>它不会替你判断这些数字该不该放在一起比</strong>。
+      这是新闻绘图最要命的伦理问题，比任何技术参数都重要。
+    </blockquote>
+
+    <h3>4.11 新手必踩的 10 个坑（错误 / 正确对照）</h3>
+
+    <p><strong>坑 1：中文全变方块</strong></p>
+    <pre><code># ❌ 没设字体，中文标题是 □□□
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots()
+ax.set_title("投诉量变化趋势")
+plt.show()
+
+# ✅ 设 font.family，族名写在最前，末尾用 sans-serif 兜底
+import matplotlib.pyplot as plt
+plt.rcParams['font.family'] = ['Microsoft YaHei', 'SimHei', 'sans-serif']
+fig, ax = plt.subplots()
+ax.set_title("投诉量变化趋势")
+plt.show()
+
+# ✅ 或者只给这一个元素指定（作用范围只限于这处文字）
+ax.set_title("投诉量变化趋势", family=['Microsoft YaHei', 'sans-serif'])</code></pre>
+    <p class="meta">诊断口诀：中文变方块 + 英文数字正常 → 字体缺字形，去设 <code>font.family</code>，不要去找编码问题。</p>
+
+    <p><strong>坑 2：先 show() 再 savefig()，存出空白图</strong></p>
+    <pre><code># ❌ 存出一张空白图
+plt.plot([1, 2, 3], [1, 4, 2])
+plt.show()
+plt.savefig("chart.png")
+
+# ✅ 反过来
+plt.plot([1, 2, 3], [1, 4, 2])
+plt.savefig("chart.png")
+plt.show()
+
+# ✅ 最稳：用显式接口 + fig.savefig()
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [1, 4, 2])
+fig.savefig("chart.png")
+plt.show()</code></pre>
+
+    <p><strong>坑 3：以为 savefig 会自动改后缀</strong></p>
+    <pre><code># ❌ 存出一个叫 report 的文件（没有扩展名），内容是 PNG
+fig.savefig("report")
+
+# ❌ 存出一个叫 chart.png 的文件，内容其实是 PDF —— 后缀骗人，别人打不开
+fig.savefig("chart.png", format="pdf")
+
+# ✅ 后缀和 format 保持一致
+fig.savefig("chart.pdf", format="pdf")</code></pre>
+
+    <p><strong>坑 4：把 Axes 当成「坐标轴」</strong></p>
+    <pre><code># ❌ 以为 ax 是坐标轴，去找 x 轴对象却写错
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [1, 4, 2])
+# 想设 x 轴范围，写成对「轴」的操作 —— 其实 set_xlim 就在 ax 上
+# ax.xaxis.set_xlim(...)  ← 绕远路，容易出错
+
+# ✅ 记住 ax 是「绘图区」，范围直接设在 ax 上
+ax.set_xlim(0, 4)
+ax.set_ylim(0, 5)
+# 真的要拿「刻度尺」时才用 ax.xaxis
+ax.xaxis.set_ticks([1, 2, 3])</code></pre>
+
+    <p><strong>坑 5：subplots(2,2) 之后还用单数 ax</strong></p>
+    <pre><code># ❌ ax 现在是个 2x2 的数组，没有 plot 方法
+fig, ax = plt.subplots(2, 2)
+ax.plot([1, 2, 3], [1, 4, 2])    # AttributeError
+
+# ✅ 用 axs + 显式下标
+fig, axs = plt.subplots(2, 2)
+axs[0, 0].plot([1, 2, 3], [1, 4, 2])
+
+# ✅ 只有一个子图时才用单数
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [1, 4, 2])</code></pre>
+
+    <p><strong>坑 6：不写 ax.legend() 却奇怪图例为什么没有</strong></p>
+    <pre><code># ❌ 给了 label 但没有图例
+fig, ax = plt.subplots()
+ax.plot([1, 2, 3], [1, 4, 2], label="投诉量")     # 图上是空的，没有图例框
+
+# ✅ 显式调用 legend()
+ax.legend()
+
+# ⚠️ 如果只传了位置参数、没给 label，图例框会画出来但是空的
+ax.plot([1, 2, 3], [1, 4, 2])            # 忘了 label=
+ax.legend()                              # 出来一个空框（有时还会给个警告）
+# ✅ label 和 legend() 要配对出现</code></pre>
+
+    <p><strong>坑 7：dpi 当成「画质修复」用</strong></p>
+    <pre><code># ❌ 一张 3x2 英寸的小图，靠调 dpi 想「变清晰」
+fig, ax = plt.subplots(figsize=(3, 2))
+ax.plot([1, 2, 3], [1, 4, 2])
+fig.savefig("small.png", dpi=600)        # 只是把同样内容放大输出，线依然细
+
+# ✅ 先给足画布尺寸，再按用途给 dpi
+fig, ax = plt.subplots(figsize=(8, 4.5))   # 画布给够
+ax.plot([1, 2, 3], [1, 4, 2])
+fig.savefig("print.png", dpi=300, bbox_inches="tight")   # 印刷
+fig.savefig("web.png",   dpi=150, bbox_inches="tight")   # 网页</code></pre>
+
+    <p><strong>坑 8：标题、轴标签被切掉</strong></p>
+    <pre><code># ❌ 标题太长、x 轴标签太长，直接被画布边缘裁掉
+fig.savefig("chart.png")
+
+# ✅ bbox_inches="tight" 自动算紧包围盒；嫌贴太紧就调 pad_inches
+fig.savefig("chart.png", bbox_inches="tight")
+fig.savefig("chart.png", bbox_inches="tight", pad_inches=0.2)</code></pre>
+
+    <p><strong>坑 9：用 from matplotlib.pylab import *</strong></p>
+    <pre><code># ❌ 官方明确说 highly discouraged；它会把内置 sum 换成 numpy.sum
+from matplotlib.pylab import *
+
+# ✅ 老实 import pyplot（以及需要的 numpy）
+import matplotlib.pyplot as plt
+import numpy as np</code></pre>
+
+    <p><strong>坑 10：数学符号不写 r 前缀</strong></p>
+    <pre><code># ❌ \s 和 \n 会被 Python 当成转义序列，图形显示不对甚至报错
+ax.set_title("$\sigma_i=15$")
+
+# ✅ 加 r，表示原始字符串，反斜杠原样交给 matplotlib
+ax.set_title(r"$\sigma_i=15$")</code></pre>
+    <p class="meta">
+      官方原话：<em>「where the </em><code>r</code><em> preceding the title string signifies that the string is a
+      raw string and that the backslash should not be interpreted as an escape character.」</em>
+      （字符串前的 <code>r</code> 表示这是原始字符串，反斜杠不应被当作转义字符。）
+      这跟 regex 那节要加 <code>r"..."</code> 是同一个道理，可以对照着记。
+    </p>
+  </section>
+
+  <section id="s5">
+    <h2>5. 应用场景（新闻传播学）</h2>
+
+    <h3>场景一：把一份评论情绪数据，做成本地报纸能印的「情绪趋势图」</h3>
+    <p>
+      情形：你拿到某话题连续 12 周的评论情绪分值（-1 到 +1，负数代表负面），
+      要交一张给版面的图——印在纸上，所以 dpi 要够、中文要正常、标题和轴标签不能被切掉。
+    </p>
+    <pre><code># -*- coding: utf-8 -*-
+"""某话题 12 周情绪趋势图 —— 交付给版面"""
+import matplotlib
+import matplotlib.pyplot as plt
+
+# ① 字体：族名写最前，末尾留兜底。Windows 上一般有微软雅黑和黑体
+#    不确定有哪些字体时先跑：print(matplotlib.font_manager.get_font_names())
+plt.rcParams['font.family'] = ['Microsoft YaHei', 'SimHei', 'sans-serif']
+
+# ② 数据（真实场景里从 csv 读，见 file-io 那节）
+weeks  = [f"第{i}周" for i in range(1, 13)]
+score  = [0.12, 0.20, 0.05, -0.18, -0.42, -0.55,
+          -0.38, -0.10, 0.08, 0.22, 0.31, 0.26]
+
+# ③ 显式接口：拿到 fig 和 ax
+fig, ax = plt.subplots(figsize=(8, 4.5))
+
+ax.plot(weeks, score, marker="o", linewidth=2, color="#2c5a87",
+        label="情绪分值（-1 极负 → +1 极正）")
+
+# ④ 一条零基准线，让「正负」一眼可辨
+ax.axhline(0, color="#999999", linewidth=1, linestyle="--")
+
+# ⑤ 标题、轴标签、网格
+ax.set_xlabel("时间")
+ax.set_ylabel("情绪分值")
+ax.set_title("某话题评论情绪 12 周走势")
+ax.grid(True, alpha=0.3)
+ax.legend()
+
+# ⑥ x 轴标签竖排，防止 12 个「第N周」挤在一起
+plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
+
+# ⑦ 先存文件，再显示（顺序不能反）
+fig.savefig("情绪趋势_印刷版.png", dpi=300, bbox_inches="tight")
+fig.savefig("情绪趋势_网页版.png", dpi=150, bbox_inches="tight")
+plt.show()</code></pre>
+    <p><strong>这张图里每一行都在解决一个真实问题：</strong></p>
+    <ul>
+      <li><strong>字体那两行</strong>——不写就是 12 个方块中文。这是最优先的。</li>
+      <li><strong>零基准线 <code>axhline(0, ...)</code></strong>——情绪数据有正有负，中间一条虚线能让读者立刻看出「哪几周转负」。
+        没有这条线，读者得自己去比对刻度，图的表达力立刻掉一半。</li>
+      <li><strong><code>fig.savefig()</code> 而不是 <code>plt.savefig()</code></strong>——因为用显式接口拿到了 <code>fig</code>，
+        天然不会掉进「show 之后再存出空白图」的坑。</li>
+      <li><strong>存两版</strong>——印刷 300 dpi、网页 150 dpi。同一次运行出两个交付物，比事后手动转格式靠谱得多。</li>
+      <li><strong>两个都带 <code>bbox_inches="tight"</code></strong>——「第1周～第12周」这排标签加上竖排，
+        很容易超出画布被裁掉，这个参数是必需的。</li>
+    </ul>
+    <blockquote class="warn">
+      <strong>交付前必须人工检查的三件事（这一节最该记住的话）：</strong>
+      <ol>
+        <li><strong>纵轴从 0 开始了吗？</strong>如果只画 0.05 到 0.31 这一段，视觉上会像「暴涨」，实际只动了 0.26。
+          情绪分值这种有明确 -1/+1 含义的指标，纵轴范围要老实标；如果为了看清变化而截断纵轴，
+          <strong>必须在图注里写明</strong>。这是图片编辑最常见也最严重的误导手法。</li>
+        <li><strong>「第N周」的起止日期写了吗？</strong>图上的「第1周」对应哪个日历区间，图注里要交代。否则读者无法核对。</li>
+        <li><strong>中文字体名在你同事的电脑上存在吗？</strong>如果你交出的是代码，换成他的机器可能又变方块（原因见 4.5）。
+          所以<strong>交出去的应该是图片文件，而不是只有代码</strong>；要给代码就附上「先跑 get_font_names() 确认」的说明。</li>
+      </ol>
+    </blockquote>
+
+    <h3>场景二：从一张稿件数据表，出一张「各平台平均阅读量」柱状图</h3>
+    <p>
+      情形：你手上有一个 DataFrame（列：<code>平台</code>、<code>阅读量</code>、<code>字数</code>），
+      要出一张三平台的对比柱状图。这类图直接用 pandas 最快，但因为要送排版（要自定义颜色、要标数值），
+      所以走「pandas 画骨架 + matplotlib 补细节」的路子。
+    </p>
+    <pre><code># -*- coding: utf-8 -*-
+"""各平台平均阅读量对比 —— pandas 画骨架，matplotlib 补细节"""
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# ① 字体必须在 df.plot() 之前设，否则第一张图还是方块
+plt.rcParams['font.family'] = ['Microsoft YaHei', 'SimHei', 'sans-serif']
+
+df = pd.DataFrame({
+    "平台": ["A站", "B站", "C站", "A站", "B站", "C站"],
+    "阅读量": [12000, 34000, 8000, 15000, 41000, 9000],
+})
+
+# ② 聚合：一定要先算出「平均值」再画，不能直接画原始行
+avg = df.groupby("平台")["阅读量"].mean().sort_values(ascending=False)
+
+# ③ 用显式接口拿 ax，把 pandas 的图画到指定的 ax 上
+fig, ax = plt.subplots(figsize=(7, 4))
+avg.plot(kind="bar", ax=ax, color="#2c5a87", rot=0,
+         label="平均阅读量")
+
+# ④ 回到 matplotlib 补细节（pandas 那层做不了这些）
+ax.set_title("各平台平均阅读量对比")
+ax.set_xlabel("平台")
+ax.set_ylabel("阅读量（次）")
+ax.grid(True, axis="y", alpha=0.3)      # 只画横向网格线，柱状图更好读
+ax.legend()
+
+# ⑤ 把数值标在柱顶——纸媒读者不用猜高度
+#    注意 avg 经过 sort_values，顺序和 x 轴刻度一致
+for i, v in enumerate(avg.values):
+    ax.text(i, v + 800, f"{v:,.0f}", ha="center", fontsize=9)
+
+# ⑥ 先把纵轴上限拉高一点，否则柱顶数字贴着画布边
+ax.set_ylim(0, avg.max() * 1.15)
+
+fig.savefig("平台阅读量对比.png", dpi=300, bbox_inches="tight")
+plt.show()</code></pre>
+    <p><strong>几个关键点：</strong></p>
+    <ul>
+      <li><strong><code>avg.plot(kind="bar", ax=ax, ...)</code> 里的 <code>ax=ax</code></strong>——
+        这是把 pandas 的图「放进我指定的绘图区」。不传这个参数，pandas 会自己新建一张图，
+        你后面在 <code>ax</code> 上加的标题就加到了一个空的图上。
+        <strong>这是「pandas 直接画图」最核心的接口</strong>，也是混用两套体系时唯一安全的方式。</li>
+      <li><strong>先 <code>groupby().mean()</code> 再画</strong>——直接画原始 6 行会把同一个平台画成两根柱子，图就废了。
+        这是数据聚合问题（pandas 那节的内容），不是绘图问题，但画错图的人常常误以为是绘图没学会。</li>
+      <li><strong>只画横向网格 <code>axis="y"</code></strong>——柱状图比较的是高度，横线帮忙读数，竖线只会添乱。</li>
+      <li><strong>柱顶标数值的 <code>for</code> 循环</strong>——<code>enumerate</code> 给出下标 <code>i</code> 当 x 坐标，
+        <code>ha="center"</code> 让数字水平居中在柱子上。这一步让图从「能看」变「能读」。</li>
+      <li><strong><code>set_ylim</code> 留白</strong>——不留白的话，最高的那根柱子上的数字会被 <code>bbox_inches="tight"</code>
+        算进包围盒，导致图的比例变形（y 轴被压缩）。先手动抬高上限，图的纵向比例才稳定。</li>
+    </ul>
+    <blockquote class="warn">
+      <strong>这张图必须配的图注信息：</strong>
+      <ol>
+        <li><strong>「平均阅读量」的统计口径</strong>——是所有稿件的算术平均，还是去掉头部爆款后的平均？
+          平均值极易被极端值拉偏，如果某个平台有几篇百万阅读的爆款，这个平均值就代表不了「一般稿子」的表现。
+          <strong>这种情况应该用中位数，或者同时给出两个数。</strong></li>
+        <li><strong>时间范围</strong>——哪段时间的数据。</li>
+        <li><strong>样本量</strong>——每个平台各有多少篇稿件。3 篇算出来的平均和 3000 篇算出来的平均，可信度完全不同，
+          <strong>样本量太小时图注里必须标注，或者干脆不画</strong>。</li>
+        <li><strong>颜色的含义</strong>——如果四个平台用了四种颜色，而颜色没有任何含义，那就是纯装饰；
+          如果颜色代表分组（比如自有平台 vs 外部平台），图注里要说清。</li>
+      </ol>
+    </blockquote>
+  </section>
+
+  <section id="s6">
+    <h2>6. 概念辨析</h2>
+
+    <p><strong>辨析 1：<code>Figure</code> vs <code>Axes</code> vs <code>Axis</code></strong></p>
+    <table>
+      <thead>
+        <tr><th></th><th>Figure</th><th>Axes</th><th>Axis</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>中文该怎么理解</td><td>整张图 / 画布</td><td>一个绘图区</td><td>坐标轴（刻度尺）</td></tr>
+        <tr><td>数量关系</td><td>一个 Figure 可以含多个 Axes</td><td>一个 Axes 通常含 2 个 Axis（3D 时 3 个）</td><td>属于某个 Axes</td></tr>
+        <tr><td>典型操作</td><td><code>fig.savefig()</code>、<code>fig.suptitle()</code>、<code>figsize</code></td><td><code>ax.plot()</code>、<code>ax.set_title()</code>、<code>ax.legend()</code></td><td><code>ax.xaxis.set_ticks()</code>、<code>Locator</code>、<code>Formatter</code></td></tr>
+        <tr><td>最容易搞混的地方</td><td>以为 <code>plt.figure()</code> 就有坐标系了（其实没有，要 <code>subplots()</code>）</td><td><strong>以为 Axes 是「坐标轴」</strong>（这是最常见的错）</td><td>以为 <code>Axis</code> 是所有轴的总称</td></tr>
+      </tbody>
+    </table>
+    <pre><code>fig = plt.figure()             # ❌ 只有一张空纸，没有绘图区
+fig, ax = plt.subplots()       # ✅ 空纸 + 一个绘图区，这才画得出东西
+fig, axs = plt.subplots(2, 2)  # ✅ 一张纸 + 四个绘图区</code></pre>
+
+    <p><strong>辨析 2：<code>plt.plot()</code> vs <code>ax.plot()</code>（隐式 vs 显式）</strong></p>
+    <table>
+      <thead>
+        <tr><th></th><th>隐式 pyplot 接口</th><th>显式 Axes 接口</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>写法</td><td><code>plt.plot(x, y)</code></td><td><code>fig, ax = plt.subplots(); ax.plot(x, y)</code></td></tr>
+        <tr><td>画在哪</td><td>「它以为你想要的」那个对象上</td><td>你明确指定的那个 <code>ax</code> 上</td></tr>
+        <tr><td>多个子图时</td><td>要靠 <code>plt.subplot()</code> / <code>plt.sca()</code> 来回切，容易串图</td><td>直接 <code>axs[0].plot()</code>，各画各的</td></tr>
+        <tr><td>官方态度</td><td>方便（尤其交互式、简单脚本）</td><td><strong>「一般建议使用 OO 风格，特别是对于复杂图形，以及打算作为更大项目一部分复用的函数和脚本」</strong></td></tr>
+      </tbody>
+    </table>
+    <pre><code># 翻译规律：画图函数名字一样；取属性加 get_；设属性加 set_
+plt.plot(x, y)              →  ax.plot(x, y)
+plt.xlabel("时间")           →  ax.set_xlabel("时间")
+label = plt.xlabel()        →  label = ax.get_xlabel()
+plt.title("标题")            →  ax.set_title("标题")</code></pre>
+    <blockquote class="warn">
+      关于「复用」这一条，官方讲得很直白：正因为 <code>ax</code> 是被显式传进去的，
+      你才能把「画一张图」封装成一个接受 <code>ax</code> 参数的函数（4.9 节的 <code>my_plotter</code>）。
+      隐式接口下写这种函数，函数里画的东西会跑到「当前轴」上去，调用两次就乱套了。
+    </blockquote>
+
+    <p><strong>辨析 3：<code>plt.show()</code> vs <code>plt.savefig()</code></strong></p>
+    <table>
+      <thead>
+        <tr><th></th><th><code>show()</code></th><th><code>savefig()</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>干什么</td><td>显示所有打开的图（到窗口/前端）</td><td>把当前图写成图片或矢量文件</td></tr>
+        <tr><td>关键副作用</td><td>阻塞式调用结束时，<strong>图会被关闭并从 pyplot 注销</strong></td><td>无副作用（透明、facecolor 等设置退出时会还原）</td></tr>
+        <tr><td>顺序</td><td>放最后</td><td><strong>放在 show 之前</strong>，或用 <code>fig.savefig()</code></td></tr>
+        <tr><td>Jupyter 里</td><td>可以省（后端每个 cell 结束自动调）</td><td>要显式写，不会自动存</td></tr>
+      </tbody>
+    </table>
+    <pre><code>plt.savefig("a.png"); plt.show()      # ✅ 文件正常
+plt.show(); plt.savefig("a.png")      # ❌ 存出空白图
+fig.savefig("a.png"); plt.show()      # ✅ 更稳，不依赖顺序</code></pre>
+
+    <p><strong>辨析 4：<code>plt.subplots()</code> vs <code>plt.subplot()</code></strong></p>
+    <table>
+      <thead>
+        <tr><th></th><th><code>subplots()</code>（带 s）</th><th><code>subplot()</code>（不带 s）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>返回</td><td><code>fig, ax</code> 元组（多子图时 <code>fig, axs</code> 数组）</td><td>一个 Axes 对象</td></tr>
+        <tr><td>是否创建 Figure</td><td>会，一次创建好纸和所有绘图区</td><td>不会，在已有的当前 Figure 上切一块</td></tr>
+        <tr><td>参数含义</td><td><code>subplots(行数, 列数)</code></td><td><code>subplot(行数, 列数, 第几个)</code></td></tr>
+        <tr><td>推荐度</td><td><strong>推荐</strong>（一次拿全，便于后面回头改）</td><td>临时探索可用；回头改旧轴时很别扭</td></tr>
+      </tbody>
+    </table>
+    <pre><code>fig, axs = plt.subplots(1, 2)     # ✅ 一次拿全，后面 axs[0]/axs[1] 随便改
+axs[0].plot([1, 2, 3], [1, 4, 2])
+axs[1].plot([1, 2, 3], [3, 1, 2])
+
+plt.subplot(1, 2, 1)              # ⚠️ 后面想改第一个轴，得重新 subplot(1,2,1) 切回去
+plt.plot([1, 2, 3], [1, 4, 2])</code></pre>
+
+    <p><strong>辨析 5：<code>font.family</code> vs <code>font.sans-serif</code>（中文设置的两个位置）</strong></p>
+    <p>这两个都出现在官方文档里，但它们不是同一层的东西：</p>
+    <table>
+      <thead>
+        <tr><th></th><th><code>font.family</code></th><th><code>font.sans-serif</code></th></tr>
+      </thead>
+      <tbody>
+        <tr><td>是什么</td><td>「用哪些字体族」的有序列表</td><td>「sans-serif 这个通用族名具体对应哪些字体」的映射表</td></tr>
+        <tr><td>可以放什么</td><td>具体字体族名 <strong>和/或</strong> 通用族名（<code>'serif'</code>、<code>'sans-serif'</code> 等）</td><td>具体字体族名列表</td></tr>
+        <tr><td>官方推荐改哪个</td><td><strong>推荐改这个</strong>：<em>「prepend the font name to 'font.family' (recommended)」</em></td><td>另一种等价做法（「第二种方法」）</td></tr>
+      </tbody>
+    </table>
+    <pre><code># 方法一（官方推荐）：中文字体名塞进 font.family 最前面
+plt.rcParams['font.family'] = ['Microsoft YaHei', 'sans-serif']
+
+# 方法二：改通用族名的映射表
+plt.rcParams['font.family'] = ['sans-serif']
+plt.rcParams['sans-serif'] = ['Microsoft YaHei', 'sans-serif']</code></pre>
+    <p>为什么两者等价？因为官方说明了替换规则：<code>font.family</code> 里出现通用族名时，会被<strong>原地展开</strong>成对应 rcParam 里的那一串具体字体（见 4.4 节的例子）。所以方法一里的 <code>'sans-serif'</code>，最终就是展开成 <code>font.sans-serif</code> 里的内容。既然结果一样，就用官方推荐的方法一，行数更少。</p>
+
+    <p><strong>辨析 6：<code>df.plot()</code> vs matplotlib 的 <code>ax.plot()</code></strong></p>
+    <table>
+      <thead>
+        <tr><th></th><th><code>df.plot()</code>（pandas）</th><th><code>ax.plot()</code>（matplotlib）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>本质</td><td>官方明说：<em>「just a simple wrapper around <code>plt.plot()</code>」</em></td><td>底座</td></tr>
+        <tr><td>输入</td><td>直接吃 DataFrame/Series，自动拿索引当 x 轴、列名当图例</td><td>吃序列（列表、数组、Series）</td></tr>
+        <tr><td>擅长</td><td>快速出一张「decent looking」的基础图，几行搞定</td><td>一切定制：样式、标注、多子图、精确控制</td></tr>
+        <tr><td>怎么配合</td><td>用它画骨架，<strong>并传 <code>ax=</code> 指定目标绘图区</strong></td><td>接着在同一 <code>ax</code> 上补细节</td></tr>
+      </tbody>
+    </table>
+    <pre><code>fig, ax = plt.subplots(figsize=(7, 4))
+avg.plot(kind="bar", ax=ax, rot=0)   # ✅ pandas 画骨架，落到我指定的 ax 上
+ax.set_title("各平台平均阅读量对比")   # ✅ matplotlib 补细节
+ax.grid(True, axis="y", alpha=0.3)
+
+avg.plot(kind="bar")                 # ⚠️ 不传 ax：pandas 自己新建一张图
+plt.title("标题")                     # 这张图的标题确实会加对，但你拿不到 ax，复杂定制寸步难行</code></pre>
+    <blockquote class="warn">
+      官方对 pandas 绘图的定位是「提供基础功能」：<em>「We provide the basics in pandas to easily create decent
+      looking plots.」</em>，并且明确把「超越这些文档范围的可视化」指向生态系统页面。
+      <strong>所以看到「pandas 画的图不够好看、不能定制」时，答案不是换库，而是「回到 matplotlib 的 Axes 上继续做」。</strong>
+    </blockquote>
+  </section>
+
+  <section id="s7">
+    <h2>7. 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：我画出来的中文标题是一排方块，但数字和英文正常。这是编码问题吗？</b>
+      <div class="ans">
+        不是编码问题，是<strong>字体里没有这些汉字的字形</strong>。官方原文说得很清楚：从 v2.0 起默认字体 DejaVu
+        包含了「many western alphabets, but not other scripts, such as Chinese, Korean, or Japanese」。
+        渲染时找不到字形，就画个空心方框占位。修法是把中文字体族名加到 <code>font.family</code> 最前面，末尾留
+        <code>'sans-serif'</code> 兜底。<strong>判断口诀：中文全方块 + 英文数字正常 = 字体问题，不要去找编码问题。</strong>
+        （反过来，如果是一串 <code>\xe6\x8a\x95</code> 这种，那才是 file-io 那节的编码问题。）
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：为什么官方建议用 <code>fig, ax = plt.subplots(); ax.plot(...)</code> 而不是 <code>plt.plot(...)</code>？</b>
+      <div class="ans">
+        三个理由。<strong>①</strong> 隐式接口把 Artist 加到「它以为你想要」的对象上，多图时容易串；
+        <strong>②</strong> 回头想改一个不在 <code>plt.gca()</code> 里的旧轴时，隐式接口要么重复 <code>subplot</code>
+        要么存 handle 再用 <code>sca()</code> 切回去，官方评价第一种是「quickly becomes inelegant」；
+        <strong>③</strong> 有了 <code>fig</code> 之后可以用 <code>fig.savefig()</code>，顺手绕开
+        「show 之后再 savefig 存出空白图」的坑。官方总结：显式的起步啰嗦一点，但复杂图形往往更简单。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：我第一次跑代码是这样，存出来是一张全白的图，为什么？</b>
+      <pre><code>plt.plot([1, 2, 3], [1, 4, 2])
+plt.show()
+plt.savefig("chart.png")</code></pre>
+      <div class="ans">
+        因为阻塞式 <code>show()</code> 结束时，<strong>图被关闭并从 pyplot 注销了</strong>。
+        之后 <code>pyplot.savefig()</code> 去找「当前图」找不到，就新建了一张空图，于是你存下一张白板。
+        官方原文：<em>「At the end of (a blocking) show() the figure is closed and unregistered from pyplot.
+        Calling pyplot.savefig afterwards would save a new and thus empty figure.」</em>
+        两种修法：把 <code>savefig</code> 挪到 <code>show</code> 前面；或者保留 <code>fig</code> 引用、改用
+        <code>fig.savefig()</code>（这条不受顺序限制）。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：我要把图印在报纸上，<code>dpi</code> 和 <code>bbox_inches</code> 该怎么填？为什么光调 dpi 没用？</b>
+      <div class="ans">
+        印刷一般 <code>dpi=300</code>，网页 <code>dpi=150</code>（<code>dpi='figure'</code> 是默认，表示用图自身的 dpi）。
+        <strong><code>bbox_inches="tight"</code> 一定要加</strong>——它算出紧凑包围盒，解决「标题/轴标签被裁掉」，
+        官方定义是：<em>「Bounding box in inches: only the given portion of the figure is saved. If 'tight',
+        try to figure out the tight bbox of the figure.」</em>；嫌贴太紧可以配 <code>pad_inches</code>。
+        <br><br>
+        <strong>光调 dpi 没用</strong>，因为 dpi 是「每英寸点数」，它决定的是<strong>同样内容输出多少像素</strong>。
+        你把一张 <code>figsize=(3, 2)</code> 的小图用 <code>dpi=600</code> 导出，得到的只是一张更大的、线条依然很细的图——
+        它不会凭空多出细节。<strong>正确顺序是先给足 <code>figsize</code>，再按用途给 <code>dpi</code>。</strong>
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>savefig("chart.png", format="pdf")</code> 会存出什么？</b>
+      <div class="ans">
+        存出一个<strong>名叫 <code>chart.png</code>、内容其实是 PDF 的文件</strong>。
+        官方原文：<em>「If format is set, it determines the output format... Note that fname is used verbatim,
+        and there is no attempt to make the extension, if any, of fname match format, and no extension is
+        appended.」</em>——<code>fname</code> 原样使用，<strong>matplotlib 不会帮你把后缀改成和 format 一致，也不会补后缀</strong>。
+        <br><br>
+        这个坑还有个变体：<code>savefig("report")</code> 不设 <code>format</code>、也没有扩展名时，
+        文件会<strong>没有扩展名</strong>，内容按 <code>rcParams["savefig.format"]</code>（默认 <code>'png'</code>）保存，
+        并且会自动补上对应的扩展名——所以这种情况其实会存成 <code>report.png</code>。
+        <strong>记法：后缀和 format 一致，是最省心的做法。</strong>
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>df.plot(kind="bar")</code> 画出来的中文也是方块，pandas 是不是要单独设字体？</b>
+      <div class="ans">
+        不需要单独设。pandas 的 <code>plot</code> 官方明说只是「a simple wrapper around <code>plt.plot()</code>」，
+        底层就是 matplotlib，所以你设的 <code>plt.rcParams['font.family']</code> 对它一样生效。
+        <br><br>
+        <strong>但有两个前提</strong>：① 设字体要在 <code>df.plot()</code> <strong>之前</strong>（<code>rcParams</code> 是运行时全局状态）；
+        ② 要在<strong>同一个 Python 进程</strong>里设——如果你在 Jupyter 里重启了内核，得重跑设字体的那行。
+        排查时如果「明明设了还是方块」，先检查这两条。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：我想把「画一张柱状图」写成一个函数，以后复用。怎么写才安全？</b>
+      <div class="ans">
+        让函数<strong>接收一个 <code>ax</code> 参数</strong>，往里画，然后返回结果。官方在快速入门里给了这个模式：
+        <pre><code>def my_plotter(ax, data1, data2, param_dict):
+    out = ax.plot(data1, data2, **param_dict)
+    return out
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(5, 2.7))
+my_plotter(ax1, data1, data2, {'marker': 'x'})
+my_plotter(ax2, data3, data4, {'marker': 'o'})</code></pre>
+        关键在 <code>ax</code> 是<strong>参数</strong>而不是从「当前轴」里捞的。
+        如果函数内部写 <code>plt.plot(...)</code>（隐式接口），它就会画到「当前轴」上——调用两次可能都画到同一个轴上，
+        或者跑到你没预期的图上。官方讲第三方库接口时也是同样的思路：库的 <code>plot</code> 方法通常接受可选的 <code>ax</code> 参数，
+        让你把图放进自己安排好的位置，并把 Axes 还给你以便继续定制。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8. 可核查参考来源</h2>
+    <p>
+      以下来源均为<strong>本次实际抓取</strong>的官方文档页面（抓取时间 2026-09-17）。
+      本文中的官方引文、参数默认值、代码示例均来自这些页面。
+    </p>
+    <table>
+      <thead>
+        <tr><th>#</th><th>来源</th><th>URL</th><th>用于本文的哪些内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Matplotlib 官方文档 — Quick start guide（快速入门指南）</td>
+          <td><a href="https://matplotlib.org/stable/users/explain/quick_start.html">https://matplotlib.org/stable/users/explain/quick_start.html</a></td>
+          <td>Figure / Axes / Axis / Artist 四者的官方定义与「注意区分 Axes 和 Axis」的提醒；<code>fig, ax = plt.subplots()</code> 最小示例与「Create a figure containing a single Axes」注释；创建 Figure 的四种常用写法（含 <code>subplot_mosaic</code>）；<code>set_xlabel</code>/<code>set_ylabel</code>/<code>set_title</code> 与 <code>ax.legend()</code> 用法；数学表达式示例与「<code>r</code> 表示 raw string、反斜杠不作为转义字符」的原话；OO 风格与 pyplot 风格两段对照代码；「一般建议使用 OO 风格」的评价；<code>pylab</code> 强烈不推荐的说明；<code>my_plotter(ax, ...)</code> 辅助函数模式；Jupyter 中可省略 <code>plt.show()</code> 的原文</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Matplotlib 官方文档 — Fonts in Matplotlib</td>
+          <td><a href="https://matplotlib.org/stable/users/explain/text/fonts.html">https://matplotlib.org/stable/users/explain/text/fonts.html</a></td>
+          <td>「默认字体 DejaVu 覆盖多数欧洲文字系统但不含中日韩」的原文；「Matplotlib can use font families installed on the user's computer」一句（解释平台差异的根源）；字体选择三步流程（<code>FontProperties</code> → <code>FontManager</code> → 后端渲染）与 CSS1 派生算法、五个通用族名（serif/monospace/fantasy/cursive/sans-serif）；<code>font_manager.findfont</code>；<strong>font fallback（3.6 起同一 Text 可混用多字体、「每个字形用列表里第一个包含它的字体渲染」原文与中英混排示例代码）</strong>；PDF/PS 字体嵌入与 font subsetting（CJK 字形多导致文件大）；<code>svg.fonttype</code> 默认 <code>'path'</code> 与 <code>'none'</code> 的取舍；<code>pdf.use14corefonts</code> / <code>ps.useafm</code> 示例</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Matplotlib 官方文档 — Text properties and layout（文本属性与布局）</td>
+          <td><a href="https://matplotlib.org/stable/users/explain/text/text_props.html">https://matplotlib.org/stable/users/explain/text/text_props.html</a></td>
+          <td><strong>「Text with non-latin glyphs」全节</strong>：官方推荐「prepend the font name to <code>'font.family'</code>（recommended）」的两种设置方法与示例代码；「A good practice... append a generic-family... as a last resort」的兜底建议；<code>.matplotlibrc</code> 里 <code>font.family: Source Han Sans TW, Arial, sans-serif</code> 的写法；Linux 上 <code>fc-list :lang=zh family</code> 的输出示例（用于说明「族名 vs 具体 face」）；<strong>「默认字体」一节的 rcParam 表（<code>font.family</code>、<code>font.style</code>、<code>font.variant</code>、<code>font.stretch</code>、<code>font.weight</code>、<code>font.size</code>）与通用族别名到 rcParam 的映射表</strong>；<code>font.family</code> 里通用族名被原地展开的替换规则与示例；<code>matplotlib.font_manager.get_font_names()</code>；相对字号表（xx-small 0.579 等）；文本对齐属性</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Matplotlib 官方文档 — <code>matplotlib.pyplot.savefig</code>（API 参考）</td>
+          <td><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html">https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html</a></td>
+          <td>完整签名 <code>savefig(fname, *, transparent=None, dpi='figure', format=None, metadata=None, bbox_inches=None, pad_inches=0.1, facecolor='auto', edgecolor='auto', backend=None, **kwargs)</code>；<code>fname</code>「used verbatim / 不改后缀 / 不补后缀」与「不设 format 时从扩展名推断、无扩展名则用 <code>rcParams["savefig.format"]</code>（默认 <code>'png'</code>）并追加扩展名」两条原文；<code>dpi</code>、<code>format</code>、<code>bbox_inches</code>、<code>pad_inches</code>、<code>transparent</code> 的官方定义与默认值；<code>metadata</code> 各格式支持情况与不支持 '<code>pgf</code>/<code>raw</code>/<code>rgba</code>/<code>jpg</code>/<code>tiff</code>/<code>webp</code>' 的说明；「这是 <code>Figure.savefig</code> 的 pyplot 包装」说明</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Matplotlib 官方文档 — <code>matplotlib.pyplot.show</code>（API 参考）</td>
+          <td><a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html">https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html</a></td>
+          <td>签名 <code>show(*, block=None)</code>（<code>block</code> 为仅关键字参数）；<code>block=True/False</code> 的行为差异与「默认值在非交互模式下为 True、交互模式下为 False（见 <code>pyplot.isinteractive</code>）」；<strong>「Saving figures to file and showing a window at the same time」全节原文</strong>（先 <code>savefig</code> 后 <code>show</code>；阻塞式 <code>show()</code> 结束时图被关闭并注销；之后 <code>savefig</code> 会存出新的空图；非阻塞 show 或改用 <code>Figure.savefig</code> 时不适用）；Jupyter 后端每个 cell 结束自动调用 <code>show()</code> 的说明；<code>ion</code>/<code>ioff</code> 相关函数</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Matplotlib 官方文档 — Matplotlib Application Interfaces (APIs)（应用接口）</td>
+          <td><a href="https://matplotlib.org/stable/users/explain/figure/api_interfaces.html">https://matplotlib.org/stable/users/explain/figure/api_interfaces.html</a></td>
+          <td>显式 Axes 接口与隐式 pyplot 接口的官方定义（含「adds Artists to the object it thinks the user wants」）；<code>fig = plt.figure(); ax = fig.subplots()</code> 与 <code>plt.plot()</code> 两段最小对照；<code>gcf</code>/<code>gca</code> 说明；「双轴图三种写法」完整对照（<code>plt.subplot</code> 重复调用 / 存 handle + <code>plt.sca</code> / 显式 <code>subplots</code>）；<strong>「Why be explicit?」全节</strong>与官方对两种凑合办法的评价原文；<strong>接口翻译对照表</strong>（创建图形 / 画数据 / 取属性 <code>get_</code> / 设属性 <code>set_</code>）；第三方库 <code>data.plot()</code> 接口与 <code>DataContainer</code> 示例、「库把 Axes 还给你以便用 <code>ax.set_title()</code> 定制」的原文；Summary 中「显式接口最灵活、是其他接口的底层」与「复杂图往往更简单」两句；「为两套接口都要 import pyplot」的 Note；data 参数寻址的附录示例；<strong>附录「pylab 接口」原文（overwrite <code>sum</code> 为 <code>numpy.sum</code>、clutters the global namespace）</strong></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>pandas 官方文档 — Chart visualization（图表可视化，User Guide）</td>
+          <td><a href="https://pandas.pydata.org/docs/user_guide/visualization.html">https://pandas.pydata.org/docs/user_guide/visualization.html</a></td>
+          <td><strong>「The <code>plot</code> method on Series and DataFrame is just a simple wrapper around <code>plt.plot()</code>」与「We provide the basics in pandas to easily create decent looking plots」两句原文</strong>（4.8 节与辨析 6 的核心依据）；Series/DataFrame <code>plot()</code> 示例（含「索引为日期时调用 <code>gcf().autofmt_xdate()</code>」）；<code>x=</code>/<code>y=</code> 关键字用法；<strong><code>kind</code> 参数全部取值表（bar/barh/hist/box/kde/density/area/scatter/hexbin/pie）</strong>与 <code>df.plot.&lt;kind&gt;</code> 两种调用方式、Tab 补全输出；<code>DataFrame.hist()</code>/<code>DataFrame.boxplot()</code> 使用独立接口的说明；<code>pandas.plotting</code> 的绘图函数清单；<strong>饼图 <code>labels</code>/<code>colors</code> 需带 s 的 Warning 原文</strong>；绘图后端切换（<code>backend=</code> 参数与 <code>pd.options.plotting.backend</code>）</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9. 核查记录</h2>
+    <p>本节说明上面 7 条来源的核实情况，以及本文中<strong>哪些内容没有在官方来源中核到</strong>。</p>
+
+    <h3>9.1 逐条核实情况</h3>
+    <table>
+      <thead>
+        <tr><th>#</th><th>来源</th><th>抓取结果</th><th>核实程度</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Quick start guide</td>
+          <td>✅ 抓取成功</td>
+          <td><strong>已核</strong>。Figure/Axes/Axis/Artist 四段定义、最小示例四行与其注释、四种创建 Figure 的写法、<code>ax.legend()</code> 示例、数学表达式 <code>r'$\sigma_i=15$'</code> 与 raw string 原话、OO/pyplot 两段对照代码、「一般建议用 OO 风格」、<code>my_plotter</code> 示例、Jupyter 可省略 <code>show()</code> 的英文原句——均为逐字抄录。<br><strong>注意：该页没有 savefig 专节</strong>（抓取结果末尾明确给出这一提示），故本节关于 <code>savefig</code> 的一切内容都改从来源 4 取。</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Fonts in Matplotlib</td>
+          <td>✅ 抓取成功</td>
+          <td><strong>已核</strong>。DejaVu 不含中日韩字形的原文、「can use font families installed on the user's computer」原句、字体选择三步、五个通用族名、<code>findfont</code>、font fallback 全节（含「每个字形用第一个包含它的字体渲染」原文与中英混排 <code>ax.text(...)</code> 示例代码，含 3.6 起生效、Agg/SVG/PDF/PS 后端支持）、PDF/PS 字体嵌入与 font subsetting（「particularly with fonts with many glyphs such as those that support CJK」原文）、<code>svg.fonttype</code> 默认 <code>'path'</code>、<code>pdf.use14corefonts</code> 示例——均为逐字抄录。</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Text properties and layout</td>
+          <td>✅ 抓取成功</td>
+          <td><strong>已核</strong>。「Text with non-latin glyphs」全节（两种设置方法与代码、recommended 标注、末位兜底建议、<code>.matplotlibrc</code> 写法、<code>fc-list :lang=zh family</code> 输出）、rcParam 表、通用族别名→rcParam 映射表、<code>font.family</code> 通用族名原地展开的规则与 <code>['Family1', 'serif', 'Family2']</code> 示例、<code>get_font_names()</code>、相对字号表——均为逐字抄录。</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><code>pyplot.savefig</code></td>
+          <td>✅ 抓取成功</td>
+          <td><strong>已核</strong>。完整签名、<code>fname</code> 两条原文（used verbatim / 不改后缀不补后缀；不设 format 时从扩展名推断，无扩展名则用默认 <code>'png'</code> 并追加扩展名）、<code>dpi</code>/<code>format</code>/<code>bbox_inches</code>/<code>pad_inches</code>/<code>transparent</code> 的定义与默认值、<code>metadata</code> 支持矩阵、「是 <code>Figure.savefig</code> 的包装」——均为逐字抄录。<code>orientation</code>/<code>papertype</code>/<code>bbox_extra_artists</code>/<code>pil_kwargs</code> 已抓取到但本文未使用。</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><code>pyplot.show</code></td>
+          <td>✅ 抓取成功</td>
+          <td><strong>已核</strong>。签名与 <code>block</code> 仅为关键字参数、「Saving figures to file and showing a window at the same time」全节原文、「At the end of (a blocking) show() the figure is closed and unregistered from pyplot... would save a new and thus empty figure」原句与两条例外、<code>block=True/False</code> 行为与默认值规则、Jupyter 每个 cell 结束自动 <code>show()</code> 的说明、<code>ion</code>/<code>ioff</code>/<code>savefig</code> 的 See also——均按抓取内容转述。</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Application Interfaces (APIs)</td>
+          <td>✅ 抓取成功</td>
+          <td><strong>已核</strong>。两套接口定义原文（含「the object it thinks the user wants」）、双轴图三种写法对照、Why be explicit 全节与官方评价原句、接口翻译对照表、第三方库 <code>DataContainer</code> 示例与「understanding the explicit Axes interface, we could call: ax.set_title(...)」原句、Summary 两句、「两套接口都要 import pyplot」的 Note、附录 data 寻址示例、<strong>附录 pylab 原文（overwrite <code>sum</code> 为 <code>numpy.sum</code>）</strong>——均为逐字抄录。</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>pandas Chart visualization</td>
+          <td>✅ 抓取成功</td>
+          <td><strong>已核</strong>。两句核心原文（wrapper / we provide the basics）、Series/DataFrame 示例、<code>autofmt_xdate()</code> 说明、<code>x=</code>/<code>y=</code> 用法、<code>kind</code> 取值表、<code>df.plot.&lt;kind&gt;</code> 与 Tab 输出、<code>hist()</code>/<code>boxplot()</code> 独立接口说明、饼图 <code>labels</code>/<code>colors</code> Warning 原文、后端切换写法。</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>本次抓取无失败项：7 个 URL 全部返回成功。</strong></p>
+
+    <h3>9.2 未能核到官方明文的内容（重要）</h3>
+    <p>下面这些内容出现在了本文中，但<strong>不在上述 7 个来源页面里</strong>，请注意区分对待：</p>
+    <ol>
+      <li>
+        <strong>Windows / macOS 的具体中文字体族名与推荐写法（4.5 节表格）。</strong>
+        这是本文最需要复核的一块。官方文档给的中文示例是 Linux 上的 <code>Source Han Sans TW</code>（思源黑体）与
+        <code>Noto Sans CJK SC</code>，<code>fc-list</code> 的示范也是 Linux 命令。
+        <strong>本文表中列出的 <code>Microsoft YaHei</code>、<code>SimHei</code>、<code>SimSun</code>、<code>KaiTi</code>、
+        <code>PingFang SC</code>、<code>Hiragino Sans GB</code>、<code>Heiti SC</code>、<code>STHeiti</code>、<code>WenQuanYi Micro Hei</code>
+        及各平台的 <code>plt.rcParams['font.family']</code> 示例，都是依据官方「font.family = 具体字体族名列表」这条规则
+        推出的社区常见配置，不是官方明文。</strong>请务必在自己机器上跑一遍
+        <code>matplotlib.font_manager.get_font_names()</code> 核实后再写进正式项目。
+      </li>
+      <li>
+        <strong><code>plt.rcParams['axes.unicode_minus'] = False</code>。</strong>
+        这一行在 4.5 节出现了，<strong>但本次抓取的 3 个 matplotlib 文本/字体相关页面都没有提到这个参数</strong>。
+        它是社区流传极广的经验写法（用于解决负号显示成方块），本文已在正文中明确标注为非官方内容。
+        请在需要时自行测试其效果。
+      </li>
+      <li>
+        <strong>「纵轴必须从 0 开始」「饼图类别数不超过 5」这类可视化原则（4.10 节、第 5 节场景一与场景二的 blockquote 警告）。</strong>
+        这些是图形设计与新闻编辑的通行规范，<strong>matplotlib 官方文档不涉及这些判断标准</strong>，
+        pandas 的 <code>kind</code> 表里也没有任何「饼图不适合多个类别」的提示。
+        本文把它们放在场景的「交付前人工检查」里而非拆解为 API 说明，就是为了标明它们属于编辑判断而非库的规则。
+      </li>
+      <li>
+        <strong>「<code>df.plot(kind='bar')</code> 不传 <code>ax=</code> 时会自己新建一张图」这一行为描述。</strong>
+        来源 7（pandas 可视化页）确认了 <code>plot</code> 是 <code>plt.plot()</code> 的 wrapper，
+        来源 6 也讲了第三方库 <code>plot</code> 方法通常接受可选 <code>ax</code> 参数（并给出 <code>if ax is None: ax = plt.gca()</code> 的示范），
+        <strong>但没有一句明文说「不传 ax 就会新建图」</strong>。这是从上述两条推出的合理结论，运行时行为请自行验证。
+      </li>
+      <li>
+        <strong>第 4.11 节、第 5 节两个场景中的所有代码块，均未在本环境中实际运行。</strong>
+        它们的语法、API 名称与参数名都对照官方文档写过一遍，但<strong>输出结果、报错文本、图的最终外观没有被实测验证</strong>。
+        尤其是场景一里 <code>plt.setp(ax.get_xticklabels(), rotation=45, ha="right")</code> 这行的效果、
+        场景二里柱顶数字的纵向位置（与 <code>set_ylim</code> 的配合），建议在真实数据上跑一遍再定稿。
+      </li>
+      <li>
+        <strong>「<code>np</code> 未导入时 <code>figsize</code> 等用法」无关的小问题：第 5 节场景一里 <code>import matplotlib</code>
+        只为注释中提到 <code>matplotlib.font_manager.get_font_names()</code> 而写，实际绘图只用了 <code>plt</code>。</strong>
+        代码可以运行，但如果你想删掉这行 import，需要把注释里的提示也一并调整。
+      </li>
+    </ol>
+
+    <h3>9.3 关于本文件本身</h3>
+    <ul>
+      <li>本文的 HTML 结构与内联 CSS 与同目录 <code>vars-and-types.html</code> 完全一致（相同的 9 段结构、相同的类名与配色变量、相同的 <code>id="s1"</code>~<code>id="s9"</code> 锚点与 <code>.toc</code> 跳转目录）。</li>
+      <li>文中所有标注为「官方原文」「官方原话」的引文，均来自 9.1 节表格中标记为「已核」的页面，未做改写；标注为「意译」「人话」的是笔者的转述。</li>
+      <li>本文未使用任何未在来源表中列出的 URL。</li>
+      <li>本次抓取的所有页面均为英文官方文档（madplotlib 与 pandas 官方站），文中中文译文为笔者所译，如需引用请以英文原文为准。</li>
+    </ul>
+
+    <blockquote class="warn">
+      <strong>请人工复核优先级最高的一项：</strong>4.5 节里 Windows / macOS 的字体族名与写法（9.2 节第 1 条）。
+      这是全文唯一一处「高频使用但官方未明文给出」的内容，也是最容易在你换一台电脑后失效的地方。
+      复核方法：在目标机器上执行 <code>import matplotlib; matplotlib.font_manager.get_font_names()</code>，
+      在输出里找出该平台真实存在的中文字体族名，替换掉文中示例。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <a href="index.html">返回概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">仓库地址</a>
+    </p>
+    <p>生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

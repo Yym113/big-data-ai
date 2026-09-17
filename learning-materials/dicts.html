@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字典 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>字典</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 4 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      列表靠「第几个」取东西，字典靠<b>名字</b>取东西。
+    </p>
+    <pre><code># 列表：你得记住「第 0 个是标题，第 1 个是浏览量」—— 一周后肯定忘
+news = ["AI 重塑新闻业", 12800, "科技日报"]
+
+# 字典：名字写在代码里，不用记
+news = {"标题": "AI 重塑新闻业", "浏览": 12800, "来源": "科技日报"}
+print(news["标题"])     # AI 重塑新闻业</code></pre>
+    <p>
+      <b>一条新闻就是一个天然的字典型数据</b>：标题、来源、发布时间、浏览量、正文 —— 每样东西都有名字。
+      你之后会用字典来存一条条新闻，用列表把字典装起来。这是新闻数据最常见的建模方式，没有之一。
+    </p>
+    <pre><code>news_list = [
+    {"标题": "AI 重塑新闻业", "浏览": 12800, "来源": "科技日报"},
+    {"标题": "算法推荐争议",  "浏览": 21000, "来源": "新闻战线"},
+]
+
+for n in news_list:
+    print(f'{n["来源"]}：{n["标题"]}（{n["浏览"]}）')</code></pre>
+    <p>
+      字典最容易栽的地方只有一个：<b>取一个不存在的键，程序直接崩。</b>
+    </p>
+    <pre><code>news = {"标题": "AI 重塑新闻业"}
+print(news["来源"])      # KeyError: '来源'   ← 崩了
+print(news.get("来源"))  # None               ← 不崩，安全</code></pre>
+    <blockquote>
+      一句话记住：<b>不确定键在不在，就用 <code>.get()</code>。</b>
+      这一条能消掉你前期遇到的一半 <code>KeyError</code>。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>用花括号创建字典，用键取值、赋值、删除，并说明 <code>d[k]</code> 与 <code>d.get(k)</code> 的区别；</li>
+      <li>用 <code>keys()</code> / <code>values()</code> / <code>items()</code> 遍历字典，并说出哪种写法最常用；</li>
+      <li>解释「键必须是可哈希的」是什么意思，并说清为什么列表不能当键；</li>
+      <li>说明 Python 3.7+ 字典「保持插入顺序」的含义，以及为什么不能依赖老版本的行为；</li>
+      <li>用字典嵌套列表表示「一条新闻的多个标签」「一个来源的多条新闻」这类结构；</li>
+      <li>说出遍历字典时修改字典会出什么问题，并给出两种安全写法。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li>字典和列表最本质的区别是什么？什么时候该用哪个？</li>
+      <li>怎么创建一个字典？<code>{}</code> 和 <code>dict()</code> 有什么区别？</li>
+      <li>取值、赋值、删除分别怎么写？</li>
+      <li>为什么 <code>d["不存在的键"]</code> 会崩，而 <code>d.get()</code> 不会？</li>
+      <li>怎么遍历一个字典？<code>items()</code> 为什么最常用？</li>
+      <li>「键必须可哈希」是什么意思？为什么列表不能当键、元组可以？</li>
+      <li>字典的键唯一意味着什么？重复赋值会怎样？</li>
+      <li>字典是「有序」的吗？Python 3.7 前后有什么变化？</li>
+      <li>为什么不能在遍历字典的同时增删键？</li>
+      <li>字典能嵌套字典吗？嵌套三层会不会失控？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>字典（<code>dict</code>）</b>：把<b>键</b>映射到<b>值</b>的容器，也叫映射类型。
+      官方教程的说法：<i>「与以连续整数为索引的序列不同，字典是以<em>键</em>来索引的，键可以是任何不可变类型。」</i>
+    </p>
+    <p>官方给出的键的限制很明确（括号里是为什么）：</p>
+    <ul>
+      <li>字符串和数字<b>总是</b>可以作为键；</li>
+      <li>元组在<b>仅包含字符串、数字或元组</b>时也可以作为键；</li>
+      <li>元组里直接或间接包含了任何<b>可变对象</b>，就不能当键；</li>
+      <li><b>不能用列表作为键</b>，因为列表可以用索引赋值、切片赋值或 <code>append()</code>、<code>extend()</code> 原地修改。</li>
+    </ul>
+
+    <h3>4.2 最小模型：一本电话簿</h3>
+    <pre><code>news = {
+    "标题": "AI 重塑新闻业",
+    "浏览": 12800,
+    "来源": "科技日报",
+}
+#  键 → 值
+#  "标题" → "AI 重塑新闻业"
+#  "浏览" → 12800
+#  "来源" → "科技日报"</code></pre>
+    <p>
+      官方教程用电话簿作例子：<code>tel = {'jack': 4098, 'sape': 4139}</code>，
+      <code>tel['guido'] = 4127</code> 是「登记一个新号码」，<code>tel['jack']</code> 是「查号码」。
+      查一个没登记过的名字，就该报错（<code>KeyError</code>）—— 这是合理的，因为数据就是不存在。
+    </p>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>字典</td><td>通讯录 / 电话簿</td><td>按名字查，不用记第几行</td></tr>
+        <tr><td>键</td><td>姓名</td><td>唯一，不重复</td></tr>
+        <tr><td>值</td><td>电话号码</td><td>可以重复，可以是任何东西</td></tr>
+        <tr><td><code>d[k]</code></td><td>查一个不存在的人</td><td>查不到就当场报错（<code>KeyError</code>）</td></tr>
+        <tr><td><code>d.get(k)</code></td><td>「有就给我，没有就拉倒」</td><td>返回 <code>None</code> 或你指定的默认值</td></tr>
+        <tr><td><code>in</code></td><td>「这个人在不在通讯录里」</td><td>只问存在性，不取值</td></tr>
+        <tr><td><code>items()</code></td><td>把通讯录一行一行念出来</td><td>同时拿到键和值</td></tr>
+        <tr><td>键可哈希</td><td>姓名得是印在封面上的固定字</td><td>会自己改动的名字不能当索引（列表不行）</td></tr>
+        <tr><td>插入顺序</td><td>通讯录是按登记先后排的</td><td>3.7+ 保证顺序，但不自动按字母排</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 核心操作</h3>
+    <pre><code>news = {"标题": "AI 重塑新闻业", "浏览": 12800}
+
+news["来源"] = "科技日报"      # 新增：键不存在就是新增
+news["浏览"] = 13000          # 修改：键已存在就覆盖（旧值丢失）
+print(news)
+# {'标题': 'AI 重塑新闻业', '浏览': 13000, '来源': '科技日报'}
+
+del news["浏览"]              # 删除键值对
+print(news)                   # {'标题': 'AI 重塑新闻业', '来源': '科技日报'}
+
+print("来源" in news)          # True   检查键是否在（不是检查值！）
+print("科技日报" in news)      # False  值不在检查范围内
+
+print(len(news))              # 2      键值对数量</code></pre>
+    <blockquote>
+      <code>in</code> 检查的是<b>键</b>，不是值。想检查值要用 <code>"科技日报" in news.values()</code>。
+      这条几乎每个新手都会误解一次。
+    </blockquote>
+
+    <h3>4.5 取值：<code>d[k]</code> vs <code>d.get(k)</code></h3>
+    <p>官方教程原话：<i>「通过下标操作（<code>d[key]</code>）提取不存在的键的值会引发 <code>KeyError</code>。
+      要避免在试图访问可能不存在的键时遇到这种错误，可改用 <code>get()</code> 方法，它会在字典不存在某个键时返回 <code>None</code>（或指定的默认值）。」</i></p>
+    <pre><code>news = {"标题": "AI 重塑新闻业", "浏览": 12800}
+
+news["来源"]               # KeyError: '来源'
+news.get("来源")           # None
+news.get("来源", "未知")    # "未知"   ← 给默认值，最常用
+news.get("浏览")           # 12800
+
+# 实战：设置默认值
+news["来源"] = news.get("来源", "未标注")</code></pre>
+    <table>
+      <thead><tr><th>写法</th><th>键不存在时</th><th>什么时候用</th></tr></thead>
+      <tbody>
+        <tr><td><code>d[k]</code></td><td>抛 <code>KeyError</code></td><td>键<b>必须</b>存在（数据缺失就是 bug）</td></tr>
+        <tr><td><code>d.get(k)</code></td><td>返回 <code>None</code></td><td>键可能不存在，且 <code>None</code> 能表达「没有」</td></tr>
+        <tr><td><code>d.get(k, 默认值)</code></td><td>返回默认值</td><td>最常用：缺失时给个合理兜底</td></tr>
+        <tr><td><code>d.setdefault(k, 默认值)</code></td><td>插入并返回默认值</td><td>想顺便把默认值写回字典时</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.6 遍历：三种方法，<code>items()</code> 最常用</h3>
+    <pre><code>news = {"标题": "AI 重塑新闻业", "浏览": 12800, "来源": "科技日报"}
+
+# 方式一：只遍历键（默认行为）
+for k in news:
+    print(k, "=", news[k])
+
+# 方式二：直接遍历值
+for v in news.values():
+    print(v)
+
+# 方式三（官方推荐）：同时拿到键和值
+for k, v in news.items():
+    print(f"{k}: {v}")
+# 标题: AI 重塑新闻业
+# 浏览: 12800
+# 来源: 科技日报</code></pre>
+    <blockquote class="ok">
+      官方教程在「循环的技巧」一节里的原话是：<i>「当对字典执行循环时，可以使用 <code>items()</code> 方法同时提取键及其对应的值。」</i>
+      实际写代码时，<b>只要循环体里同时用到键和值，就用 <code>items()</code></b>，
+      比 <code>for k in d: v = d[k]</code> 更短也更快。
+    </blockquote>
+    <pre><code># 想要键的列表（按插入顺序）
+list(news)
+# ['标题', '浏览', '来源']
+# 官方原文：「对字典执行 list(d) 操作，返回该字典中所有键的列表，按插入次序排列
+#           （如需排序，请使用 sorted(d)）。」
+
+sorted(news)
+# ['来源', '标题', '浏览']   ← 按 Unicode 码位排序</code></pre>
+
+    <h3>4.7 键必须可哈希：这条限制在说什么</h3>
+    <p>
+      「可哈希」的意思是：这个对象有一个在其生命周期内<b>不会变化</b>的哈希值。
+      因为字典要靠哈希值快速定位，如果键能变，字典就找不着它了。
+    </p>
+    <pre><code>d = {}
+
+d["标题"] = 1        # ✅ 字符串可以
+d[42] = 2            # ✅ 数字可以
+d[(1, 2)] = 3        # ✅ 只含数字的元组可以
+d[None] = 4          # ✅ None 可以
+d[True] = 5          # ✅ bool 可以（注意 True == 1，会和上文的 1 冲突！）
+
+d[[1, 2]] = 6
+# TypeError: unhashable type: 'list'   ← 列表不行
+
+d[{"a": 1}] = 7
+# TypeError: unhashable type: 'dict'   ← 字典也不行</code></pre>
+    <pre><code># 实战场景：想用「来源 + 日期」当键，怎么办？
+# ❌ 列表不行
+# counts[["科技日报", "2026-09-17"]] = 5
+
+# ✅ 转成元组
+counts = {}
+key = ("科技日报", "2026-09-17")
+counts[key] = counts.get(key, 0) + 1
+print(counts)   # {('科技日报', '2026-09-17'): 1}</code></pre>
+    <blockquote class="warn">
+      <b><code>True == 1</code> 且 <code>False == 0</code></b>，而且它们的哈希值相同。
+      所以 <code>d[1]</code> 和 <code>d[True]</code> 在字典里是<b>同一个键</b>。
+      在存布尔标记和数字计数混在一起的字典时，这会造成很难查的 bug。
+    </blockquote>
+
+    <h3>4.8 插入顺序：3.7 之后是这个行为</h3>
+    <pre><code>d = {}
+d["丙"] = 3
+d["甲"] = 1
+d["乙"] = 2
+
+print(list(d))
+# ['丙', '甲', '乙']  ← 按插入顺序，不是按字母或笔画排序
+
+print(sorted(d))
+# ['丙', '甲', '乙']  ← 这只是因为中文按 Unicode 码位恰好如此
+# 想按插入顺序 → 直接用 list(d)
+# 想按某种规则排序 → sorted(d, key=...) 得到新列表，原字典不动</code></pre>
+    <p class="meta">
+      官方文档在 dict 章节明确保留了「保持插入顺序」的保证，并说明这是语言规范的一部分（自 3.7 起）。
+      <b>但「有序」不等于「会自动排序」</b>—— 字典永远按你插入的先后排列，想要别的顺序得自己 <code>sorted()</code>。
+    </p>
+
+    <h3>4.9 遍历时不能改字典</h3>
+    <p>
+      官方教程给的策略很直接：<i>「很难正确地在迭代多项集的同时修改多项集的内容。更简单的方法是迭代多项集的副本或者创建新的多项集。」</i>
+    </p>
+    <pre><code># ❌ 错误：边遍历边删
+users = {"Hans": "active", "Éléonore": "inactive", "景太郎": "active"}
+for user in users:
+    if users[user] == "inactive":
+        del users[user]
+# RuntimeError: dictionary changed size during iteration
+
+# ✅ 方案一（官方示例）：迭代副本
+for user, status in users.copy().items():
+    if status == "inactive":
+        del users[user]
+
+# ✅ 方案二（官方示例）：创建新字典
+active_users = {}
+for user, status in users.items():
+    if status == "active":
+        active_users[user] = status
+
+# ✅ 方案三：字典推导式（最简洁）
+active_users = {u: s for u, s in users.items() if s == "active"}</code></pre>
+    <blockquote class="warn">
+      注意：<b>改值是可以的，改「键的数量」才会报错。</b>
+      <code>users[u] = "new"</code> 在循环里合法；<code>del users[u]</code> 和 <code>users[新键] = x</code> 会抛
+      <code>RuntimeError: dictionary changed size during iteration</code>。这个区别很多人搞混。
+    </blockquote>
+
+    <h3>4.10 嵌套：字典里装列表，列表里装字典</h3>
+    <p>这是新闻数据最常见的两种结构，务必看熟：</p>
+    <pre><code># 结构 A：字典套列表 —— 一条新闻的多个标签
+article = {
+    "标题": "AI 重塑新闻业",
+    "浏览": 12800,
+    "标签": ["AI", "媒体融合", "技术"],
+}
+print(article["标签"][0])       # AI       先取键，再取索引
+article["标签"].append("深度报道")
+print(len(article["标签"]))     # 4
+
+# 结构 B：列表套字典 —— 多条新闻
+articles = [
+    {"标题": "AI 重塑新闻业", "浏览": 12800, "来源": "科技日报"},
+    {"标题": "算法推荐争议",  "浏览": 21000, "来源": "新闻战线"},
+]
+# 这是最推荐的建模方式：每一条是字典，整批是列表
+
+# 遍历 + 提取
+titles = [a["标题"] for a in articles]
+total = sum(a["浏览"] for a in articles)
+
+# 结构 C：字典套字典 —— 按来源分组
+by_source = {}
+for a in articles:
+    src = a["来源"]
+    by_source.setdefault(src, []).append(a["标题"])
+print(by_source)
+# {'科技日报': ['AI 重塑新闻业'], '新闻战线': ['算法推荐争议']}</code></pre>
+    <p class="meta">
+      <code>setdefault(键, 默认值)</code> 的意思是「键不在就设成默认值，然后返回这个键对应的值」，
+      所以它天然适合做「分组累加」—— 这一行的效果等价于写 4 行 <code>if/else</code>。
+      后面学 pandas 时，<code>groupby</code> 就是这件事的工业化版本。
+    </p>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：把一批新闻建成「列表套字典」并做统计</h3>
+    <pre><code>articles = [
+    {"标题": "AI 写稿工具上线",   "浏览": 12800, "来源": "科技日报", "标签": ["AI", "产品"]},
+    {"标题": "县级融媒体三周年", "浏览": 3400,  "来源": "新闻战线", "标签": ["基层"]},
+    {"标题": "算法推荐争议调查", "浏览": 21000, "来源": "科技日报", "标签": ["AI", "算法"]},
+    {"标题": "AI 版权第一案",    "浏览": 9600,  "来源": "法治日报", "标签": ["AI", "版权"]},
+]
+
+# 1. 用 get 安全取值：没有「标签」的条目返回空列表
+for a in articles:
+    tags = a.get("标签", [])
+    if "AI" in tags:
+        print(f'{a["标题"]}（{a["浏览"]}）')
+# AI 写稿工具上线（12800）
+# 算法推荐争议调查（21000）
+# AI 版权第一案（9600）
+
+# 2. 按来源统计条数与总浏览量 —— 字典累加的经典模式
+stats = {}
+for a in articles:
+    src = a["来源"]
+    if src not in stats:              # 也可以写成 stats.setdefault(src, [0, 0])
+        stats[src] = [0, 0]           # [条数, 总浏览量]
+    stats[src][0] += 1
+    stats[src][1] += a["浏览"]
+
+for src, (cnt, total) in stats.items():
+    print(f"{src}: {cnt} 条，平均 {total / cnt:.0f}")
+# 科技日报: 2 条，平均 16200
+# 新闻战线: 1 条，平均 3400
+# 法治日报: 1 条，平均 9600
+
+# 3. 统计所有标签出现次数
+tag_count = {}
+for a in articles:
+    for t in a.get("标签", []):
+        tag_count[t] = tag_count.get(t, 0) + 1
+print(sorted(tag_count.items(), key=lambda kv: -kv[1]))
+# [('AI', 3), ('产品', 1), ('算法', 1), ('版权', 1), ('基层', 1)]</code></pre>
+    <blockquote class="ok">
+      <b><code>d[k] = d.get(k, 0) + 1</code></b> 是「计频」的万能句式，背下来。
+      词频统计、来源统计、标签统计，全是这一行。后面学 <code>collections.Counter</code> 会看到更省的写法，但原理就是这个。
+    </blockquote>
+
+    <h3>场景二：用字典维护「来源 → 网址」的对照表，做数据规整</h3>
+    <p>
+      抓下来的来源名字五花八门（「XX网」「XX新闻网」「XX新闻」），做统计前要先统一。
+      字典做对照表是最直接的办法。
+    </p>
+    <pre><code># 对照表：各种写法 → 规范名称
+SOURCE_MAP = {
+    "科技日报": "科技日报",
+    "科技日报社": "科技日报",
+    "科技日报网": "科技日报",
+    "新闻战线": "新闻战线",
+    "新闻战线杂志": "新闻战线",
+}
+
+raw = [
+    {"标题": "AI 写稿工具上线", "来源": "科技日报社"},
+    {"标题": "县级融媒体三周年", "来源": "新闻战线杂志"},
+    {"标题": "算法推荐争议调查", "来源": "科技日报网"},
+    {"标题": "某地方台报道", "来源": "某地方台"},     # 对照表里没有
+]
+
+for a in raw:
+    raw_name = a.get("来源", "").strip()
+    # 用 get 兜底：对照表里没有就保留原名
+    a["来源规范"] = SOURCE_MAP.get(raw_name, raw_name)
+
+for a in raw:
+    print(a["来源"], "→", a["来源规范"])
+# 科技日报社 → 科技日报
+# 新闻战线杂志 → 新闻战线
+# 科技日报网 → 科技日报
+# 某地方台 → 某地方台
+
+# 顺手统计规范后的来源分布
+dist = {}
+for a in raw:
+    dist[a["来源规范"]] = dist.get(a["来源规范"], 0) + 1
+print(dist)
+# {'科技日报': 2, '新闻战线': 1, '某地方台': 1}
+
+# 报告「没被对照表覆盖」的来源（数据质量检查）
+unmapped = sorted({a["来源"] for a in raw if a["来源"] not in SOURCE_MAP})
+print("未覆盖：", unmapped)     # 未覆盖： ['某地方台']</code></pre>
+    <p class="meta">
+      最后那一步「找出没被映射到的取值」是数据清洗里非常重要的一环 ——
+      它能告诉你对照表还缺什么，而不是默默把数据算错。
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：<code>KeyError</code> vs <code>None</code> —— <code>get</code> 的默认值不是万能的</h3>
+    <pre><code>news = {"标题": "AI 重塑新闻业", "浏览": None}   # 浏览量明确是「没有」
+
+news.get("浏览")            # None   ← 键存在，值是 None
+news.get("来源")            # None   ← 键不存在，也是 None
+
+# 上面两种 None 含义完全不同，但 get 分不出来！
+
+# 想区分，要么先判断键
+if "浏览" in news:
+    print("键存在，值是", news["浏览"])
+else:
+    print("键不存在")
+
+# 要么用哨兵默认值
+missing = object()
+if news.get("浏览", missing) is missing:
+    print("键不存在")</code></pre>
+    <blockquote class="warn">
+      <b><code>get()</code> 会把「键不存在」和「值是 None」混成一回事。</b>
+      在严格要求数据完整性的场合（比如校验抓取结果），应该用 <code>in</code> 判断或让 <code>KeyError</code> 直接抛出来，
+      而不是一路 <code>get()</code> 把问题盖住。
+    </blockquote>
+
+    <h3>辨析 2：<code>in</code> 检查键，不检查值</h3>
+    <pre><code>news = {"标题": "AI 重塑新闻业", "来源": "科技日报"}
+
+"来源" in news                # True    检查键
+"科技日报" in news            # False   值不在检查范围
+"科技日报" in news.values()   # True    要检查值得显式 .values()
+
+# 想按值反查键（注意：值可能重复，只能找到第一个）
+def find_key(d, target):
+    for k, v in d.items():
+        if v == target:
+            return k
+    return None
+
+find_key(news, "科技日报")     # '来源'</code></pre>
+
+    <h3>辨析 3：键唯一 —— 重复赋值会静默覆盖</h3>
+    <pre><code>d = {"标题": "第一条", "标题": "第二条"}
+print(d)        # {'标题': '第二条'}   ← 前一个被悄悄丢掉了
+
+# 更危险的情况：从列表建字典时
+pairs = [("a", 1), ("a", 2), ("a", 3)]
+d = dict(pairs)
+print(d)        # {'a': 3}   ← 只留下最后一个，没有任何警告
+
+# 想保留全部，值应该用列表
+d = {}
+for k, v in pairs:
+    d.setdefault(k, []).append(v)
+print(d)        # {'a': [1, 2, 3]}</code></pre>
+    <p class="meta">
+      官方教程：「字典的键必须是唯一的……如果你使用已存在的键进行存储，则与该键相关联的旧值将丢失。」
+     </p>
+
+    <h3>辨析 4：字典「保持插入顺序」≠「有序」</h3>
+    <pre><code>d = {"z": 1, "a": 2, "m": 3}
+
+list(d)          # ['z', 'a', 'm']   ← 插入顺序，不是字母序
+sorted(d)        # ['a', 'm', 'z']   ← 要排序得显式调用
+
+# 想按值排序取出前几名
+scores = {"科技日报": 16200, "新闻战线": 3400, "法治日报": 9600}
+for name, s in sorted(scores.items(), key=lambda kv: -kv[1]):
+    print(name, s)
+# 科技日报 16200
+# 法治日报 9600
+# 新闻战线 3400</code></pre>
+
+    <h3>辨析 5：<code>dict.copy()</code> 也是浅拷贝</h3>
+    <pre><code>a = {"标签": ["AI", "产品"]}
+b = a.copy()               # 外层是新字典
+b["新键"] = 1              # 不影响 a ✅
+b["标签"].append("深度")    # 影响 a ❌（内层列表共享）
+print(a)                   # {'标签': ['AI', '产品', '深度']}
+
+# 完全隔离
+import copy
+b = copy.deepcopy(a)</code></pre>
+    <p class="meta">
+      这和列表的 <code>a[:]</code> 完全同理 —— 见 <a href="lists.html#s6">列表 · 辨析 3</a>。
+      只要有两层以上容器嵌套，就要想一下浅拷贝够不够。
+    </p>
+
+    <h3>辨析 6：<code>d.get(k, 0) + 1</code> vs <code>d[k] += 1</code></h3>
+    <pre><code># ❌ 直接加：第一次遇到新键就崩
+counts = {}
+for word in ["AI", "算法", "AI"]:
+    counts[word] += 1
+# KeyError: 'AI'
+
+# ✅ 兼容写法一：get 兜底
+counts = {}
+for word in ["AI", "算法", "AI"]:
+    counts[word] = counts.get(word, 0) + 1
+print(counts)      # {'AI': 2, '算法': 1}
+
+# ✅ 兼容写法二：setdefault
+counts = {}
+for word in ["AI", "算法", "AI"]:
+    counts[word] = counts.setdefault(word, 0) + 1
+
+# ✅ 兼容写法三：标准库计数器（后面会学）
+from collections import Counter
+print(Counter(["AI", "算法", "AI"]))   # Counter({'AI': 2, '算法': 1})</code></pre>
+    <p class="meta">
+      <code>d[k] += 1</code> 报 <code>KeyError</code> 是新手写词频统计时必踩的第一个坑。
+      三种写法都对，<code>Counter</code> 最省事，但前两种更通用（因为值不一定是数字）。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：<code>d = {"a": 1}</code>，<code>d["b"]</code> 和 <code>d.get("b")</code> 分别怎样？</b>
+      <div class="ans">
+        <code>d["b"]</code> 抛 <code>KeyError: 'b'</code>；<code>d.get("b")</code> 返回 <code>None</code>，
+        写 <code>d.get("b", 0)</code> 则返回 <code>0</code>。官方教程明确说 <code>get()</code> 就是为避免这个问题而存在的。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：为什么 <code>d[[1,2]] = "x"</code> 会报错，而 <code>d[(1,2)] = "x"</code> 不会？</b>
+      <div class="ans">
+        字典的键必须是可哈希的（不可变）。列表是可变对象，可以用索引赋值、切片赋值、<code>append</code> 原地修改，
+        所以不能作为键；只包含不可变元素的元组可以。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：遍历字典时同时拿到键和值，最推荐的写法是什么？</b>
+      <div class="ans">
+        <code>for k, v in d.items():</code>。官方教程在「循环的技巧」里明确推荐用 <code>items()</code> 同时提取键和值。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>d = {"b": 1, "a": 2}</code>，<code>list(d)</code> 得到什么？这是「排序」吗？</b>
+      <div class="ans">
+        得到 <code>['b', 'a']</code>。这是<b>插入顺序</b>，不是排序。官方原文：<code>list(d)</code> 返回所有键的列表，
+        「按插入次序排列（如需排序，请使用 <code>sorted(d)</code>）」。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>"科技日报" in news</code> 是在检查键还是值？</b>
+      <div class="ans">
+        检查<b>键</b>。要检查值必须写 <code>"科技日报" in news.values()</code>。这是 <code>in</code> 最常见的误解。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：为什么 <code>for k in d: del d[k]</code> 会报错？怎么改？</b>
+      <div class="ans">
+        会抛 <code>RuntimeError: dictionary changed size during iteration</code>（遍历中改变了字典大小）。
+        安全写法：遍历 <code>d.copy().items()</code>，或者用字典推导式创建一个新字典
+        <code>{k: v for k, v in d.items() if 条件}</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：统计词频时 <code>counts[w] += 1</code> 为什么会崩？正确写法是什么？</b>
+      <div class="ans">
+        新词对应的键还不存在，<code>counts[w]</code> 取值时就抛 <code>KeyError</code>。
+        正确写法：<code>counts[w] = counts.get(w, 0) + 1</code>，或用 <code>setdefault</code>、<code>collections.Counter</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 数据结构（5.5 字典 / 5.6 循环的技巧）</td>
+          <td>字典以键索引、键可以是任何不可变类型、元组作键的限制、不能使用列表作键及原因、键唯一与旧值丢失、<code>KeyError</code> 与 <code>get()</code> 的官方说明、<code>list(d)</code> 按插入次序返回键、<code>items()</code> 遍历、<code>dict()</code> 构造与字典推导式、<code>setdefault</code> 场景</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/datastructures.html">docs.python.org/zh-cn/3/tutorial/datastructures.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型（不可变序列 / 可哈希性）</td>
+          <td>「这种支持使得不可变序列（如元组实例）可以用作字典的键」，以及可哈希性与键约束的相关表述</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html">docs.python.org/zh-cn/3/library/stdtypes.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 更多控制流工具（4.2 for 语句）</td>
+          <td>「很难正确地在迭代多项集的同时修改多项集的内容」原文，以及 <code>users.copy().items()</code> 与新建字典两种官方策略示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/controlflow.html">docs.python.org/zh-cn/3/tutorial/controlflow.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题（复制对象 / 共享默认值）</td>
+          <td>「字典对象提供了 <code>copy()</code> 方法：<code>newdict = olddict.copy()</code>」、<code>copy.deepcopy()</code> 的使用场景、可变对象改动引起的困惑</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 输入与输出（7.1.2 format 方法）</td>
+          <td>把字典作为关键字参数传入格式化（<code>format(**table)</code>）、用方括号按名访问键的写法（本份在遍历输出场景中参照）</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/inputoutput.html">docs.python.org/zh-cn/3/tutorial/inputoutput.html</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      说明：本份资料使用的 <code>dict</code> 方法清单与「插入顺序保证」主要来自《数据结构》教程 5.5 节与 stdtypes 中的相关表述
+      （stdtypes 页面抓取时在 <code>str.isspace()</code> 处被截断，未取到 dict 章节的完整方法表），
+      因此 <code>keys</code> / <code>values</code> / <code>items</code> / <code>pop</code> / <code>popitem</code> / <code>update</code> / <code>fromkeys</code> 的逐条措辞未逐字引用官方原文。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版），均通过 WebFetch 实际抓取页面内容后使用</td></tr>
+        <tr><td>键的约束</td><td>已核。原文：「字典是以<em>键</em>来索引的，键可以是任何不可变类型……如果一个元组直接或间接地包含了任何可变对象，则不可以用作键。你不能使用列表作为键，因为列表可使用索引赋值、切片赋值或 <code>append()</code> 和 <code>extend()</code> 等方法进行原地修改。」</td></tr>
+        <tr><td><code>KeyError</code> 与 <code>get()</code></td><td>已核。原文：「通过下标操作提取不存在的键的值会引发 <code>KeyError</code>。要避免……可改用 <code>get()</code> 方法，它会在字典不存在某个键时返回 <code>None</code>（或指定的默认值）。」</td></tr>
+        <tr><td>插入顺序</td><td>已核（部分）。<code>list(d)</code>「按插入次序排列」为官方原文；dict 章节中「保持插入顺序」的保证表述因页面截断未取到完整原文，本份按 3.7+ 的官方行为描述，未逐字引用</td></tr>
+        <tr><td><code>items()</code> 遍历</td><td>已核。原文：「当对字典执行循环时，可以使用 <code>items()</code> 方法同时提取键及其对应的值。」</td></tr>
+        <tr><td>遍历时修改字典</td><td>已核。两种策略（迭代 <code>copy()</code>、创建新字典）的示例代码取自官方教程原文</td></tr>
+        <tr><td><code>RuntimeError: dictionary changed size during iteration</code></td><td><b>未在抓取到的页面中直接核到该报错文本</b>。这是 Python 运行时对该场景的实际报错，但本份未能引用官方原文确认措辞，属依据通用语义的补写</td></tr>
+        <tr><td>未核到 / 部分核</td><td>dict 的 <code>keys</code> / <code>values</code> / <code>items</code> / <code>setdefault</code> / <code>pop</code> / <code>popitem</code> / <code>update</code> / <code>fromkeys</code> 的逐条官方措辞未取到（stdtypes 页面截断于 <code>str.isspace()</code>）；<code>True == 1</code> 导致键冲突的结论来自 stdtypes 中 bool 是 int 子类、以及哈希值相同的通用语义，未逐条对照官方原文</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；新闻类示例数据为虚构；未在本机逐条运行验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、新闻场景、自测题由 AI 撰写；
+      键的可哈希约束、<code>KeyError</code> 与 <code>get()</code>、<code>list(d)</code> 的顺序、<code>items()</code> 遍历、
+      遍历中修改字典的官方策略，均逐条对照官方文档原文核验；未核到与部分核到的条目已在上表逐条列出。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>字典</b> · Python 概念学习资料 第 4 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

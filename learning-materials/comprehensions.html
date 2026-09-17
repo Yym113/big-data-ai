@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>推导式与内置函数 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>推导式与内置函数</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 8 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      推导式就是<b>「循环 + 判断 + 追加」这三件事的压缩写法</b>。你写四行的事，它可以写成一行。
+    </p>
+    <pre><code># 老写法：四行
+hot = []
+for n in news:
+    if n["浏览"] &gt; 10000:
+        hot.append(n["标题"])
+
+# 推导式：一行
+hot = [n["标题"] for n in news if n["浏览"] &gt; 10000]</code></pre>
+    <p>
+      翻译规则很简单，从左往右读：
+      <b>「我要 <code>n["标题"]</code>，对每一条 <code>n</code> 在 <code>news</code> 里，只要 <code>n["浏览"] &gt; 10000</code>」</b>。
+    </p>
+    <p>
+      看到一行看不懂的推导式，就<b>把它倒着展开成循环</b>：先写 <code>for</code>，再写 <code>if</code>，最后把最前面那个表达式塞进 <code>append()</code>。
+      反过来，看到「建空列表 → 循环 → 判断 → append」这个四步结构，就该想到能不能写成推导式。
+    </p>
+    <p>
+      然后说内置函数。Python 有一批「已经帮你写好的函数」，直接调用就行 ——
+      <code>len</code>、<code>sum</code>、<code>max</code>、<code>sorted</code>、<code>any</code>、<code>all</code>……
+      官方 FAQ 在讲「怎么让程序变快」时的第一条建议就是：<b>「如果标准库已为某些操作提供了基础函数，则可能比所有自编的函数都要快」</b>，
+      并明确点名「一定要用内置方法 <code>list.sort()</code> 或 <code>sorted()</code> 函数进行排序」。
+    </p>
+    <blockquote>
+      一句话记住：<b>推导式省的是行数，内置函数省的是你重写 bug 的机会。</b>
+      能一行写清就用推导式；能调内置函数就别自己写循环。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>把「循环 + 条件 + append」的代码改写成列表推导式，也能把推导式展开回循环；</li>
+      <li>区分列表推导式 <code>[...]</code>、集合推导式 <code>{...}</code>、字典推导式 <code>{k: v ...}</code> 和生成器表达式 <code>(...)</code>；</li>
+      <li>说出生成器表达式与列表推导式在内存上的差别，并知道什么时候该用哪一个；</li>
+      <li>用 <code>sorted(可迭代对象, key=函数, reverse=True)</code> 做自定义排序，并解释为什么它比多重 <code>if</code> 排序好；</li>
+      <li>用 <code>sum</code> / <code>max</code> / <code>min</code> / <code>any</code> / <code>all</code> 替代自己写的累加循环；</li>
+      <li>说出推导式「什么时候不该用」，并识别 <code>lambda</code> 在循环里的变量陷阱。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li>推导式的语法结构是什么？怎么把它读成中文？</li>
+      <li>推导式里能写 <code>if</code> 吗？能写两个 <code>for</code> 吗？</li>
+      <li>集合推导式、字典推导式和列表推导式有什么不同？</li>
+      <li>生成器表达式为什么省内存？它和列表推导式的括号差别为什么重要？</li>
+      <li><code>sorted(key=...)</code> 的 <code>key</code> 是什么？为什么不能直接写 <code>key=值</code>？</li>
+      <li><code>lambda</code> 是什么？为什么在循环里定义 <code>lambda</code> 会用错变量？</li>
+      <li><code>any()</code> / <code>all()</code> 怎么用来替代「找到一个就行」的循环？</li>
+      <li><code>sum()</code> 能替代手写累加吗？为什么它比 <code>for</code> 循环快？</li>
+      <li>推导式什么时候不该用？嵌套三层之后为什么读不懂了？</li>
+      <li>推导式的变量会泄漏到外面吗？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>推导式（comprehension）</b>：一种用紧凑语法从一个可迭代对象构建新容器的方式。
+      官方教程：<i>「列表推导式创建列表的方式更简洁。常见的用法为，对序列或可迭代对象中的每个元素应用某种操作，
+      用生成的结果创建新的列表；或用满足特定条件的元素创建子序列。」</i>
+    </p>
+    <p>官方的语法结构说明（原文）：<i>「列表推导式的方括号内包含以下内容：一个表达式，后面为一个 <code>for</code> 子句，
+      然后，是零个或多个 <code>for</code> 或 <code>if</code> 子句。」</i></p>
+
+    <h3>4.2 最小模型</h3>
+    <pre><code>squares = [x**2 for x in range(10)]
+# [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# 等价的老写法（官方示例）
+squares = []
+for x in range(10):
+    squares.append(x**2)</code></pre>
+    <p>官方还给出了另一种等价写法，以及它推荐的结论：</p>
+    <pre><code>squares = list(map(lambda x: x**2, range(10)))   # 也能实现
+squares = [x**2 for x in range(10)]              # 官方：「上面这种写法更简洁、易读。」</code></pre>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>列表推导式</td><td>一条流水线：进料 → 筛 → 装盒</td><td>一行说清「要什么、从哪来、什么条件」</td></tr>
+        <tr><td>生成器表达式</td><td>同一个流水线，但不预先装盒</td><td>要一个做一个，随手给你</td></tr>
+        <tr><td>字典推导式</td><td>边筛边登记成台账</td><td>产出的是一份「键→值」的表</td></tr>
+        <tr><td>集合推导式</td><td>边筛边随手扔进不允许重复的筐</td><td>自动去重</td></tr>
+        <tr><td><code>sorted(key=...)</code></td><td>按你指定的「看哪个字段」排队</td><td>给每个元素算一个排序依据</td></tr>
+        <tr><td><code>lambda</code></td><td>现写现用的一次性小工具</td><td>只写一个表达式，不给名字</td></tr>
+        <tr><td><code>any</code> / <code>all</code></td><td>「有一个符合就行」/「全都得符合」</td><td>找到第一个符合条件的就停止</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 推导式全家桶</h3>
+    <pre><code># 列表推导式：[表达式 for 变量 in 可迭代对象 if 条件]
+titles = ["AI 写稿上線", "算法推荐争议", "县级融媒体"]
+lens = [len(t) for t in titles]                       # [6, 6, 5]
+longs = [t for t in titles if len(t) &gt;= 6]            # 过滤
+
+# 官方示例
+vec = [-4, -2, 0, 2, 4]
+[x*2 for x in vec]            # [-8, -4, 0, 4, 8]
+[x for x in vec if x &gt;= 0]     # [0, 2, 4]
+[abs(x) for x in vec]         # [4, 2, 0, 2, 4]
+
+freshfruit = ['  banana', '  loganberry ', 'passion fruit  ']
+[weapon.strip() for weapon in freshfruit]     # ['banana', 'loganberry', 'passion fruit']
+
+[(x, x**2) for x in range(6)]                  # [(0,0), (1,1), (2,4), (3,9), (4,16), (5,25)]
+
+# 展平嵌套列表（两个 for）
+vec2 = [[1,2,3], [4,5,6], [7,8,9]]
+[num for elem in vec2 for num in elem]         # [1,2,3,4,5,6,7,8,9]
+
+# 集合推导式：自动去重
+a = {x for x in 'abracadabra' if x not in 'abc'}    # {'r', 'd'}
+sources = {a["来源"] for a in articles}              # 所有来源名（已去重）
+
+# 字典推导式：产出一份「键→值」表
+{x: x**2 for x in (2, 4, 6)}                   # {2: 4, 4: 16, 6: 36}
+src_count = {s: 0 for s in sources}             # 初始化计数器</code></pre>
+    <blockquote class="warn">
+      <b>元组要加括号。</b>官方专门举了这个错例：<code>[x, x**2 for x in range(6)]</code> 会报
+      <code>SyntaxError: did you forget parentheses around the comprehension target?</code>，
+      必须写成 <code>[(x, x**2) for x in range(6)]</code>。
+    </blockquote>
+
+    <h3>4.5 生成器表达式：省内存的那一半</h3>
+    <p>
+      官方原文：<i>「生成器表达式的语法与列表推导式相同，只是它们用圆括号而不是方括号括起来。」</i>
+      并且指出：<i>「在运行时，生成器表达式的求值结果是一个生成器迭代器，它产生的值与对应的列表推导式相同。」</i>
+    </p>
+    <pre><code># 列表推导式：立刻把全部结果造出来放进内存
+squares_list = [x**2 for x in range(10)]
+squares_list          # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# 生成器表达式：造一个「会算的机器」出来，不算
+squares_gen = (x**2 for x in range(10))
+squares_gen           # &lt;generator object &lt;genexpr&gt; at ...&gt;
+list(squares_gen)     # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]   算到这一步才产生值</code></pre>
+    <pre><code># 内存差别：做同一个统计
+import sys
+
+data = list(range(1_000_000))
+
+lst = [x * 2 for x in data]
+gen = (x * 2 for x in data)
+
+sys.getsizeof(lst)     # 约 8 MB（真的要装下 100 万个整数）
+sys.getsizeof(gen)     # 约 200 字节（只记着怎么算）
+
+# 求和时用生成器，不需要中间那一整个列表
+total = sum(x * 2 for x in data)          # 推荐：省内存
+total = sum([x * 2 for x in data])        # 能用，但白造了一个大列表</code></pre>
+    <p>官方还给了括号可以省略的两种情况（原文示例）：</p>
+    <pre><code># 生成器表达式作为唯一位置参数时，可以省掉自己那对括号
+sum(x ** 2 for x in range(10))            # 285
+
+# 不是唯一参数时，必须自己带括号
+sum((x ** 2 for x in range(10)), start=1000)   # 1285</code></pre>
+    <blockquote class="warn">
+      <b>生成器只能消费一次。</b>
+      <code>gen = (x for x in [1,2,3])</code> 之后 <code>list(gen)</code> 得到 <code>[1,2,3]</code>，
+      再 <code>list(gen)</code> 就只剩 <code>[]</code> 了 —— 因为迭代器只能往前走一遍。
+      <b>需要多次遍历就必须用列表推导式。</b>
+    </blockquote>
+    <pre><code>gen = (x for x in [1, 2, 3])
+list(gen)      # [1, 2, 3]
+list(gen)      # []       ← 空了
+
+lst = [x for x in [1, 2, 3]]
+list(lst)      # [1, 2, 3]
+list(lst)      # [1, 2, 3]  ← 列表可以反复遍历</code></pre>
+    <p>官方还说明了一个求值时机的细节：<b>最左侧 <code>for</code> 子句里的可迭代对象表达式会立即求值</b>，
+    所以它抛的错会立刻出现，而不是等到第一次取值：</p>
+    <pre><code>(x ** 2 for x in nonexistent_iterable)
+# NameError: name 'nonexistent_iterable' is not defined   ← 定义时就报错
+
+iterator = (nonexistent_value for x in range(10))     # 这行不报错
+list(iterator)                                        # 取值时才报错</code></pre>
+
+    <h3>4.6 内置函数：把循环换成一次调用</h3>
+    <table>
+      <thead><tr><th>函数</th><th>作用</th><th>替代了什么循环</th></tr></thead>
+      <tbody>
+        <tr><td><code>len(x)</code></td><td>元素个数</td><td>数一遍</td></tr>
+        <tr><td><code>sum(it, start=0)</code></td><td>求和</td><td><code>total = 0; for ...: total += x</code></td></tr>
+        <tr><td><code>max(it, key=)</code> / <code>min(it, key=)</code></td><td>最大/最小，可按 key 比较</td><td>「先设第一个为最大，然后逐个比」</td></tr>
+        <tr><td><code>sorted(it, key=, reverse=)</code></td><td>返回新的排序列表</td><td>手写排序</td></tr>
+        <tr><td><code>any(it)</code></td><td>有一个为真就 <code>True</code></td><td>「找到就 <code>break</code>」</td></tr>
+        <tr><td><code>all(it)</code></td><td>全部为真才 <code>True</code></td><td>「遇到假的就 <code>break</code>」</td></tr>
+        <tr><td><code>enumerate(it, start=0)</code></td><td>同时给出序号和值</td><td><code>range(len(...))</code> 取下标</td></tr>
+        <tr><td><code>zip(*its)</code></td><td>多序列按位配对</td><td>手写双下标</td></tr>
+        <tr><td><code>reversed(it)</code></td><td>逆序迭代</td><td>倒着数索引</td></tr>
+        <tr><td><code>abs(x)</code> / <code>round(x, n)</code></td><td>绝对值 / 四舍五入</td><td>—</td></tr>
+        <tr><td><code>filter(f, it)</code> / <code>map(f, it)</code></td><td>过滤 / 逐项变换</td><td>推导式（通常推导式更好读）</td></tr>
+      </tbody>
+    </table>
+    <pre><code># sum：官方签名是 sum(iterable, /, start=0)
+sum([12800, 3400, 21000])                     # 37200
+sum(n["浏览"] for n in articles)               # 用生成器，省内存
+
+# max / min：可以传可迭代对象，也可以传多个参数
+max([1, 5, 3])                                # 5
+max(1, 5, 3)                                  # 5
+max(articles, key=lambda a: a["浏览"])          # 浏览量最高的那条
+
+# any / all：官方定义就是短路的循环
+any(n["浏览"] &gt; 20000 for n in articles)       # 有爆款吗
+all(n.get("来源") for n in articles)           # 每条都有来源吗
+
+# 官方给出的 any / all 等价实现
+def any(iterable):
+    for element in iterable:
+        if element:
+            return True
+    return False
+
+def all(iterable):
+    for element in iterable:
+        if not element:
+            return False
+    return True</code></pre>
+    <blockquote>
+      <b>空序列的边界：</b>官方明确写了 ——
+      <code>all()</code> 在可迭代对象为空时返回 <b><code>True</code></b>，<code>any()</code> 为空时返回 <b><code>False</code></b>。
+      所以「每条新闻都有来源吗」对空列表会回答「是」，这通常在逻辑上会让人意外一点。
+    </blockquote>
+
+    <h3>4.7 <code>sorted(key=...)</code>：排序的核心机制</h3>
+    <p>
+      官方签名：<code>sorted(iterable, /, *, key=None, reverse=False)</code>；返回<b>新列表</b>，不动原对象。
+      <code>key</code> 是一个单参数函数，用来从每个元素中提取「比较键」——
+      每个元素的键只算一次，然后用于整个排序过程。
+    </p>
+    <pre><code>titles = ["AI 写稿", "县级融媒体的三年", "算法"]
+sorted(titles, key=len)                  # ['算法', 'AI 写稿', '县级融媒体的三年']
+sorted(titles, key=len, reverse=True)    # 从长到短
+
+# 按字典的某个字段排序
+articles = [
+    {"标题": "AI 写稿", "浏览": 12800},
+    {"标题": "县级融媒体", "浏览": 3400},
+    {"标题": "算法争议", "浏览": 21000},
+]
+sorted(articles, key=lambda a: a["浏览"])                    # 升序
+sorted(articles, key=lambda a: a["浏览"], reverse=True)      # 降序
+
+# 多级排序：key 返回元组，先比第一个，相同再比第二个
+sorted(articles, key=lambda a: (-a["浏览"], a["标题"]))
+
+# 不区分大小写排序
+words = ["Apple", "banana", "Cherry"]
+sorted(words)                 # ['Apple', 'Cherry', 'banana']  按码位，大写在前
+sorted(words, key=str.lower)  # ['Apple', 'banana', 'Cherry']  按字母序
+
+# key 也能用内置函数名或其他函数对象
+sorted(["12", "3", "105"], key=int)      # ['3', '12', '105']</code></pre>
+    <p class="meta">
+      官方 FAQ 里讲的「施瓦茨变换」（用一个映射出来的「排序值」来排序）在 Python 里就用 <code>key=</code> 实现：
+      <code>Isorted.sort(key=lambda s: int(s[10:15]))</code>。这是官方点名的推荐做法。
+    </p>
+
+    <h3>4.8 <code>lambda</code> 与它的循环陷阱</h3>
+    <p>
+      官方定义：<i>「<code>lambda</code> 关键字用于创建小巧的匿名函数……在语法上，匿名函数只能是单个表达式。
+      在语义上，它只是常规函数定义的语法糖。」</i>
+    </p>
+    <pre><code>add = lambda a, b: a + b
+add(1, 2)          # 3
+
+# 官方示例：用作排序键
+pairs = [(1, 'one'), (2, 'two'), (3, 'three'), (4, 'four')]
+pairs.sort(key=lambda pair: pair[1])
+pairs
+# [(4, 'four'), (1, 'one'), (3, 'three'), (2, 'two')]</code></pre>
+    <p><b>然后是那个经典陷阱。</b>官方 FAQ 专门为它写了一个条目：「为什么在循环中定义的参数各异的 lambda 都返回相同的结果？」</p>
+    <pre><code># ❌ 错误
+squares = []
+for x in range(5):
+    squares.append(lambda: x**2)
+
+squares[2]()      # 16    ← 期望是 4
+squares[4]()      # 16    ← 期望是 16
+
+# 官方解释原文：
+# 「这是因为 x 不是 lambda 表达式的局部变量，而是定义于外部作用域中，
+#   并且它会在【调用 lambda 表达式时】被访问 —— 而不是在定义时。
+#   在循环结束时，x 的值为 4，所以此时所有函数都将返回 4**2，即 16。」
+#
+# 还能验证：改掉 x，之前建的 lambda 结果也变
+x = 8
+squares[2]()      # 64</code></pre>
+    <pre><code># ✅ 修复：用默认参数把当前值"绑"进去
+squares = []
+for x in range(5):
+    squares.append(lambda n=x: n**2)
+
+squares[2]()      # 4
+squares[4]()      # 16
+
+# 官方补充：「上述表现并不是 lambda 所特有的，常规的函数也同样适用。」</code></pre>
+    <p class="meta">
+      原因：默认参数在<b>函数定义时</b>求值（这条规则和 <a href="functions.html#s6">函数 · 可变默认参数</a>是同一个机制）。
+      <code>n=x</code> 把当时 <code>x</code> 的值复制进去，之后 <code>x</code> 再怎么变都不影响。
+    </p>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：一次做完新闻数据的清洗、筛选与派生字段</h3>
+    <pre><code>raw = [
+    {"标题": "  AI 写稿工具上线 - XX新闻网 ", "浏览": "12800", "来源": "科技日报社", "标签": ["AI", "产品"]},
+    {"标题": "算法推荐争议调查｜独家",       "浏览": "21000", "来源": "新闻战线",   "标签": ["AI", "算法"]},
+    {"标题": "县级融媒体三周年",             "浏览": "3400",  "来源": "新闻战线杂志", "标签": ["基层"]},
+    {"标题": "AI 版权第一案",                "浏览": "9600",  "来源": "法治日报",   "标签": ["AI", "版权"]},
+]
+
+SOURCE_MAP = {"科技日报社": "科技日报", "新闻战线杂志": "新闻战线"}
+
+# 1. 清洗 + 类型转换 + 来源归一：一个推导式 + 一个辅助函数
+def clean(t):
+    t = (t or "").strip()
+    for sep in (" - ", "｜"):
+        if sep in t:
+            t = t.split(sep)[0]
+    return t.strip()
+
+news = [
+    {
+        "标题": clean(a["标题"]),
+        "浏览": int(a["浏览"]),                                  # 字符串转整数
+        "来源": SOURCE_MAP.get(a["来源"], a["来源"]),
+        "标签": a.get("标签", []),
+    }
+    for a in raw
+]
+
+# 2. 筛选：只看 AI 相关
+ai_news = [n for n in news if "AI" in n["标签"]]
+print(len(ai_news))          # 3
+
+# 3. 派生字段：用字典推导式加一列
+level = {n["标题"]: ("爆款" if n["浏览"] &gt;= 10000 else "常规") for n in news}
+print(level)
+# {'AI 写稿工具上线': '爆款', '算法推荐争议调查': '爆款',
+#  '县级融媒体三周年': '常规', 'AI 版权第一案': '常规'}
+
+# 4. 汇总：sum / max / any 替代手写循环
+print("总浏览：", sum(n["浏览"] for n in news))          # 46800
+print("最高：", max(news, key=lambda n: n["浏览"])["标题"])   # 算法推荐争议调查
+print("有爆款：", any(n["浏览"] &gt;= 20000 for n in news))      # True
+print("全有来源：", all(n["来源"] for n in news))             # True
+
+# 5. 去重 + 排序：集合推导式
+print(sorted({n["来源"] for n in news}))               # ['news战线'...] 实际是按码位排序
+
+# 6. 多级排序：按浏览量降序，同量按标题
+for n in sorted(news, key=lambda n: (-n["浏览"], n["标题"])):
+    print(f'{n["浏览"]:&gt;6}  {n["标题"]}')
+#  21000  算法推荐争议调查
+#  12800  AI 写稿工具上线
+#   9600  AI 版权第一案
+#   3400  县级融媒体三周年</code></pre>
+    <blockquote class="ok">
+      整段代码里<b>没有一处手写累加循环</b>：
+      清洗用推导式，筛选用推导式，派生字段用字典推导式，去重用集合推导式，
+      汇总用 <code>sum</code> / <code>max</code> / <code>any</code> / <code>all</code>，排序用 <code>sorted(key=)</code>。
+      这就是「写得更少做得更多」的实际样子。
+    </blockquote>
+
+    <h3>场景二：大文件逐行过滤 —— 这里必须用生成器表达式</h3>
+    <p>
+      从几万行的新闻日志里筛出含特定关键词的行，再用 <code>sum</code> 统计。
+      如果先造一个列表，内存会一下涨上去。
+    </p>
+    <pre><code>def iter_lines(path):
+    """逐行产出文件内容（不一次性读进内存）。"""
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            yield line.rstrip("\n")
+
+# 生成器链：每一步都只处理一行，不堆积
+KEYWORDS = ("AI", "算法")
+
+hit_count = sum(
+    1
+    for line in iter_lines("news.log")
+    if any(kw in line for kw in KEYWORDS)
+)
+print("命中行数：", hit_count)
+
+# 只要前 10 条命中样本（用 islice 截断，不会把全文件跑完）
+from itertools import islice
+
+samples = list(islice(
+    (line for line in iter_lines("news.log") if any(kw in line for kw in KEYWORDS)),
+    10,
+))
+print(len(samples))
+
+# 需要多次使用这份结果时，才落地成列表
+hit_lines = [line for line in iter_lines("news.log") if any(kw in line for kw in KEYWORDS)]
+print(len(hit_lines))       # 列表，可以反复遍历
+print(sum(len(l) for l in hit_lines))</code></pre>
+    <table>
+      <thead><tr><th>需求</th><th>用哪个</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td>结果只消费一次（求和、计数、写文件）</td><td>生成器表达式 <code>(...)</code></td><td>不占内存，边算边丢</td></tr>
+        <tr><td>结果要多次遍历、要索引、要 <code>len()</code></td><td>列表推导式 <code>[...]</code></td><td>列表支持反复遍历</td></tr>
+        <tr><td>需要去重</td><td>集合推导式 <code>{...}</code></td><td>自动去重，成员检查快</td></tr>
+        <tr><td>要建「键→值」的映射表</td><td>字典推导式 <code>{k: v ...}</code></td><td>直接产出字典</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：推导式什么时候<b>不该</b>用</h3>
+    <pre><code># ❌ 一个推导式塞三件事：读起来要来回扫
+result = [
+    n["标题"].strip().split(" - ")[0].replace("｜", "")
+    for n in news
+    if n.get("浏览", 0) &gt; 1000
+    if n.get("来源") in SOURCE_MAP
+    if len(n.get("标签", [])) &gt;= 1
+]
+
+# ✅ 拆开：清洗、筛选、取值各司其职
+def clean_title(t):
+    t = (t or "").strip().split(" - ")[0]
+    return t.replace("｜", "").strip()
+
+qualified = [
+    n for n in news
+    if n.get("浏览", 0) &gt; 1000 and n.get("来源") in SOURCE_MAP and n.get("标签")
+]
+result = [clean_title(n["标题"]) for n in qualified]
+
+# ❌ 推导式里做副作用（打印、写文件、改外部变量）
+[print(n["标题"]) for n in news]        # 能跑，但这是滥用
+[log.append(n) for n in news]           # 副作用藏在推导式里，非常难查
+
+# ✅ 副作用用循环
+for n in news:
+    print(n["标题"])</code></pre>
+    <blockquote class="warn">
+      <b>一条实用判断标准：推导式里的表达式超过一行、或者写不进去一个 <code>if</code> 表达式的复杂度，就别用它。</b>
+      官方在讲「如何让程序更快」时说得很清楚：
+      <i>「相较于试图对全部代码铺开做微观优化，优化算法可以产出更大的收益」、「抽象往往会造成中间层……应该避免过度的抽象」。</i>
+      <b>可读性优先于行数少。</b>
+    </blockquote>
+
+    <h3>辨析 2：生成器表达式 vs 列表推导式（括号不是小事）</h3>
+    <pre><code># 方括号 = 列表（立刻算完，占内存）
+lst = [x * 2 for x in range(1_000_000)]
+len(lst)          # 1000000
+lst[0]            # 0            可以索引
+lst[:3]           # [0, 2, 4]    可以切片'
+list(lst)         # 再遍历一遍也行
+
+# 圆括号 = 生成器（不算，随用随算）
+gen = (x * 2 for x in range(1_000_000))
+len(gen)          # TypeError: object of type 'generator' has no len()
+gen[0]            # TypeError: 'generator' object is not subscriptable
+next(gen)         # 0            只能一个一个取
+list(gen)         # 消费掉，之后 gen 就空了</code></pre>
+    <table>
+      <thead><tr><th></th><th><code>[...]</code> 列表推导式</th><th><code>(...)</code> 生成器表达式</th></tr></thead>
+      <tbody>
+        <tr><td>求值时机</td><td>立刻全部算完</td><td>取一个算一个（惰性）</td></tr>
+        <tr><td>内存</td><td>随数据量线性增长</td><td>基本恒定（只存算法）</td></tr>
+        <tr><td>能否重复遍历</td><td>可以</td><td><b>不行，只能一遍</b></td></tr>
+        <tr><td>支持 <code>len</code> / 索引 / 切片</td><td>可以</td><td>都不行</td></tr>
+        <tr><td>适合</td><td>结果要反复用、要按位置访问</td><td>只做一次汇总 / 流式处理大数据</td></tr>
+      </tbody>
+    </table>
+
+    <h3>辨析 3：<code>lambda</code> 的循环变量陷阱</h3>
+    <pre><code># ❌ 全返回 16
+funcs = [lambda: x**2 for x in range(5)]
+[f() for f in funcs]        # [16, 16, 16, 16, 16]
+
+# ✅ 默认参数绑定当前值
+funcs = [lambda n=x: n**2 for x in range(5)]
+[f() for f in funcs]        # [0, 1, 4, 9, 16]
+
+# ✅ 或者用 functools.partial / 定义一个真正的函数
+def make_square(n):
+    def sq():
+        return n ** 2
+    return sq
+
+funcs = [make_square(x) for x in range(5)]
+[f() for f in funcs]        # [0, 1, 4, 9, 16]</code></pre>
+    <p class="meta">
+      官方解释的关键句：<b>「它会在调用 lambda 表达式时被访问 —— 而不是在定义时。」</b>
+      所以循环结束时的 <code>x</code> 值（4）决定了所有函数的结果。
+      官方还强调：<b>「上述表现并不是 lambda 所特有的，常规的函数也同样适用。」</b>
+    </p>
+
+    <h3>辨析 4：<code>key=</code> 要传函数，不能传值</h3>
+    <pre><code>articles = [{"浏览": 100}, {"浏览": 300}, {"浏览": 200}]
+
+# ❌ 写成值：不报错，但结果没有意义
+sorted(articles, key="浏览")     # '浏览' 是字符串，不能调用 → 实际会报 TypeError
+
+# ⚠️ 更隐蔽的一种：key 传了个常函数
+sorted(articles, key=lambda a: 0)    # 所有键都是 0，顺序不变（稳定性保证）
+
+# ✅ 正确：传一个「从元素取出比较键」的函数
+sorted(articles, key=lambda a: a["浏览"])
+
+# ✅ 类型错误的对策：先把字符串转成数字，再排
+raw = [{"浏览": "12800"}, {"浏览": "3400"}]
+sorted(raw, key=lambda a: int(a["浏览"]))     # 数字序
+sorted(raw, key=lambda a: a["浏览"])          # 字符串序（"3400" &gt; "12800"，反了！）</code></pre>
+    <blockquote class="warn">
+      <b>排序前一定要确认类型。</b>
+      <code>"3400" &gt; "12800"</code> 是 <code>True</code>（字符串按字典序逐位比），
+      所以直接对字符串浏览量排序，结果会乱七八糟。这是 <a href="strings.html#s6">字符串</a>和排序交叉处的经典坑。
+    </blockquote>
+
+    <h3>辨析 5：<code>sum</code> 的 <code>start</code> 参数与类型</h3>
+    <pre><code>sum([1, 2, 3])                  # 6
+sum([1, 2, 3], start=100)       # 106    默认 start 是 0
+
+# ⚠️ sum 不能连接字符串（官方在讲 join 时说得很明确）
+sum(["a", "b"], start="")     # TypeError: sum() can't sum strings
+"".join(["a", "b"])           # 'ab'   ← 拼字符串用 join
+
+# ⚠️ sum 对布尔值很好用（True 就是 1）
+sum(n["浏览"] &gt; 10000 for n in articles)     # 爆款条数
+sum(1 for n in articles if "AI" in n["标签"])  # 计数，推荐让意图更清楚
+
+# ⚠️ 空列表的边界
+sum([])          # 0
+max([])          # ValueError: max() arg is an empty sequence
+max([], default=0)   # 0   ← 用 default 参数（3.4+）
+any([])          # False
+all([])          # True   ← 注意！空序列 all 为 True</code></pre>
+
+    <h3>辨析 6：推导式的变量作用域</h3>
+    <pre><code># 列表推导式有自己的作用域，循环变量不会泄漏到外面
+x = "外部的 x"
+squares = [x for x in range(3)]
+print(x)         # 外部的 x   ← 没被覆盖
+
+# 但普通 for 循环会泄漏（详见 循环 那份资料）
+x = "外部的 x"
+for x in range(3):
+    pass
+print(x)         # 2   ← 被覆盖了！
+
+# 推导式内部可以用外部变量
+threshold = 10000
+hot = [n for n in news if n["浏览"] &gt; threshold]   # ✅ 能读到 threshold
+
+# 推导式里给外部变量赋值？做不到 —— 推导式只能写表达式
+# [total += n["浏览"] for n in news]     # SyntaxError</code></pre>
+    <p class="meta">
+      这就是为什么可以放心地用 <code>n</code>、<code>a</code> 这类短名字写推导式 ——
+      它不会污染外面的命名空间。但<b>普通 <code>for</code> 循环的变量会泄漏</b>，两者不一样。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：把 <code>result = []; for t in titles: if len(t) &gt; 5: result.append(t.upper())</code> 改写成推导式。</b>
+      <div class="ans">
+        <code>result = [t.upper() for t in titles if len(t) &gt; 5]</code>。
+        结构是「表达式 + for 子句 + if 子句」，官方说明这个顺序不能颠倒。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：<code>[x**2 for x in range(10)]</code> 和 <code>(x**2 for x in range(10))</code> 有什么区别？</b>
+      <div class="ans">
+        前者立刻造出完整列表，占内存、可重复遍历、可以索引和 <code>len()</code>；
+        后者是生成器迭代器，惰性求值、内存几乎不随数据量增长，但<b>只能消费一次</b>，
+        且不支持 <code>len</code> / 索引 / 切片。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：为什么 <code>[x, x**2 for x in range(6)]</code> 会报错？</b>
+      <div class="ans">
+        元组表达式必须加圆括号，否则语法错误。官方给出的报错文本是
+        <code>SyntaxError: did you forget parentheses around the comprehension target?</code>，
+        正确写法 <code>[(x, x**2) for x in range(6)]</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>funcs = [lambda: x**2 for x in range(5)]</code>，调用每个函数得到什么？为什么？</b>
+      <div class="ans">
+        全部返回 <code>16</code>。官方解释：<code>x</code> 不是 lambda 的局部变量，而是定义于外部作用域，
+        且<b>在调用时才被访问</b>；循环结束时 <code>x</code> 为 4，所以所有函数都算 <code>4**2</code>。
+        修法：<code>lambda n=x: n**2</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>sorted(articles, key=lambda a: a["浏览"])</code> 里的 <code>key</code> 是干什么的？为什么不能写 <code>key=a["浏览"]</code>？</b>
+      <div class="ans">
+        <code>key</code> 是一个单参数函数，用来从每个元素中提取比较键（每个元素的键只算一次）。
+        它必须是可调用的；写 <code>a["浏览"]</code> 传的是某个具体的值，不是函数，会报错。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>any([])</code> 和 <code>all([])</code> 分别是什么？</b>
+      <div class="ans">
+        <code>any([])</code> 是 <code>False</code>，<code>all([])</code> 是 <b><code>True</code></b>。
+        官方明确：「<code>all()</code> 在可迭代对象为空时返回 <code>True</code>」、
+        「<code>any()</code> …… 如果可迭代对象为空，返回 <code>False</code>」。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：什么时候不该用推导式？</b>
+      <div class="ans">
+        三件事都该避开：<b>（1）</b>推导式里塞了多层筛选和复杂表达式，读起来要来回扫；
+        <b>（2）</b>在推导式里做副作用（<code>print</code>、<code>append</code> 到外部列表、写文件）；
+        <b>（3）</b>嵌套超过两层。此时改用普通循环 + 辅助函数，可读性更好。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 数据结构（5.1.3 列表推导式 / 5.1.4 嵌套推导式 / 5.4 集合）</td>
+          <td>列表推导式的语法结构与用途原文、与 <code>for + append</code> 的等价示例、<code>map(lambda ...)</code> 对比、「上面这种写法更简洁、易读」的结论、元组必须加括号的错例与报错文本、展平嵌套列表、嵌套推导式与 <code>zip(*matrix)</code> 转置、集合推导式示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/datastructures.html">docs.python.org/zh-cn/3/tutorial/datastructures.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 表达式（6.2.9 生成器表达式）</td>
+          <td>「生成器表达式的语法与列表推导式相同，只是用圆括号」「求值结果是一个生成器迭代器，产生的值与对应的列表推导式相同」原文、括号可省略的两种情形（<code>sum(x**2 for x in range(10))</code> / <code>sum((...), start=1000)</code>）、最左 <code>for</code> 子句立即求值的说明</td>
+          <td><a href="https://docs.python.org/zh-cn/3/reference/expressions.html#generator-expressions">docs.python.org/zh-cn/3/reference/expressions.html#generator-expressions</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置函数</td>
+          <td><code>all()</code> / <code>any()</code> 的官方等价实现与空序列行为、<code>enumerate(iterable, start=0)</code> 与示例、<code>filter(function, iterable)</code> 说明、<code>map</code> 签名、<code>max</code> / <code>min</code> 的 <code>key</code> 与 <code>default</code> 关键字参数、<code>sorted(iterable, /, *, key=None, reverse=False)</code> 签名、<code>sum(iterable, /, start=0)</code> 签名、<code>zip(*iterables, strict=False)</code> 与 <code>strict</code> 示例、<code>abs</code> / <code>round</code> / <code>len</code> / <code>reversed</code> 说明</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/functions.html">docs.python.org/zh-cn/3/library/functions.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题（循环中 lambda 陷阱 / 施瓦茨变换 / 字符串拼接效率 / 删除重复项）</td>
+          <td><b>「为什么在循环中定义的参数各异的 lambda 都返回相同的结果？」条目完整原文</b>（含 <code>squares[2]() == 16</code> 示例、成因解释「在调用 lambda 表达式时被访问 —— 而不是在定义时」、<code>lambda n=x:</code> 的修法、「不是 lambda 所特有」的补充）、<code>Isorted.sort(key=lambda s: int(s[10:15]))</code> 的施瓦茨变换写法、<code>list(set(mylist))</code> 去重、「如果标准库已为某些操作提供了基础函数，则可能比所有自编的函数都要快」与「一定要用内置方法 <code>list.sort()</code> 或 <code>sorted()</code>」的效率建议</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 更多控制流工具（4.9.6 Lambda 表达式）</td>
+          <td>lambda 的定位（「小巧的匿名函数」「语法上只能是单个表达式」「语义上只是常规函数定义的语法糖」）、官方 <code>pairs.sort(key=lambda pair: pair[1])</code> 示例、<code>make_incrementor</code> 返回函数的示例</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/controlflow.html#lambda-expressions">docs.python.org/zh-cn/3/tutorial/controlflow.html#lambda-expressions</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版），均通过 WebFetch 实际抓取页面内容后使用</td></tr>
+        <tr><td>列表推导式语法与示例</td><td>已核。「方括号内包含一个表达式，后面为一个 <code>for</code> 子句，然后，是零个或多个 <code>for</code> 或 <code>if</code> 子句」为原文；<code>vec</code>、<code>freshfruit</code>、<code>vec2</code> 展平等示例照录</td></tr>
+        <tr><td>元组必须加括号</td><td>已核。官方给出的报错文本为 <code>SyntaxError: did you forget parentheses around the comprehension target?</code></td></tr>
+        <tr><td><b>生成器表达式</b></td><td>已核。原文：「生成器表达式的语法与列表推导式相同，只是它们用圆括号而不是方括号括起来」、「在运行时，生成器表达式的求值结果是一个生成器迭代器，它产生的值与对应的列表推导式相同」；<code>sum(x**2 for x in range(10))</code> 与 <code>sum((...), start=1000)</code> 的括号规则为原文示例</td></tr>
+        <tr><td><code>any</code> / <code>all</code> 空序列行为</td><td>已核。官方原文：「Return <code>True</code> if all elements of the iterable are true (or if the iterable is empty)」「If the iterable is empty, return <code>False</code>」（<code>any</code>），并附等价实现</td></tr>
+        <tr><td><b>lambda 循环陷阱</b></td><td><b>已逐字核对官方 FAQ 条目原文</b>：<code>squares[2]()</code> 返回 16 的示例、成因「它会在调用 lambda 表达式时被访问 --- 而不是在定义时」、<code>lambda n=x: n**2</code> 的修法、「上述表现并不是 lambda 所特有的」补充</td></tr>
+        <tr><td><code>sorted(key=)</code> 语义</td><td>已核（部分）。<code>sorted(iterable, /, *, key=None, reverse=False)</code> 签名为官方原文；「每个元素的键只计算一次」的表述来自 stdtypes 中 <code>list.sort</code> 的说明，本份一并适用于 <code>sorted</code>，但未逐字引用 <code>sorted</code> 条目中的原文措辞</td></tr>
+        <tr><td>内置函数「比自编函数快」的建议</td><td>已核。FAQ 原文：「如果标准库已为某些操作提供了基础函数，则可能（当然不能保证）比所有自编的函数都要快」「一定要用内置方法 <code>list.sort()</code> 或 <code>sorted()</code> 函数进行排序」</td></tr>
+        <tr><td>未核到 / 部分核</td><td>（1）<code>sys.getsizeof</code> 的具体字节数（约 8 MB / 约 200 字节）为估算，<b>未在本机实测</b>；（2）<code>sum(["a","b"], start="")</code> 的报错文本 <code>sum() can't sum strings</code> 未在抓取到的页面中核到；（3）<code>max([], default=0)</code> 的 <code>default</code> 参数为文档中提到的 3.4+ 特性，本份未逐字引用示例</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；新闻场景为虚构示例；<code>iter_lines</code> 中的 <code>yield</code> 用法详见生成器相关章节；未在本机逐条运行验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、新闻场景、自测题由 AI 撰写；
+      列表推导式语法与示例、生成器表达式的定义与括号规则、<code>any</code>/<code>all</code> 的空序列行为、
+      lambda 循环陷阱（对照 FAQ 完整条目）、内置函数效率建议，均逐条对照官方文档原文核验；
+      未核到与部分核到的条目已在上表逐条列出。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>推导式与内置函数</b> · Python 概念学习资料 第 8 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

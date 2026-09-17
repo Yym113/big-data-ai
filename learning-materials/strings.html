@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>字符串 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>字符串</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 2 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      字符串就是<b>一段文本</b>，用引号括起来。就这么简单。你写新闻标题、抓下来的正文、CSV 里的来源栏目，全都是字符串。
+    </p>
+    <pre><code>title = "某市地铁新线开通首日客流破十万"</code></pre>
+    <p>
+      关键在下一句：<b>字符串是「不可变」的。</b>这四个字很像术语，其实说的是——
+      <b>你拿到的那张印好的报纸，改不了字；想改，只能重新印一份。</b>
+    </p>
+    <pre><code>s = "新闻学"
+s[0] = "新"        # 报错！TypeError: 'str' object does not support item assignment
+s = "新闻传播学"     # 这样做可以 —— 但这不是「改」，是换了张纸</code></pre>
+    <p>
+      为什么这个区别重要？因为它决定了你处理文本时<b>所有的写法</b>：
+      所有字符串方法（<code>.replace()</code>、<code>.upper()</code>、<code>.strip()</code>）都<b>不修改原字符串，而是返回一个新字符串</b>。
+      你必须把返回值接住，否则等于白干。
+    </p>
+    <pre><code>title = "  AI 重塑新闻业  "
+title.strip()              # 返回 "AI 重塑新闻业"，但 title 还是原来那个
+print(title)               # "  AI 重塑新闻业  "  ← 白干了
+
+title = title.strip()      # 正确：把新字符串接住，贴回同一个名字
+print(title)               # "AI 重塑新闻业"</code></pre>
+    <blockquote>
+      一句话记住：<b>字符串方法不改原件，只出新的。忘了接返回值，是文本处理里的头号低级 bug。</b>
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>解释「字符串不可变」的含义，并说明为什么 <code>s[0] = "x"</code> 会报错；</li>
+      <li>用索引和切片取出字符串的任意片段，并说清切片「不含尾部」的规则；</li>
+      <li>熟练使用至少 8 个字符串方法（<code>split</code> / <code>join</code> / <code>strip</code> / <code>replace</code> / <code>find</code> / <code>count</code> / <code>startswith</code> / <code>lower</code>），并记住要接住返回值；</li>
+      <li>在 f-string / <code>str.format()</code> / <code>%</code> 三种格式化写法之间选择，并说出现代 Python 推荐哪种；</li>
+      <li>解释 <code>"1" + 1</code> 为什么报错，以及什么场景下这个错一定会遇到；</li>
+      <li>说清 <code>str</code> 与 <code>bytes</code> 的区别，知道 <code>encode()</code> / <code>decode()</code> 各自在干什么。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li>字符串的三种引号写法有什么区别？三引号什么时候用？</li>
+      <li>为什么没有单独的「字符」类型？<code>s[0]</code> 返回什么？</li>
+      <li>索引和切片怎么用？为什么 <code>s[0:3]</code> 只要 3 个字符却写 3？</li>
+      <li>哪些字符串方法是我处理新闻文本时天天要用的？</li>
+      <li>「不可变」到底限制了什么？为什么所有方法都要接返回值？</li>
+      <li>字符串怎么和数字运算？为什么 <code>"1" + 1</code> 会报错？</li>
+      <li>拼接很多字符串时，为什么 <code>+=</code> 会越写越慢？该怎么做？</li>
+      <li>f-string / <code>format()</code> / <code>%</code> 三种写法该用哪个？</li>
+      <li><code>str</code> 和 <code>bytes</code> 是什么关系？<code>encode</code> / <code>decode</code> 分别在什么方向？</li>
+      <li>从文件读中文报 <code>UnicodeDecodeError</code>，和字符串的编码有关吗？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>字符串（<code>str</code>）</b>：Unicode 码位的<b>不可变序列</b>。
+      官方文档原话：<i>「Python 中的文本数据用 <code>str</code> 对象处理……字符串是 Unicode 码位的不可变序列。」</i>
+    </p>
+    <p>
+      两个关键词：<b>序列</b>（所以能索引、能切片、能 <code>len()</code>、能 <code>for</code> 遍历）、
+      <b>不可变</b>（所以不能原地改字符，所有方法都返回新对象）。
+    </p>
+
+    <h3>4.2 最小模型：字符串是一个字符格子带</h3>
+    <pre><code>s = "新闻标题"
+#  索引:   0    1    2    3
+#  字符:   新   闻   标   题
+#  负索引: -4   -3   -2   -1
+
+s[0]      # "新"
+s[-1]     # "题"   ← -1 永远表示最后一个
+lens = len(s)   # 4</code></pre>
+    <blockquote>
+      <b>没有「单字符类型」。</b>官方文档明确：<i>「由于没有单独的『字符』类型，索引字符串产生的是长度为 1 的字符串。」</i>
+      即 <code>s[0] == s[0:1]</code> 为真 —— 取出来的是长度 1 的字符串，不是字符。
+    </blockquote>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>字符串</td><td>印好的报纸版面</td><td>印出来就定了，改字只能重印一份</td></tr>
+        <tr><td>不可变性</td><td>报纸不能涂改</td><td>所以 <code>s[0]="x"</code> 报错；想改就新建一份</td></tr>
+        <tr><td>索引 <code>s[i]</code></td><td>数第几个字</td><td>从 0 开始数；<code>-1</code> 是从末尾倒数第一个</td></tr>
+        <tr><td>切片 <code>s[i:j]</code></td><td>剪报：从第 i 个字剪到第 j 个字前</td><td>尾部不包含，所以 <code>s[0:3]</code> 是 3 个字</td></tr>
+        <tr><td>字符串方法</td><td>拿原报纸重新印一份改好的</td><td>返回新字符串，原字符串纹丝不动</td></tr>
+        <tr><td><code>split()</code></td><td>把一串珠子剪成一颗颗</td><td>按分隔符切成列表</td></tr>
+        <tr><td><code>join()</code></td><td>把一颗颗珠子串起来</td><td>是 <code>split</code> 的逆操作</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 索引与切片：核心机制</h3>
+    <p>
+      切片规则官方定义为：从 <code>i</code> 到 <code>j</code> 的切片是「索引 <code>k</code> 满足 <code>i &lt;= k &lt; j</code> 的所有项」。
+      注意是<b>严格小于 j</b>，所以尾部永远取不到。
+    </p>
+    <pre><code>s = "0123456789"
+
+s[2:5]     # "234"      索引 2,3,4 —— 不含 5
+s[:3]      # "012"      省略开头 = 从 0 开始
+s[7:]      # "789"      省略结尾 = 到末尾
+s[:]       # "0123456789"  整份拷贝（常用！）
+s[::2]     # "02468"    步长 2
+s[::-1]    # "9876543210"  反转字符串的经典写法
+
+s[5:2]     # ""          i >= j 时得到空字符串，不报错
+s[100]     # IndexError  ← 索引越界会报错，切片越界不会</code></pre>
+    <blockquote class="warn">
+      <b>切片越界不报错、索引越界报错</b> —— 这个不对称是设计如此，不是 bug。
+      所以 <code>s[:10]</code> 对短字符串是安全的，<code>s[10]</code> 不是。
+    </blockquote>
+
+    <h3>4.5 常用字符串方法（处理新闻文本的必备工具箱）</h3>
+    <table>
+      <thead><tr><th>方法</th><th>作用</th><th>例子</th></tr></thead>
+      <tbody>
+        <tr><td><code>split(sep)</code></td><td>按分隔符切成列表</td><td><code>"a,b,c".split(",")</code> → <code>['a','b','c']</code></td></tr>
+        <tr><td><code>join(iterable)</code></td><td>把序列拼成一个字符串</td><td><code>"".join(['新','闻'])</code> → <code>"新闻"</code></td></tr>
+        <tr><td><code>strip()</code></td><td>去掉首尾空白（默认）或指定字符</td><td><code>"  x  ".strip()</code> → <code>"x"</code></td></tr>
+        <tr><td><code>replace(old, new)</code></td><td>替换所有匹配子串</td><td><code>"a-b".replace("-","")</code> → <code>"ab"</code></td></tr>
+        <tr><td><code>find(sub)</code></td><td>返回首次出现位置，<b>找不到返回 -1</b></td><td><code>"abc".find("z")</code> → <code>-1</code></td></tr>
+        <tr><td><code>index(sub)</code></td><td>同上，但<b>找不到抛 ValueError</b></td><td>「像 find，但找不到时引发 ValueError」（官方原话）</td></tr>
+        <tr><td><code>count(sub)</code></td><td>统计出现次数（不重叠）</td><td><code>'spam, spam, spam'.count('spam')</code> → <code>3</code></td></tr>
+        <tr><td><code>startswith / endswith</code></td><td>判断前缀/后缀，可传元组</td><td><code>'a tuple'.endswith(('at','es'))</code> → <code>True</code></td></tr>
+        <tr><td><code>lower / upper</code></td><td>转小写/大写</td><td>关键词匹配前先统一大小写</td></tr>
+        <tr><td><code>casefold()</code></td><td>比 <code>lower()</code> 更激进的规范化</td><td><code>'straße'.casefold()</code> → <code>'strasse'</code>（官方示例）</td></tr>
+        <tr><td><code>removeprefix / removesuffix</code></td><td>只去掉一次前缀/后缀（3.9+）</td><td>比 <code>replace</code> 更安全</td></tr>
+        <tr><td><code>zfill(n)</code></td><td>左侧补 0 到宽度 n</td><td><code>"7".zfill(3)</code> → <code>"007"</code></td></tr>
+        <tr><td><code>is*()</code> 系列</td><td>类型判断：<code>isdigit</code> / <code>isalpha</code> / <code>isspace</code> / <code>isalnum</code></td><td>清洗时用来筛「这行是不是纯数字」</td></tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      官方提醒：判断子串是否存在，用 <code>in</code> 而不是 <code>find()</code> ——
+      原文备注：<i>「<code>find()</code> 只在你需要知道位置时使用。要检查是否为子串，用 <code>in</code> 运算符。」</i>
+    </p>
+
+    <h3>4.6 不可变意味着什么：三种写法的对错</h3>
+    <pre><code># 错误 1：想原地改字符
+s = "新闻"
+s[0] = "旧"            # TypeError: 'str' object does not support item assignment
+# 正确：拼接出新字符串
+s = "旧" + s[1:]       # "旧闻"
+
+# 错误 2：忘了接返回值
+title = "  AI 新闻  "
+title.strip()
+print(repr(title))     # '  AI 新闻  '  ← 根本没变
+# 正确：
+title = title.strip()
+print(repr(title))     # 'AI 新闻'
+
+# 错误 3：以为 replace 会改调用者
+s = "a-b-c"
+s.replace("-", "+")
+print(s)               # "a-b-c"   ← 没变
+s = s.replace("-", "+")   # 正确写法
+print(s)               # "a+b+c"</code></pre>
+    <blockquote class="warn">
+      官方文档在讲「如何修改字符串」时的回答很直接：<i>「不可以，因为字符串是不可变对象。
+      在大多数情况下，只要将各个部分组合起来构造出一个新字符串即可。」</i>
+      想真正做原地编辑，得用 <code>io.StringIO</code> 或 <code>bytearray</code>——入门阶段不需要。
+    </blockquote>
+
+    <h3>4.7 字符串与数字：为什么会报 <code>TypeError</code></h3>
+    <pre><code>"1" + 1
+# TypeError: can only concatenate str (not "int") to str
+
+"1" + "1"      # "11"   两边都是 str → 拼接
+1 + 1          # 2      两边都是 int → 相加
+
+# 正确做法：明确转换
+"浏览量：" + str(12800)      # 显式转成字符串
+int("12800") + 3400          # 显式转成整数
+f"浏览量：{12800}"            # 或者交给 f-string 自动转</code></pre>
+    <blockquote>
+      这个错在数据处理的场景里出现频率最高，因为<b>从文件读出来的数字默认是字符串</b>。
+      <code>"12800" + "3400"</code> 得到 <code>"128003400"</code>——不报错，但结果完全是错的，比报错更危险。
+    </blockquote>
+
+    <h3>4.8 拼接效率：为什么不要在大循环里用 <code>+=</code></h3>
+    <p>
+      官方 FAQ 的原话：字符串是不可变的，<b>因此拼接很多字符串效率很低，因为每次拼接都会创建一个新对象。
+      一般情况下的总运行成本与总字符串长度呈二次方关系。</b>
+    </p>
+    <pre><code># 慢：每次都新建一个字符串，O(n²)
+result = ""
+for s in my_strings:
+    result += s
+
+# 快：先收集到列表，最后一次性 join（官方推荐写法）
+chunks = []
+for s in my_strings:
+    chunks.append(s)
+result = "".join(chunks)
+
+# 更简洁的等价写法
+result = "".join(my_strings)</code></pre>
+    <p class="meta">
+      处理几百条新闻标题感觉不出来，处理几万条正文时会明显卡住。养成「收集到列表再 join」的习惯。
+    </p>
+
+    <h3>4.9 三种格式化写法</h3>
+    <table>
+      <thead><tr><th>写法</th><th>例子</th><th>评价</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>f-string</b>（推荐）</td>
+          <td><code>f"第 {n} 条：{title}"</code></td>
+          <td>最直观、最快；变量直接写在 <code>{}</code> 里，不用管顺序</td>
+        </tr>
+        <tr>
+          <td><code>str.format()</code></td>
+          <td><code>"第 {} 条：{}".format(n, title)</code></td>
+          <td>需要复用同一份模板时有用；参数要按位置或名字对上</td>
+        </tr>
+        <tr>
+          <td><code>%</code> 旧式</td>
+          <td><code>"第 %d 条：%s" % (n, title)</code></td>
+          <td>老代码里常见，官方称其「处理类型范围更窄、更易出错，但在能处理的场景下常常更快」。新代码不要用</td>
+        </tr>
+      </tbody>
+    </table>
+    <pre><code>title, views = "AI 重塑新闻业", 12800
+
+# f-string：变量名直接可读
+print(f"{title}（浏览量 {views:,}）")          # AI 重塑新闻业（浏览量 12,800）
+
+# 格式说明符，写在冒号后面
+import math
+print(f"pi ≈ {math.pi:.3f}")                  # pi ≈ 3.142   （官方示例）
+print(f"{0.4967:.2%}")                        # 49.67%
+print(f"{title:>20}|")                        # 右对齐，宽度 20
+
+# 调试神器：= 说明符（3.8+），官方示例
+bugs, count = "roaches", 13
+print(f"{bugs=} {count=}")                    # bugs='roaches' count=13</code></pre>
+
+    <h3>4.10 str 与 bytes：encode / decode 的方向</h3>
+    <pre><code>s = "新闻"
+b = s.encode("utf-8")     # str  → bytes：编码
+# b'\xe6\x96\xb0\xe9\x97\xbb'   （一个中文字符通常占 3 字节）
+
+s2 = b.decode("utf-8")    # bytes → str：解码
+# "新闻"
+
+type(s), type(b)
+# (&lt;class 'str'&gt;, &lt;class 'bytes'&gt;)</code></pre>
+    <table>
+      <thead><tr><th></th><th><code>str</code></th><th><code>bytes</code></th></tr></thead>
+      <tbody>
+        <tr><td>是什么</td><td>人类可读的文本（Unicode 码位）</td><td>机器存的字节序列</td></tr>
+        <tr><td>写法</td><td><code>"新闻"</code></td><td><code>b"\xe6\x96\xb0"</code></td></tr>
+        <tr><td>方向</td><td>— <code>encode()</code> →</td><td>← <code>decode()</code> —</td></tr>
+        <tr><td>什么时候遇到</td><td>几乎所有日常代码</td><td>读写文件、网络请求、图片</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      入门阶段你<b>基本只和 <code>str</code> 打交道</b>。<code>bytes</code> 冒出来的信号通常是：
+      打开文件时没写 <code>encoding=</code>，或者把二进制文件和文本文件搞混了。
+      详见 <a href="file-io.html">文件读写</a>里的编码三大坑。
+    </blockquote>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：清洗一批抓来的新闻标题</h3>
+    <p>
+      爬下来的标题常常带网站名后缀、多余空格、全角空格、换行符。清洗一遍再分析，是内容分析的第一步。
+    </p>
+    <pre><code>raw_titles = [
+    "  AI 重塑新闻业 - XX新闻网  ",
+    "\u3000记者调查：短视频平台算法争议\t- XX新闻网",
+    "独家｜AI 重塑新闻业——XX新闻网",
+]
+
+def clean_title(t: str) -&gt; str:
+    t = t.strip()                            # 去首尾空白（含全角空格）
+    t = t.replace("\u3000", "")               # 去全角空格
+    t = t.replace("\n", "").replace("\t", "")  # 去换行与制表符
+    # 去掉后缀：先找 " - "，再找 "｜" 之后的部分
+    for sep in [" - ", "｜", "——"]:
+        if sep in t:
+            t = t.split(sep)[0]
+            break
+    return t.strip()
+
+for t in raw_titles:
+    print(clean_title(t))
+# AI 重塑新闻业
+# 记者调查：短视频平台算法争议
+# 独家</code></pre>
+    <p class="meta">
+      注意每个 <code>t = t.replace(...)</code> 都在<b>重新赋值</b> —— 因为字符串不可变，不接返回值就白干（见 4.6）。
+    </p>
+
+    <h3>场景二：从新闻正文里统计关键词出现次数</h3>
+    <p>
+      做「AI」相关报道的频次统计。用 <code>count()</code> 数次数，用 <code>in</code> 做筛选，用 <code>split()</code> 粗略分词。
+    </p>
+    <pre><code>articles = [
+    "AI 正在重塑新闻业。AI 写稿、AI 剪辑、AI 配音都已落地。",
+    "关于算法推荐争议的深度报道。",
+    "生成式 AI 的版权问题：AI 训练数据从哪里来？",
+]
+
+# 1. 用 in 筛选涉及 AI 的报道
+ai_news = [a for a in articles if "AI" in a]
+print("涉及 AI 的报道：", len(ai_news), "条")     # 2 条
+
+# 2. 用 count 统计总提及次数
+total = sum(a.count("AI") for a in ai_news)
+print("AI 总提及次数：", total)                    # 5 次
+
+# 3. 用 split 粗略看每条的篇幅（按句号切）
+for a in articles:
+    sentences = [s for s in a.split("。") if s.strip()]
+    print(f"本条约 {len(sentences)} 句，{len(a)} 字")
+
+# 4. 大小写统一后再匹配，避免漏掉 "ai"
+hits = sum(a.lower().count("ai") for a in articles)
+print("不区分大小写：", hits)</code></pre>
+    <blockquote class="ok">
+      这四步（<b>筛选 → 计数 → 切分 → 规范化</b>）就是文本内容分析的最小骨架。
+      后面学 <a href="regex.html">正则表达式</a> 会把第 4 步的「粗略分词」升级成真正的模式匹配。
+    </blockquote>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：字符串不可变 ≠ 变量不能重新赋值</h3>
+    <p>
+      这两件事经常被混为一谈。「不可变」说的是<b>对象本身的内容改不了</b>；
+      「变量重新赋值」说的是<b>名字改指向另一个对象</b>。完全不矛盾。
+    </p>
+    <pre><code>s = "abc"
+s = "xyz"        # ✅ 合法：s 改指向新对象
+s[0] = "x"       # ❌ 报错：不允许修改 "abc" 这个对象的内容
+
+# 对比列表（可变）
+lst = [1, 2, 3]
+lst[0] = 9       # ✅ 合法：直接改了列表对象的内容</code></pre>
+    <p class="meta">
+      详见 <a href="lists.html">列表</a> —— 可变与不可变的差别会在那里集中爆发。
+    </p>
+
+    <h3>辨析 2：<code>find()</code> vs <code>index()</code> vs <code>in</code></h3>
+    <pre><code>s = "AI 新闻"
+
+s.find("AI")       # 0     找不到时返回 -1
+s.find("zzz")      # -1
+
+s.index("AI")      # 0     找不到时抛 ValueError
+s.index("zzz")     # ValueError: substring not found
+
+"AI" in s          # True  ← 只是想知道「在不在」，用这个
+"zzz" in s         # False</code></pre>
+    <table>
+      <thead><tr><th>需求</th><th>用哪个</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>只要知道在不在</td><td><code>in</code></td><td>官方推荐；不会有 -1 和 0 混淆的问题</td></tr>
+        <tr><td>要知道位置，且可能不存在</td><td><code>find()</code></td><td>返回 -1 而不是崩掉</td></tr>
+        <tr><td>要知道位置，且必须存在</td><td><code>index()</code></td><td>不存在就直接报错，早暴露问题</td></tr>
+      </tbody>
+    </table>
+
+    <h3>辨析 3：<code>split()</code> 的默认行为（坑）</h3>
+    <pre><code>"  新闻   传播  ".split()
+# ['新闻', '传播']   ← 不传参数：按任意连续空白切，自动丢掉空串
+
+"  新闻   传播  ".split(" ")
+# ['', '', '新闻', '', '', '传播', '', '']   ← 传了空格：老老实实切，空串全留着</code></pre>
+    <blockquote class="warn">
+      想按空白分词，<b>用 <code>split()</code>，别写 <code>split(" ")</code></b>。
+      后者会产生一堆空字符串，是统计词频时结果偏高的常见原因。
+    </blockquote>
+
+    <h3>辨析 4：f-string 里的引号与花括号</h3>
+    <pre><code>name = "新闻"
+
+# 外层引号与内层引号不能冲突（3.12 前的版本）
+f"hello {name}"        # ✅
+f"hello {'x'}"         # ✅ 内层用另一种引号
+
+# 想输出真的花括号，写两遍
+f"{{文字}}"             # "{文字}"
+f"{name}"              # "新闻"
+
+# 转义：f-string 里不能用反斜杠（3.12 之前），换行要提前存进变量
+nl = "\n"
+f"第一行{nl}第二行"      # ✅
+# f"第一行\n第二行"      # ❌ 3.12 之前的版本会报 SyntaxError</code></pre>
+    <p class="meta">Python 3.12 起放宽了这个限制（PEP 701），但为了兼容性，写成上面那样更稳。</p>
+
+    <h3>辨析 5：<code>strip()</code> 的参数是「字符集」不是「子串」</h3>
+    <p>
+      这是很隐蔽的一个坑：<code>strip("ab")</code> 的意思是「去掉首尾所有 <code>a</code> 或 <code>b</code> 字符」，
+      不是「去掉 <code>"ab"</code> 这个前缀」。
+    </p>
+    <pre><code>"abcba".strip("ab")      # "c"     ← 首尾的 a/b 全被剥掉
+"前缀-hello".strip("前缀")  # "-hello"  看起来对，其实是巧合
+
+# 想精确去掉一个前缀，用 removeprefix（3.9+）
+"前缀-hello".removeprefix("前缀")   # "-hello"
+"https://x.com".removeprefix("https://")   # "x.com"
+
+# startswith + 切片也能做（老版本的写法）
+s = "https://x.com"
+if s.startswith("https://"):
+    s = s[len("https://"):]         # "x.com"</code></pre>
+
+    <h3>辨析 6：<code>"1"</code> 是字符串，<code>1</code> 是数字</h3>
+    <p>
+      引号内的数字永远是字符串。这是从文件、网页、输入框拿到的数据的默认状态。
+    </p>
+    <pre><code>"1" + "1"      # "11"    拼接，不是 2
+"10" * 3       # "101010"  重复，不是 30
+int("10") * 3  # 30     先转再算
+
+"3" > "25"     # True！ 字符串按字典序比较，'3' > '2'
+3 > 25         # False  数字按大小比较
+
+"123".isdigit()   # True   字符串自己带类型判断方法
+float("1.5e3")    # 1500.0  科学计数法字符串也能转</code></pre>
+    <blockquote class="warn">
+      <code>"3" &gt; "25"</code> 是 <code>True</code>，这一条几乎所有人第一次看到都会愣一下。
+      做「浏览量排序」时如果忘了先转 <code>int</code>，排出来的顺序就是错的。
+    </blockquote>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：为什么 <code>s = "abc"; s[0] = "x"</code> 会报错？</b>
+      <div class="ans">
+        字符串是不可变序列，不允许原地修改其中的元素。官方文档：「不可以，因为字符串是不可变对象。」
+        想达到同样效果要新建：<code>s = "x" + s[1:]</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：<code>"0123456789"[2:5]</code> 的结果是什么？为什么不是 4 个字符？</b>
+      <div class="ans">
+        <code>"234"</code>。切片的定义是「索引 <code>k</code> 满足 <code>i &lt;= k &lt; j</code>」——尾部 <code>j</code> 不包含，
+        所以取的是索引 2、3、4 共 3 个字符。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：<code>title = "  AI 新闻  "</code>，执行 <code>title.strip()</code> 后 <code>title</code> 变了吗？</b>
+      <div class="ans">
+        没变。<code>strip()</code> 返回的是<b>新字符串</b>，原对象不受影响。必须写成 <code>title = title.strip()</code>。
+        这是字符串方法最普遍的误用。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>"abc" + 1</code> 会怎样？该怎么改？</b>
+      <div class="ans">
+        抛 <code>TypeError: can only concatenate str (not "int") to str</code>。
+        改成 <code>"abc" + str(1)</code> 或 <code>f"abc{1}"</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>"  新闻   传播  ".split()</code> 和 <code>.split(" ")</code> 结果差在哪？</b>
+      <div class="ans">
+        前者得 <code>['新闻', '传播']</code>（按连续空白切，丢空串）；后者得
+        <code>['', '', '新闻', '', '', '传播', '', '']</code>（每个空格都切一刀，空串全保留）。
+        分词统计要用不传参数的写法。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>encode()</code> 和 <code>decode()</code> 分别在做什么？</b>
+      <div class="ans">
+        <code>str.encode()</code> 把文本编码成 <code>bytes</code>（str → bytes）；
+        <code>bytes.decode()</code> 反过来（bytes → str）。默认都用 UTF-8。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：要在循环里把一万条标题拼成一个大字符串，为什么不能一直用 <code>+=</code>？</b>
+      <div class="ans">
+        字符串不可变，每次 <code>+=</code> 都新建一个对象，官方 FAQ 指出总成本与总长度呈<b>二次方</b>关系。
+        正确做法是先把片段 <code>append</code> 到列表，最后用 <code>"".join(列表)</code> 一次性拼接。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 内置类型（文本序列类型 str）</td>
+          <td>「字符串是 Unicode 码位的不可变序列」原文、无独立字符类型、<code>s[0] == s[0:1]</code>、<code>find</code> 找不到返回 -1、<code>index</code> 抛 <code>ValueError</code>、<code>count</code> 与 <code>endswith</code> 官方示例、<code>casefold</code> 示例、<code>encode</code> 默认 utf-8</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html">docs.python.org/zh-cn/3/library/stdtypes.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 输入与输出（7.1 更复杂的输出格式）</td>
+          <td>f-string / <code>str.format()</code> / <code>%</code> 三种格式化的官方说明与示例、格式说明符 <code>:.3f</code> / <code>:2.2%</code>、<code>!r</code> 转换、<code>=</code> 自说明型表达式</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/inputoutput.html">docs.python.org/zh-cn/3/tutorial/inputoutput.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题（如何修改字符串 / 如何拼接大量字符串）</td>
+          <td>「不可以，因为字符串是不可变对象」原文、拼接效率与「二次方」结论、<code>str.join()</code> 推荐写法、<code>io.StringIO</code> 替代方案</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型（通用序列操作与切片）</td>
+          <td>切片定义「索引 k 满足 i &lt;= k &lt; j」、省略参数与负索引规则、<code>i &gt;= j</code> 时切片为空（尾部不含）</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#common-sequence-operations">docs.python.org/zh-cn/3/library/stdtypes.html#common-sequence-operations</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 数据结构（5.6 循环的技巧）</td>
+          <td>循环中按索引取值的写法、<code>enumerate</code> / <code>zip</code> / <code>sorted(set(...))</code> 的官方示例（本份在场景中被引用）</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/datastructures.html">docs.python.org/zh-cn/3/tutorial/datastructures.html</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      说明：<code>split</code> / <code>join</code> / <code>strip</code> / <code>replace</code> 的逐条官方措辞位于 stdtypes 页面的「字符串方法」小节，
+      本份资料抓取时该页面在 <code>str.isspace()</code> 处被截断，这几条方法的行为描述依据的是《数据结构》教程与《常见问题》中互相印证的部分，
+      未逐条引用官方原文措辞（详见第 9 节核查记录）。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版），均通过 WebFetch 实际抓取页面内容后使用，未凭记忆生成；未使用的候选来源（codecs 页）已在第 8 节移除，未列为参考文献</td></tr>
+        <tr><td>不可变性表述</td><td>已核。原文：「Strings are immutable sequences of Unicode code points.」及「不可以，因为字符串是不可变对象。」</td></tr>
+        <tr><td>无独立字符类型</td><td>已核。原文：「Since there is no separate 'character' type, indexing a string produces strings of length 1.」</td></tr>
+        <tr><td>切片不含尾部</td><td>已核。原文：切片是索引 k 满足 <code>i &lt;= k &lt; j</code> 的序列；<code>i &gt;= j</code> 时切片为空</td></tr>
+        <tr><td>三种格式化写法</td><td>已核。抓取《7.1 更复杂的输出格式》原文，f-string、<code>format()</code>、<code>%</code> 的示例与措辞照录</td></tr>
+        <tr><td>拼接效率结论</td><td>已核。FAQ 原文：「the total runtime cost is quadratic in the total string length」，并给出 <code>str.join()</code> 推荐写法</td></tr>
+        <tr><td>未核到 / 部分核</td><td><code>split</code> / <code>join</code> / <code>strip</code> / <code>replace</code> 的逐条官方说明未抓到（stdtypes 页面抓取时被截断于 <code>str.isspace()</code>）。这些方法的行为描述依据教程与 FAQ 的印证内容及 Python 通用语义，<b>未逐条对照官方原文</b></td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；<code>TypeError</code> / <code>ValueError</code> 的报错文本与官方文档描述一致，但未在本机逐条运行验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、应用场景、自测题由 AI 撰写；
+      不可变性、切片规则、格式化写法、拼接效率结论逐条对照官方文档原文核验；
+      字符串方法清单中的部分条目未能核到官方逐条措辞，已在第 8 节与上表明确标注。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>字符串</b> · Python 概念学习资料 第 2 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

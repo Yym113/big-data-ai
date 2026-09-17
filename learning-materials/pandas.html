@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pandas 数据处理 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>pandas 数据处理</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 14 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景（新闻传播学）</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1. 个人理解（先说人话）</h2>
+    <p>
+      上一节学了 NumPy，它能飞快地算一堆数字。但新闻数据从来不只是数字。
+      一条评论数据长这样：<strong>「这条评论来自微博，发布于 2026-03-01，内容是『终于修好了』，有 158 个赞」</strong>。
+      这里有文字、有日期、有数字混在一起，还有「这条属于哪条报道」的对应关系。
+    </p>
+    <p>
+      NumPy 数组装不了这种「每一列类型不同」的表格。<strong>pandas 就是为这种表格数据而生的。</strong>
+      你可以把它想成「Python 里的 Excel」——但比 Excel 强的地方在于：
+      它能处理几百万行、能自动化、能写进可复现的脚本。
+    </p>
+    <p>pandas 只有两个核心对象：</p>
+    <table>
+      <thead>
+        <tr><th>对象</th><th>是什么</th><th>类比</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Series</code></td><td>带标签的一列数据</td><td>Excel 里的一列（含表头）</td></tr>
+        <tr><td><code>DataFrame</code></td><td>带行标签和列名的二维表</td><td>Excel 里的一整个工作表</td></tr>
+      </tbody>
+    </table>
+    <p>
+      「带标签」这三个字是 pandas 的灵魂，也是它全部麻烦的来源。
+      因为一旦有了标签，就出现了三个必须回答的问题：
+    </p>
+    <ol>
+      <li><strong>你说「第 3 行」，指的是第 3 个位置，还是标签叫 3 的那一行？</strong>（→ <code>iloc</code> vs <code>loc</code>）</li>
+      <li><strong>你赋值的时候，是按位置对齐，还是按标签对齐？</strong>（→ 官方明确说 <code>loc</code> 对齐、<code>iloc</code> 不对齐，结果完全不同）</li>
+      <li><strong>你拿到的这一列，是原表的一部分，还是一个独立的副本？</strong>（→ 视图 vs 副本，即链式赋值问题的根源）</li>
+    </ol>
+    <p>
+      新手觉得 pandas「玄学」，绝大多数是因为这三个问题没搞清。
+      本节花最多篇幅的地方也在这里。
+    </p>
+    <blockquote>
+      还有一个必须提前知道的重大变化：<strong>从 pandas 3.0 起，Copy-on-Write 成为默认且唯一的模式。</strong>
+      官方原文是「Copy-on-Write is now the default with pandas 3.0」和「Copy-on-Write is the default and only mode in pandas 3.0」。
+      这意味着很多老教程里管用的写法现在会失效——第 4.5 节会专门讲。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2. 学习目标</h2>
+    <p>学完这一份，你应该能做到：</p>
+    <ul>
+      <li>能说清 <code>Series</code> 和 <code>DataFrame</code> 的关系，知道索引（index）和列名（columns）的作用。</li>
+      <li>能区分 <code>loc</code>（按标签）和 <code>iloc</code>（按位置），知道两者对切片边界的处理不同。</li>
+      <li><strong>能解释为什么 <code>df["A"][条件] = 值</code> 不再生效，并知道正确写法 <code>df.loc[条件, "列"] = 值</code>。</strong></li>
+      <li>能说出 Copy-on-Write（CoW）解决的是什么问题，以及它带来的三个行为变化。</li>
+      <li>能说出布尔筛选为什么必须加括号，并知道用 <code>|</code> <code>&amp;</code> <code>~</code> 而不是 <code>and</code> <code>or</code> <code>not</code>。</li>
+      <li>能识别 <code>NaN</code> 与 <code>NA</code>，会用 <code>isna()</code> / <code>notna()</code> 判断，而不是用 <code>==</code>。</li>
+      <li>能用 <code>dropna()</code> / <code>fillna()</code> / <code>ffill()</code> / <code>bfill()</code> 处理缺失值，知道整数列出现缺失值后为什么会变成浮点。</li>
+      <li>知道 <code>inplace</code> 在 CoW 下的争议，能改用「重新赋值」的写法。</li>
+      <li>会读写 CSV 并记得 <code>encoding</code> 与导出时 <code>index=False</code>。</li>
+      <li>能用 <code>str.contains(na=False)</code> 做文本筛选，知道 <code>na</code> 参数的默认行为会出问题。</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <h2>3. 核心问题清单</h2>
+    <ol>
+      <li><code>Series</code> 和 <code>DataFrame</code> 是什么关系？一列数据是哪个？</li>
+      <li><code>df["A"]</code>、<code>df.loc[...]</code>、<code>df.iloc[...]</code> 分别返回什么？</li>
+      <li><code>loc</code> 和 <code>iloc</code> 的切片为什么行为不同？（一个闭区间、一个不含尾）</li>
+      <li><code>df["A"][条件] = 值</code> 为什么不生效了？<code>ChainedAssignmentError</code> 是什么？</li>
+      <li>什么是 Copy-on-Write？它解决了什么老问题？</li>
+      <li>CoW 之后 <code>to_numpy()</code> 返回的数组为什么不能改？</li>
+      <li><code>df.attr = 值</code> 为什么不能创建新列？</li>
+      <li><code>df.loc[:, ["B","A"]] = df[["A","B"]]</code> 为什么没交换成功？</li>
+      <li>布尔筛选为什么必须加括号？不加会怎样？</li>
+      <li><code>NaN</code>、<code>None</code>、<code>NaT</code>、<code>NA</code> 有什么区别？该用哪个？</li>
+      <li>为什么判断缺失值不能用 <code>== np.nan</code>？</li>
+      <li>整数列里插入一个缺失值后，<code>dtype</code> 为什么变成 float？</li>
+      <li><code>dropna()</code> 的 <code>how</code>/<code>axis</code>/<code>subset</code>/<code>thresh</code> 分别做什么？</li>
+      <li><code>inplace=True</code> 还该不该用？</li>
+      <li><code>str.contains()</code> 遇到缺失值会怎样？<code>na=False</code> 是什么作用？</li>
+      <li><code>to_csv()</code> 的 <code>index=False</code> 为什么要加？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4. 结构化解释</h2>
+
+    <h3>4.1 定义：两个核心对象</h3>
+    <p>pandas 官方对索引（axis labeling）的作用给了三条说明：</p>
+    <blockquote>
+      The axis labeling information in pandas objects serves many purposes:
+      <ul>
+        <li>Identifies data (i.e. provides <em>metadata</em>) using known indicators, important for analysis, visualization, and interactive console display.</li>
+        <li>Enables automatic and explicit <strong>data alignment</strong>.</li>
+        <li>Allows intuitive getting and setting of subsets of the data set.</li>
+      </ul>
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》开头</span>
+    </blockquote>
+    <p>
+      注意第二条「data alignment」（数据对齐）——这是 pandas 和 NumPy 最本质的区别。
+      NumPy 只有位置，pandas 有标签。<strong>有标签就有「按标签对齐」这件事。</strong>
+    </p>
+    <p>官方还给了一条很重要的建议：</p>
+    <blockquote class="ok">
+      The Python and NumPy indexing operators <code>[]</code> and attribute operator <code>.</code>
+      provide quick and easy access to pandas data structures across a wide range of use cases. ...
+      However, since the type of the data to be accessed isn't known in advance, directly using standard operators has some optimization limits.
+      <strong>For production code, we recommended that you take advantage of the optimized pandas data access methods exposed in this chapter.</strong>
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <p>
+      翻译过来就是：<strong>正式代码里请用 <code>.loc</code> / <code>.iloc</code>，少用裸的 <code>[]</code> 和 <code>.属性</code>。</strong>
+      这句话是整份文档里最该记住的一句。
+    </p>
+
+    <h3>4.2 最小模型：Excel 工作表 + 三种「指路方式」</h3>
+    <p>
+      把 DataFrame 想成一张 Excel 表。你告诉同事「去拿数据」时，可能用三种方式：
+    </p>
+    <table>
+      <thead>
+        <tr><th>你怎么说</th><th>pandas 里对应</th><th>注意</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>「拿『点赞数』这一列」</td><td><code>df["点赞数"]</code></td><td>返回 <code>Series</code></td></tr>
+        <tr><td>「拿行号是 5、列名是『标题』的那个格子」</td><td><code>df.loc[5, "标题"]</code></td><td>按<strong>标签</strong>找</td></tr>
+        <tr><td>「拿第 6 行第 2 列那个格子」</td><td><code>df.iloc[5, 1]</code></td><td>按<strong>位置</strong>找（从 0 数）</td></tr>
+      </tbody>
+    </table>
+    <p>官方对 <code>loc</code> 与 <code>iloc</code> 的定义：</p>
+    <blockquote>
+      <code>.loc</code> is primarily <strong>label</strong> based, but may also be used with a boolean array.
+      <code>.loc</code> will raise <code>KeyError</code> when the items are not found.
+      <br><br>
+      <code>.iloc</code> is primarily <strong>integer position</strong> based (from <code>0</code> to <code>length-1</code> of the axis),
+      but may also be used with a boolean array.
+      <code>.iloc</code> will raise <code>IndexError</code> if a requested indexer is out-of-bounds,
+      except <em>slice</em> indexers which allow out-of-bounds indexing.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <p>
+      这里有个细节非常关键：<strong>「<code>.loc</code> will raise <code>KeyError</code>」而「<code>.iloc</code> will raise <code>IndexError</code>」</strong>。
+      报错类型不同，能帮你立刻判断自己用错了哪个。
+    </p>
+    <p>还有一个容易踩的坑，官方在 <code>loc</code> 的输入类型说明里点出了：</p>
+    <blockquote class="warn">
+      A single label, e.g. <code>5</code> or <code>'a'</code>
+      （注意 <code>5</code> 被解释为索引的<strong>标签</strong>，<strong>不是</strong>整数位置）
+      <span class="meta">——引自 pandas 官方文档 <code>.loc</code> 输入类型说明</span>
+    </blockquote>
+    <pre><code># 假设 df 的索引是 ['a', 'b', 'c', ...]
+df.loc[5]      # 找「标签叫 5」的那一行，不是「第 5 行」
+df.iloc[5]     # 找「第 5 个位置」的那一行（第 6 行）
+
+# 索引是日期时会直接报错（官方示例）
+# df.loc[2:3]  →  TypeError: cannot do slice indexing on DatetimeIndex with these indexers [2] of type int</code></pre>
+
+    <h3>4.3 关键机制一：loc / iloc / []</h3>
+    <p>官方对 <code>[]</code> 返回值类型的说明（表格原文）：</p>
+    <table>
+      <thead>
+        <tr><th>Object Type</th><th>Selection</th><th>Return Value Type</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Series</td><td><code>series[label]</code></td><td>scalar value（标量）</td></tr>
+        <tr><td>DataFrame</td><td><code>frame[colname]</code></td><td><code>Series</code> corresponding to colname</td></tr>
+      </tbody>
+    </table>
+    <p>另外官方的切片说明也很重要：</p>
+    <blockquote>
+      With Series, the syntax works exactly as with an ndarray...
+      <br>
+      <strong>With DataFrame, slicing inside of <code>[]</code> slices the rows.</strong>
+      <br><br>
+      When slicing, both the start bound <strong>AND</strong> the stop bound are <em>included</em>, if present in the index.
+      Integers are valid labels, but they refer to the label <strong>and not the position</strong>.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <p>整理成一张对照表：</p>
+    <table>
+      <thead>
+        <tr><th>写法</th><th>按什么找</th><th>切片含不含尾</th><th>越界行为</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>df.loc[a:b]</code></td><td>标签</td><td><strong>含尾</strong>（闭区间）</td><td>标签不存在 → <code>KeyError</code></td></tr>
+        <tr><td><code>df.iloc[1:4]</code></td><td>位置</td><td><strong>不含尾</strong>（同 Python）</td><td>切片越界<strong>不报错</strong>，返回空</td></tr>
+        <tr><td><code>df.iloc[[4,5,6]]</code></td><td>位置列表</td><td>—</td><td>任一越界 → <code>IndexError</code></td></tr>
+        <tr><td><code>df[:3]</code></td><td>位置（切行）</td><td>不含尾</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <p>官方对 <code>iloc</code> 越界的说明很具体：</p>
+    <blockquote>
+      Out of range slice indexes are handled gracefully just as in Python/NumPy.
+      <br>
+      A single indexer that is out of bounds will raise an <code>IndexError</code>.
+      A list of indexers where any element is out of bounds will raise an <code>IndexError</code>.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <pre><code>df.iloc[4:10]       # OK，超出部分自动截断
+df.iloc[8:10]       # 返回空的 Series，不报错
+df.iloc[[4, 5, 6]]  # 如果 6 越界 → IndexError: positional indexers are out-of-bounds</code></pre>
+    <p>还有一个「带步长的 loc 切片」的陷阱，官方专门说明了：</p>
+    <blockquote class="warn">
+      When using a slice with a step, such as <code>.loc[start:stop:step]</code>,
+      note that <em>start</em> and <em>stop</em> are interpreted as <strong>labels</strong>,
+      while <em>step</em> is applied over the <strong>positional index</strong> within that label range.
+      This means a stepped slice will behave differently than using the labels <code>range(start, stop, step)</code>
+      when the index is not contiguous integers.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <pre><code>s = pd.Series(range(10), index=[0, 5, 10, 15, 20, 25, 30, 35, 40, 45])
+s.loc[10:50:5]
+# 官方输出：
+# 10    2
+# 35    7
+# dtype: int64
+# 注意：不是 10, 15, 20...（按标签），而是从标签 10 开始，位置跳 5 步</code></pre>
+    <blockquote class="ok">
+      实践建议：<strong>按标签取用 <code>.loc</code> 时，尽量只做「连续区间」的切片。</strong>
+      想要「跳着取」，用 <code>.iloc</code> 更符合直觉。
+    </blockquote>
+    <p>官方还给出了 <code>loc</code> 切片会失败的两个条件：</p>
+    <blockquote>
+      However, if at least one of the two is absent <em>and</em> the index is not sorted, an error will be raised
+      (since doing otherwise would be computationally expensive, as well as potentially ambiguous for mixed type indexes).
+      <br>
+      Also, if the index has duplicate labels <em>and</em> either the start or the stop label is duplicated, an error will be raised.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <p>
+      所以如果你的索引<strong>没排序</strong>或<strong>有重复</strong>，<code>loc</code> 切片的行为可能出乎意料。
+      做分析前先确认索引唯一、必要时 <code>df = df.sort_index()</code>，能省掉很多莫名的报错。
+    </p>
+
+    <h3>4.4 关键机制二：赋值时的对齐——loc 和 iloc 完全不同</h3>
+    <p>这是本份资料里最「值钱」的一个知识点。官方的两条警告是并列的：</p>
+    <blockquote class="warn">
+      pandas aligns all <strong>AXES</strong> when setting <code>Series</code> and <code>DataFrame</code> from <code>.loc</code>.
+      <strong>This will not modify <code>df</code> because the column alignment is before value assignment.</strong>
+      <span class="meta">——引自 pandas 官方文档，<code>.loc</code> 赋值警告</span>
+    </blockquote>
+    <blockquote>
+      pandas does <strong>not</strong> align AXES when setting <code>Series</code> and <code>DataFrame</code> from <code>.iloc</code>
+      because <code>.iloc</code> operates by position.
+      <strong>This will modify <code>df</code> because the column alignment is not done before value assignment.</strong>
+      <span class="meta">——引自 pandas 官方文档，<code>.iloc</code> 赋值警告</span>
+    </blockquote>
+    <p>官方给的「想交换两列」的例子，最能说明问题：</p>
+    <pre><code># ❌ 想交换 A、B 两列的值，但这样写不会成功
+df.loc[:, ['B', 'A']] = df[['A', 'B']]
+# 值没变！因为 loc 先按列名对齐：把右边 A 列的值放回 A 列，B 放回 B，等于没动
+
+# ✅ 正确的写法：用 .to_numpy() 让右边「没有列名」，只剩位置
+df.loc[:, ['B', 'A']] = df[['A', 'B']].to_numpy()
+
+# ✅ 或者用 iloc（按位置，不对齐）
+df.iloc[:, [1, 0]] = df[['A', 'B']]</code></pre>
+    <p>
+      <strong>核心结论：<code>loc</code> 会先按标签把两边对齐再赋值；<code>iloc</code> 直接按位置盖上去。</strong>
+      你想「按标签对应」，用 <code>loc</code>；想「按顺序覆盖」，用 <code>iloc</code>。
+      搞反了会得到静默的错误结果——<strong>不报错，但数据是错的。</strong>
+    </p>
+    <p>同类的属性访问陷阱，官方也明确警告了：</p>
+    <blockquote class="warn">
+      You can use attribute access to modify an existing element of a Series or column of a DataFrame, but be careful;
+      <strong>if you try to use attribute access to create a new column, it creates a new attribute rather than a new column
+      and will this raise a <code>UserWarning</code></strong>
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <pre><code># ❌ 不会创建列，而是创建了一个对象属性
+df_new.two = [4, 5, 6]
+# 打印 df_new 会发现还是只有原来那一列
+
+# ✅ 创建新列的正确形式
+df_new['two'] = [4, 5, 6]</code></pre>
+    <p>官方还列了属性访问的三个限制：</p>
+    <blockquote>
+      <ul>
+        <li>只有索引元素是合法的 Python 标识符时才能用属性访问，比如 <code>s.1</code> 是不允许的。</li>
+        <li>如果属性名与已有的方法名冲突，该属性不可用，比如 <code>s.min</code> 不行，但 <code>s['min']</code> 可以。</li>
+        <li>同理，与 <code>index</code>、<code>major_axis</code>、<code>minor_axis</code>、<code>items</code> 冲突时也不可用。</li>
+        <li>以上任何一种情况，用标准索引仍然有效：<code>s['1']</code>、<code>s['min']</code>、<code>s['index']</code> 都能取到对应的元素或列。</li>
+      </ul>
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <blockquote class="ok">
+      简单的实践守则：<strong>列名一律用 <code>df['列名']</code>，永远不要用 <code>df.列名</code>。</strong>
+      这一条规则让你一次避开上面所有的坑。
+    </blockquote>
+
+    <h3>4.5 关键机制三：Copy-on-Write 与链式赋值（重点）</h3>
+    <p>先看官方给出的「旧行为」示例——这就是无数老教程里的写法：</p>
+    <pre><code># 旧行为（CoW 之前）
+df = pd.DataFrame({"foo": [1, 2, 3], "bar": [4, 5, 6]})
+subset = df["foo"]
+subset.iloc[0] = 100
+df
+#    foo  bar
+# 0  100    4     ← df 也被改了！
+# 1    2    5
+# 2    3    6</code></pre>
+    <p>官方对旧行为的评价：</p>
+    <blockquote>
+      pandas indexing behavior is tricky to understand.
+      Some operations return views while other return copies.
+      Depending on the result of the operation, <strong>mutating one object might accidentally mutate another</strong>.
+      <br>
+      The exact behavior was hard to predict.
+      <span class="meta">——引自 pandas 官方文档《Copy-on-Write (CoW)》</span>
+    </blockquote>
+    <p>而 CoW 之后，同样的代码：</p>
+    <pre><code># CoW 行为
+df = pd.DataFrame({"foo": [1, 2, 3], "bar": [4, 5, 6]})
+subset = df["foo"]
+subset.iloc[0] = 100
+df
+#    foo  bar
+# 0    1    4     ← df 保持不变！
+# 1    2    5
+# 2    3    6</code></pre>
+    <p>官方对 CoW 价值的说明：</p>
+    <blockquote class="ok">
+      CoW will lead to more predictable behavior since it is not possible to update more than one object with one statement,
+      e.g. indexing operations or methods won't have side-effects.
+      Additionally, through delaying copies as long as possible, the average performance and memory usage will improve.
+      <br><br>
+      CoW means that any DataFrame or Series derived from another in any way <strong>always behaves as a copy</strong>.
+      As a consequence, we can only change the values of an object through modifying the object itself.
+      CoW disallows updating a DataFrame or a Series that shares data with another DataFrame or Series object inplace.
+      <span class="meta">——引自 pandas 官方文档《Copy-on-Write (CoW)》</span>
+    </blockquote>
+    <p><strong>翻译成一句话：「从别的对象派生出来的东西，一律当成副本；要改就改它自己。」</strong></p>
+    <p>CoW 带来的三个必须知道的行为变化（官方列表）：</p>
+    <table>
+      <thead>
+        <tr><th>变化</th><th>官方原话</th><th>对你的影响</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>链式赋值彻底失效</td>
+          <td>「Chained assignment will never work」</td>
+          <td><code>df["A"][条件] = 值</code> 会抛 <code>ChainedAssignmentError</code> 警告。改用 <code>df.loc[条件, "A"] = 值</code></td>
+        </tr>
+        <tr>
+          <td>底层数组变成只读</td>
+          <td>「Accessing the underlying array of a pandas object will return a read-only view」</td>
+          <td><code>df.to_numpy()</code> 返回的数组不能再改；要改先 <code>.copy()</code>，或把 <code>arr.flags.writeable = True</code>（官方说「should be used with caution」）</td>
+        </tr>
+        <tr>
+          <td>一次只更新一个对象</td>
+          <td>「Only one pandas object is updated at once」</td>
+          <td>取一列单独改（不管是直接改还是用 <code>inplace=True</code>），不再传回父表</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>关于链式赋值，官方给了完整的对错对比：</p>
+    <pre><code># ❌ 链式赋值：两个索引操作连在一起
+df["foo"][df["bar"] &gt; 5] = 100
+# 会抛 ChainedAssignmentError：它需要同时改视图 df["foo"] 和 df 本身
+
+# ✅ 用 loc 一行完成
+df.loc[df["bar"] &gt; 5, "foo"] = 100</code></pre>
+    <p>关于「取一列单独改」，官方也给了两种改写方式：</p>
+    <pre><code># ❌ 对取出来的列用 inplace，不会传回原表
+df["foo"].replace(1, 5, inplace=True)
+# df 没变
+
+# ✅ 方式一：在整表上操作
+df.replace({"foo": {1: 5}}, inplace=True)
+
+# ✅ 方式二（更推荐）：不用 inplace，重新赋值
+df["foo"] = df["foo"].replace(1, 5)</code></pre>
+    <p>官方对 <code>to_numpy()</code> 只读行为的说明：</p>
+    <blockquote>
+      This array is read-only, which means that it can't be modified inplace:
+      <pre><code>&gt;&gt;&gt; arr = df.to_numpy()
+&gt;&gt;&gt; arr[0, 0] = 100
+ValueError: assignment destination is read-only</code></pre>
+      The same holds true for a Series, since a Series always consists of a single array.
+      <span class="meta">——引自 pandas 官方文档《Copy-on-Write (CoW)》</span>
+    </blockquote>
+    <p>
+      官方还提到一个关于构造函数的变化：「The Series and DataFrame constructors now copies a NumPy array by default
+      when not otherwise specified」——这样可以避免你在 pandas 外面改了 NumPy 数组、却把 pandas 对象也改了。
+      需要省这一次复制时，可以传 <code>copy=False</code>。
+    </p>
+    <p>最后一个关于性能的官方提醒，很多人会犯：</p>
+    <blockquote class="warn">
+      No defensive copy will be performed if two objects share the same data while you are modifying one object inplace.
+      ... This is not necessary if the initial object <code>df</code> isn't needed anymore.
+      <strong>Simply reassigning to the same variable will invalidate the reference that is held by the object.</strong>
+      <br><br>
+      <strong>Creating multiple references keeps unnecessary references alive and thus will hurt performance with Copy-on-Write.</strong>
+      <span class="meta">——引自 pandas 官方文档《Copy-on-Write (CoW)》"Patterns to avoid" 节</span>
+    </blockquote>
+    <pre><code># ❌ 保留旧引用，导致改 df2 时触发一次复制
+df2 = df.reset_index(drop=True)
+df2.iloc[0, 0] = 100
+
+# ✅ 如果 df 不再需要，直接覆盖同名变量，就不触发复制
+df = df.reset_index(drop=True)
+df.iloc[0, 0] = 100</code></pre>
+    <p>还有一条关于旧版本的提醒——如果你在网上看到 <code>pd.options.mode.copy_on_write</code>，它是给 pandas 3.0 之前用的：</p>
+    <blockquote>
+      Copy-on-Write is the default and only mode in pandas 3.0.
+      This means that users need to migrate their code to be compliant with CoW rules.
+      <br>
+      The default mode in pandas &lt; 3.0 raises warnings for certain cases that will actively change behavior...
+      pandas 2.2 has a warning mode <code>pd.options.mode.copy_on_write = "warn"</code> that will warn for every operation that will change behavior with CoW.
+      <span class="meta">——引自 pandas 官方文档《Copy-on-Write (CoW)》"Migrating to Copy-on-Write" 节</span>
+    </blockquote>
+    <blockquote class="warn">
+      在 pandas 3.0+ 上<strong>不需要</strong>再设置 <code>pd.options.mode.copy_on_write</code>，CoW 已经是唯一模式。
+      如果你看到教程里有这一行，说明它写的是 2.x 时代的内容。
+    </blockquote>
+
+    <h3>4.6 关键机制四：布尔筛选与 where/mask</h3>
+    <p>官方对布尔运算符的说明非常明确：</p>
+    <blockquote class="warn">
+      The operators are: <code>|</code> for <code>or</code>, <code>&amp;</code> for <code>and</code>, and <code>~</code> for <code>not</code>.
+      These <strong>must</strong> be grouped by using parentheses,
+      since by default Python will evaluate an expression such as <code>df['A'] &gt; 2 &amp; df['B'] &lt; 3</code>
+      as <code>df['A'] &gt; (2 &amp; df['B']) &lt; 3</code>,
+      while the desired evaluation order is <code>(df['A'] &gt; 2) &amp; (df['B'] &lt; 3)</code>.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <pre><code># ❌ 漏括号：解析成了完全不同的表达式
+df[df['A'] &gt; 2 &amp; df['B'] &lt; 3]
+
+# ✅ 每个条件加括号
+df[(df['A'] &gt; 2) &amp; (df['B'] &lt; 3)]
+df[(df['A'] &gt; 2) | (df['B'] &lt; 3)]
+df[~(df['A'] &gt; 2)]
+df[df['平台'].isin(['微博', '抖音'])]</code></pre>
+    <p><code>loc</code> 与 <code>iloc</code> 在布尔索引上还有一个差异，官方专门警告了：</p>
+    <blockquote class="warn">
+      While <code>loc</code> supports two kinds of boolean indexing, <code>iloc</code> only supports indexing with a boolean <strong>array</strong>.
+      If the indexer is a boolean <code>Series</code>, an error will be raised.
+      For instance, <code>df.iloc[s.values, 1]</code> is ok. The boolean indexer is an array.
+      But <code>df.iloc[s, 1]</code> would raise <code>ValueError</code>.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <pre><code># ✅ loc 可以直接接受布尔 Series
+df.loc[s, 'B']
+
+# ⚠️ iloc 只接受布尔数组，不接受布尔 Series
+df.iloc[s, 1]          # ❌ ValueError
+df.iloc[s.values, 1]   # ✅ 加 .values 转成数组</code></pre>
+    <p>还有一个非常实用的对比——<strong>筛选（改变形状）vs where（保持形状）</strong>：</p>
+    <pre><code>s = pd.Series([-1, 2, -3, 4])
+
+s[s &gt; 0]           # 返回子集：[2, 4]，长度变成 2
+s.where(s &gt; 0)     # 保持长度 4：NaN, 2.0, NaN, 4.0，不满足的填 NaN
+s.mask(s &gt; 0)      # where 的反操作：只保留不满足的</code></pre>
+    <p>
+      官方说明 <code>where</code> 的用途是「To guarantee that selection output has the same shape as the original data」，
+      并提到「<code>mask()</code> is the inverse boolean operation of <code>where</code>」。
+      什么时候用？<strong>当你需要结果与原表行数一致时</strong>——比如要按行对齐再参与计算。
+      官方还提到 <code>where</code> 返回的是「a modified copy of the data」。
+    </p>
+    <p>另一个实用方法 <code>query()</code>，官方称之为「allows selection using an expression」：</p>
+    <pre><code># 普通写法
+df[(df['a'] &lt; df['b']) &amp; (df['b'] &lt; df['c'])]
+
+# query 写法：不用重复写 df['...']，而且支持连续比较
+df.query('a &lt; b and b &lt; c')
+df.query('a &lt; b &lt; c')          # 类数学写法
+
+# 特殊用法：in / not in
+df.query('a in b')               # 官方说等价于 df[df['a'].isin(df['b'])]
+df.query('a not in b')</code></pre>
+    <p>官方有一条关于优先级的 Note 要注意：</p>
+    <blockquote>
+      If the name of your index overlaps with a column name, <strong>the column name is given precedence</strong>.
+      <br>
+      （用特殊标识符 <code>index</code> 访问索引，如 <code>df.query('index &gt; 2')</code>）
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <p>以及官方的性能说明，很值得记住：</p>
+    <blockquote>
+      <code>DataFrame.query()</code> using <code>numexpr</code> is slightly faster than Python for large frames.
+      You will only see the performance benefits of using the <code>numexpr</code> engine with <code>DataFrame.query()</code>
+      <strong>if your frame has more than approximately 100,000 rows.</strong>
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+    <p>
+      也就是说：<strong>不到 10 万行，<code>query()</code> 的性能优势不明显，用它主要是为了好读。</strong>
+      别为了性能而用，为了可读性而用。
+    </p>
+
+    <h3>4.7 关键机制五：缺失值——NaN、NA 与 dtype 变化</h3>
+    <p>官方开头就说明了 pandas 用「不同的哨兵值」表示缺失，取决于数据类型：</p>
+    <blockquote>
+      pandas uses different sentinel values to represent a missing (also referred to as NA) depending on the data type.
+      <ul>
+        <li><code>numpy.nan</code> for NumPy data types. <strong>The disadvantage of using NumPy data types is that the original data type will be coerced to <code>np.float64</code> or <code>object</code>.</strong></li>
+        <li><code>NaT</code> for NumPy <code>np.datetime64</code>, <code>np.timedelta64</code>, and <code>PeriodDtype</code>.</li>
+        <li><code>NA</code> for <code>StringDtype</code>, <code>Int64Dtype</code> (and other bit widths), <code>Float64Dtype</code> (and other bit widths), <code>BooleanDtype</code> and <code>ArrowDtype</code>. <strong>These types will maintain the original data type of the data.</strong></li>
+      </ul>
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <p>官方给的第一个例子就点出了那个最经典的困惑：</p>
+    <pre><code>&gt;&gt;&gt; pd.Series([1, 2], dtype=np.int64).reindex([0, 1, 2])
+0    1.0
+1    2.0
+2    NaN
+dtype: float64       ← 整数列变成 float 了！</code></pre>
+    <p>
+      <strong>为什么会变成 float？</strong>因为 <code>NaN</code> 本身是浮点数，整数类型里没有地方放它。
+      所以一旦整数列里出现缺失值，整列被迫升级成 <code>float64</code>。
+      布尔列也一样，会变成 <code>object</code>：
+    </p>
+    <pre><code>&gt;&gt;&gt; pd.Series([True, False], dtype=np.bool_).reindex([0, 1, 2])
+0     True
+1    False
+2      NaN
+dtype: object       ← 布尔列变成 object 了</code></pre>
+    <p>如果不想让类型被破坏，就要用「可空类型」（nullable dtype，注意首字母大写）：</p>
+    <pre><code>&gt;&gt;&gt; pd.Series([1, 2], dtype="Int64").reindex([0, 1, 2])
+0       1
+1       2
+2    &lt;NA&gt;
+dtype: Int64        ← 保持整数类型！
+
+&gt;&gt;&gt; pd.Series([True, False], dtype="boolean[pyarrow]").reindex([0, 1, 2])
+0     True
+1    False
+2     &lt;NA&gt;
+dtype: bool[pyarrow]   ← 保持布尔类型！</code></pre>
+    <p>
+      注意大写的 <code>"Int64"</code> 和小写的 <code>np.int64</code> 是<strong>两种不同的东西</strong>。
+      大写版本支持 <code>&lt;NA&gt;</code>。
+    </p>
+    <p>判断缺失值用 <code>isna()</code> / <code>notna()</code>：</p>
+    <pre><code>&gt;&gt;&gt; ser = pd.Series([pd.Timestamp("2020-01-01"), pd.NaT])
+&gt;&gt;&gt; pd.isna(ser)
+0    False
+1     True
+dtype: bool</code></pre>
+    <p>官方还有一条 Note：<strong>「<code>isna()</code> or <code>notna()</code> will also consider <code>None</code> a missing value.」</strong></p>
+    <p>接下来是最重要的一个 Warning：</p>
+    <blockquote class="warn">
+      Equality comparisons between <code>np.nan</code>, <code>NaT</code>, and <code>NA</code> <strong>do not act like <code>None</code></strong>
+      <pre><code>&gt;&gt;&gt; None == None
+True
+&gt;&gt;&gt; np.nan == np.nan
+False
+&gt;&gt;&gt; pd.NaT == pd.NaT
+False
+&gt;&gt;&gt; pd.NA == pd.NA
+&lt;NA&gt;</code></pre>
+      Therefore, an equality comparison between a <code>DataFrame</code> or <code>Series</code> with one of these missing values
+      does <strong>not</strong> provide the same information as <code>isna()</code> or <code>notna()</code>.
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <pre><code># ❌ 用 == 判断缺失值，结果全是 False 或 NA
+df[df['列'] == np.nan]        # 永远得不到想要的结果
+df[df['列'] == None]          # 也一样
+
+# ✅ 用 isna / notna
+df[df['列'].isna()]
+df[df['列'].notna()]
+df.dropna(subset=['列'])</code></pre>
+    <p>关于 <code>NA</code> 的传播行为，官方有一段和 <code>np.nan</code> 的对比：</p>
+    <blockquote>
+      In general, missing values <em>propagate</em> in operations involving <code>NA</code>.
+      When one of the operands is unknown, the outcome of the operation is also unknown.
+      <pre><code>&gt;&gt;&gt; pd.NA + 1
+&lt;NA&gt;
+&gt;&gt;&gt; "a" * pd.NA
+&lt;NA&gt;</code></pre>
+      In equality and comparison operations, <code>NA</code> also propagates.
+      <strong>This deviates from the behaviour of <code>np.nan</code>, where comparisons with <code>np.nan</code> always return <code>False</code>.</strong>
+      <pre><code>&gt;&gt;&gt; pd.NA == 1
+&lt;NA&gt;
+&gt;&gt;&gt; pd.NA &lt; 2.5
+&lt;NA&gt;</code></pre>
+      To check if a value is equal to <code>NA</code>, use <code>isna()</code>
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <p>也有几个「即使有 NA 结果也确定」的特殊情况（官方示例）：</p>
+    <pre><code>&gt;&gt;&gt; pd.NA ** 0
+1
+&gt;&gt;&gt; 1 ** pd.NA
+1</code></pre>
+    <p>以及一条关于聚合的重要 Note：</p>
+    <blockquote>
+      An exception on this basic propagation rule are <em>reductions</em> (such as the mean or the minimum),
+      where <strong>pandas defaults to skipping missing values</strong>.
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <pre><code>s = pd.Series([1.0, np.nan, 3.0])
+s.mean()      # 2.0，NaN 被跳过（注意：这和 NumPy 的 np.mean 行为不同！）
+s.sum()       # 4.0
+
+# 想让它不跳过，用 skipna=False
+s.sum(skipna=False)   # nan</code></pre>
+    <p><strong>这一点非常重要：pandas 的 <code>mean()</code> 默认会跳过 <code>NaN</code>，而 NumPy 的 <code>np.mean()</code> 会得到 <code>nan</code>。</strong>
+    所以在 pandas 里你通常不需要 <code>nanmean</code>。</p>
+    <p>官方对「求和/求积时缺失值当什么」的说明也很实用：</p>
+    <blockquote>
+      When summing data, NA values or empty data will be treated as zero.
+      <pre><code>&gt;&gt;&gt; pd.Series([np.nan]).sum()
+np.float64(0.0)
+&gt;&gt;&gt; pd.Series([], dtype="float64").sum()
+np.float64(0.0)</code></pre>
+      When taking the product, NA values or empty data will be treated as 1.
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <p>以及累积函数的默认行为：</p>
+    <blockquote>
+      Cumulative methods like <code>cumsum()</code> and <code>cumprod()</code> ignore NA values by default,
+      but <strong>preserve them</strong> in the resulting array.
+      To override this behaviour and include NA values in the calculation, use <code>skipna=False</code>.
+      <pre><code>&gt;&gt;&gt; ser = pd.Series([1, np.nan, 3, np.nan])
+&gt;&gt;&gt; ser.cumsum()
+0    1.0
+1    NaN
+2    4.0      ← 3 累加上去的 1，中间的 NaN 被跳过但位置上保留
+3    NaN
+&gt;&gt;&gt; ser.cumsum(skipna=False)
+0    1.0
+1    NaN
+2    NaN      ← 一旦遇到 NaN，后面全是 NaN
+3    NaN</code></pre>
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+
+    <h3>4.8 关键机制六：dropna / fillna</h3>
+    <p>官方对 <code>dropna()</code> 的说明很简洁：「<code>dropna()</code> drops rows or columns with missing data.」</p>
+    <pre><code>&gt;&gt;&gt; df = pd.DataFrame([[np.nan, 1, 2], [1, 2, np.nan], [1, 2, 3]])
+&gt;&gt;&gt; df
+     0  1    2
+0  NaN  1  2.0
+1  1.0  2  NaN
+2  1.0  2  3.0
+
+&gt;&gt;&gt; df.dropna()          # 默认丢掉任何含 NaN 的行
+     0  1    2
+2  1.0  2  3.0
+
+&gt;&gt;&gt; df.dropna(axis=1)     # 按列丢
+   1
+0  1
+1  2
+2  2</code></pre>
+    <p><code>dropna()</code> 的常用参数（本次来源只展示了 <code>axis</code>，其余为通用 API 用法）：</p>
+    <table>
+      <thead>
+        <tr><th>参数</th><th>作用</th><th>典型场景</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>axis=0</code>（默认）</td><td>丢行</td><td>丢掉有缺失的记录</td></tr>
+        <tr><td><code>axis=1</code></td><td>丢列</td><td>丢掉缺失太多的字段</td></tr>
+        <tr><td><code>how='any'</code>（默认）</td><td>只要有一个缺失就丢</td><td>严格清洗</td></tr>
+        <tr><td><code>how='all'</code></td><td>全部缺失才丢</td><td>只清理完全空白的行</td></tr>
+        <tr><td><code>subset=['列A']</code></td><td>只看这几列有没有缺失</td><td>「标题为空就丢掉」——最常用</td></tr>
+        <tr><td><code>thresh=n</code></td><td>非缺失值少于 n 个就丢</td><td>要求「至少填了 3 个字段」</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      实务提醒：<code>dropna()</code> 会<strong>静默删掉数据</strong>。
+      新闻数据里，缺失往往是有意义的（「这条记录字段没填」可能本身就是发现）。
+      所以标准做法是：<strong>先 <code>df.isna().sum()</code> 看每列缺多少，再决定怎么处理，并在方法说明里写清「因缺失删除了 N 条」。</strong>
+      这既是数据质量要求，也是新闻的可核查性要求。
+    </blockquote>
+    <p><code>fillna()</code> 的官方定义是：</p>
+    <blockquote>
+      <code>fillna()</code> replaces NA values with non-NA data.
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <pre><code>&gt;&gt;&gt; df.fillna(0)         # 用标量填充
+    np  arrow
+0  1.0    1.0
+1  0.0    0.0
+2  0.0    0.0
+3  2.0    2.0</code></pre>
+    <p>官方对「object 类型下填充值的选择」有一段说明，很细致：</p>
+    <blockquote>
+      When the data has object dtype, you can control what type of NA values are present.
+      <pre><code>&gt;&gt;&gt; df = pd.DataFrame({"a": [pd.NA, np.nan, None]}, dtype=object)
+&gt;&gt;&gt; df.fillna(None)      → 全是 None
+&gt;&gt;&gt; df.fillna(np.nan)    → 全是 NaN
+&gt;&gt;&gt; df.fillna(pd.NA)     → 全是 &lt;NA&gt;</code></pre>
+      However when the dtype is not object, these will all be replaced with the proper NA value for the dtype.
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <p>前向/后向填充（官方原文用词是「Fill gaps forward or backward」）：</p>
+    <pre><code>&gt;&gt;&gt; df.ffill()      # 用前一个有效值填（forward fill）
+    np  arrow
+0  1.0    1.0
+1  1.0    1.0
+2  1.0    1.0
+3  2.0    2.0
+
+&gt;&gt;&gt; df.bfill()      # 用后一个有效值填（backward fill）
+    np  arrow
+0  1.0    1.0
+1  2.0    2.0
+2  2.0    2.0
+3  2.0    2.0
+
+&gt;&gt;&gt; df.ffill(limit=1)    # 最多连续填 1 个
+    np  arrow
+0  1.0    1.0
+1  1.0    1.0
+2  NaN   &lt;NA&gt;
+3  2.0    2.0</code></pre>
+    <p><code>ffill()</code> 在新闻数据里特别常用——比如「日期只在第一行填了，下面几行空着但属于同一天」：</p>
+    <pre><code># 原始：日期列只填一次
+#   日期        标题
+#   2026-03-01  某市启动改造
+#   NaN         配套方案公布
+#   NaN         居民座谈会召开
+#   2026-03-02  第二个议题
+
+df['日期'] = df['日期'].ffill()     # 向下补全
+# 这就是官方所说的「Fill gaps forward」</code></pre>
+    <p>官方还提到可以用「对齐的 Series 或 DataFrame」来填充：</p>
+    <blockquote>
+      NA values can be replaced with corresponding value from a <code>Series</code> or <code>DataFrame</code>
+      where the index and column aligns between the original object and the filled object.
+      <pre><code>&gt;&gt;&gt; dff.fillna(dff.mean())    # 用各列自己的均值填</code></pre>
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <p>以及一个等价写法：</p>
+    <blockquote>
+      <code>DataFrame.where()</code> can also be used to fill NA values. Same result as above.
+      <pre><code>&gt;&gt;&gt; dff.where(pd.notna(dff), dff.mean(), axis="columns")</code></pre>
+      <span class="meta">——引自 pandas 官方文档《Working with missing data》</span>
+    </blockquote>
+    <p>官方还有一条关于 Index 里放缺失值的 Important 提醒：</p>
+    <blockquote class="warn">
+      Even though <code>Index</code> can hold missing values (<code>NaN</code>),
+      <strong>it should be avoided if you do not want any unexpected results</strong>.
+      For example, some operations exclude missing values implicitly.
+      <span class="meta">——引自 pandas 官方文档《Indexing and selecting data》</span>
+    </blockquote>
+
+    <h3>4.9 关键机制七：文本筛选与 str.contains</h3>
+    <p>
+      <code>Series.str</code> 是 pandas 给整列字符串做向量化操作的接口，它把上一节学的正则也用上了。
+      但这里有一个 pandas 特有的坑，和缺失值直接相关。
+    </p>
+    <pre><code>import pandas as pd
+
+df = pd.DataFrame({
+    "标题": ["某市启动老旧小区改造", "垃圾分类新规实施", None, "地铁新线开通"],
+    "来源": ["日报", "晚报", "日报", "电视台"],
+})
+
+# ❌ 默认 na 参数会保留 NaN，导致结果是 object 而不是 bool
+mask = df["标题"].str.contains("改造")
+print(mask)
+# 0     True
+# 1    False
+# 2      NaN      ← 缺失值位置是 NaN，不是 False！
+# 3    False
+# Name: 标题, dtype: object      ← 注意 dtype 不是 bool
+
+# ✅ 明确指定 na=False：缺失值位置当成 False
+mask = df["标题"].str.contains("改造", na=False)
+print(mask.dtype)    # bool
+print(df[mask])
+
+# ✅ 用正则（记得 r 前缀）
+df[df["标题"].str.contains(r"新规|新线", na=False)]
+
+# ✅ 大小写不敏感
+df[df["标题"].str.contains("ABC", case=False, na=False)]</code></pre>
+    <blockquote class="warn">
+      <strong>这是 pandas 新手最容易被卡住的一处：</strong>只要列里有缺失值，
+      任何 <code>.str.xxx()</code> 的结果都会带上 <code>NaN</code>，dtype 变成 <code>object</code>，
+      于是筛选时行为不符预期。<strong>解法就是统一加 <code>na=False</code>。</strong>
+    </blockquote>
+    <p>其他常用的 <code>.str</code> 方法：</p>
+    <table>
+      <thead>
+        <tr><th>方法</th><th>作用</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>.str.contains(pat, na=False)</code></td><td>是否包含某模式</td><td>支持正则，返回布尔</td></tr>
+        <tr><td><code>.str.startswith(...)</code> / <code>.str.endswith(...)</code></td><td>前缀 / 后缀判断</td><td>同样要 <code>na=False</code></td></tr>
+        <tr><td><code>.str.len()</code></td><td>长度</td><td>统计标题字数</td></tr>
+        <tr><td><code>.str.strip()</code></td><td>去首尾空白</td><td>清洗必备</td></tr>
+        <tr><td><code>.str.replace(a, b)</code></td><td>替换</td><td>注意默认按正则解释模式</td></tr>
+        <tr><td><code>.str.split(pat, expand=True)</code></td><td>切分</td><td><code>expand=True</code> 拆成多列</td></tr>
+        <tr><td><code>.str.extract(r"(\d{4})年")</code></td><td>提取分组</td><td>直接接上一节的正则</td></tr>
+      </tbody>
+    </table>
+    <p>
+      顺带一个高频需求：<strong>按关键词分组统计</strong>，做法是把上一个概念（正则）和这一节结合起来：
+    </p>
+    <pre><code>keywords = ["改造", "环保", "交通", "医疗"]
+
+for w in keywords:
+    n = df["标题"].str.contains(w, na=False).sum()
+    print(f"{w}: {n} 条")
+
+# 也可以一次性建成新列
+df["命中词"] = df["标题"].str.extract(rf"({'|'.join(keywords)})", expand=False)</code></pre>
+
+    <h3>4.10 关键机制八：读写 CSV 与 index=False</h3>
+    <p>
+      这一节把第 9 份（文件读写）学的内容接到 pandas 上。pandas 让读写变得极简，但有几个固定要写的参数。
+    </p>
+    <pre><code>import pandas as pd
+
+# 读取：记得 encoding（第 9 份讲过，Excel 存出来的用 utf-8-sig）
+df = pd.read_csv("线索表.csv", encoding="utf-8-sig")
+
+# 常见额外参数
+df = pd.read_csv(
+    "线索表.csv",
+    encoding="utf-8-sig",
+    usecols=["标题", "来源", "日期"],       # 只读需要的列，省内存
+    dtype={"标题": "string"},             # 指定 dtype 防止推断错误
+    parse_dates=["日期"],                 # 直接解析成日期类型
+    na_values=["", "无", "暂无", "N/A"],   # 哪些字符串算缺失
+    nrows=100,                            # 只读前 100 行（先看看数据长什么样）
+)
+
+# 写出：最常忘的是 index=False
+df.to_csv("结果.csv", index=False, encoding="utf-8-sig")
+
+# ❌ 不写 index=False：导出的 CSV 会多出一列没有名字的行号
+#    ,标题,来源,日期
+#    0,某市启动改造,日报,2026-03-01
+
+# ✅ 写了 index=False：干净
+#    标题,来源,日期
+#    某市启动改造,日报,2026-03-01</code></pre>
+    <blockquote class="ok">
+      两个固定组合，背下来：
+      <br>· <strong>读别人给的表</strong>：<code>encoding="utf-8-sig"</code>（Excel 另存的 CSV 常带 BOM）
+      <br>· <strong>写给别人看的表</strong>：<code>index=False, encoding="utf-8-sig"</code>（不要行号列，且 Excel 打开不乱码）
+      <br>这两条来自第 9 份的编码知识 + pandas 的 <code>index</code> 参数，组合起来能解决交付环节 90% 的问题。
+    </blockquote>
+    <p>其他常用 IO 函数：</p>
+    <table>
+      <thead>
+        <tr><th>函数</th><th>用途</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>pd.read_excel()</code> / <code>df.to_excel()</code></td><td>读写 xlsx（需要 <code>openpyxl</code>）</td></tr>
+        <tr><td><code>pd.read_json()</code> / <code>df.to_json()</code></td><td>读写 JSON</td></tr>
+        <tr><td><code>df.to_markdown()</code></td><td>输出 Markdown 表格（写报告很方便）</td></tr>
+        <tr><td><code>pd.read_html()</code></td><td>直接读网页里的 <code>&lt;table&gt;</code>（比正则解析 HTML 靠谱得多）</td></tr>
+      </tbody>
+    </table>
+    <p>
+      最后一条值得单独说：<strong><code>pd.read_html()</code> 是「不要用正则解析 HTML」的一个具体替代方案。</strong>
+      它底层用的是专业 HTML 解析器，比第 11 份里我们警告过的正则做法可靠得多。
+    </p>
+
+    <h3>4.11 可运行代码：完整对错对比</h3>
+
+    <p><strong>坑 1：链式赋值（CoW 下彻底失效）</strong></p>
+    <pre><code>df = pd.DataFrame({"点赞": [1, 200, 50, 300], "来源": ["微博", "微博", "抖音", "抖音"]})
+
+# ❌ 链式赋值：先取列，再用条件索引赋值
+df["点赞"][df["来源"] == "微博"] = 0
+# 抛 ChainedAssignmentError，而且 df 没变
+
+# ✅ 用 loc 一步到位：行条件 + 列名 + 值
+df.loc[df["来源"] == "微博", "点赞"] = 0
+print(df)
+#    点赞  来源
+# 0     0  微博
+# 1     0  微博
+# 2    50  抖音
+# 3   300  抖音</code></pre>
+
+    <p><strong>坑 2：对取出来的列用 inplace</strong></p>
+    <pre><code>df = pd.DataFrame({"来源": ["微博", "微博", "抖音"]})
+
+# ❌ 取出来改，不会传回原表
+df["来源"].replace("微博", "新浪微博", inplace=True)
+print(df["来源"].tolist())    # ['微博', '微博', '抖音']   没变！
+
+# ✅ 方式一：在整表上操作
+df = pd.DataFrame({"来源": ["微博", "微博", "抖音"]})
+df.replace({"来源": {"微博": "新浪微博"}}, inplace=True)
+
+# ✅ 方式二（官方也更推荐）：重新赋值
+df = pd.DataFrame({"来源": ["微博", "微博", "抖音"]})
+df["来源"] = df["来源"].replace("微博", "新浪微博")
+print(df["来源"].tolist())    # ['新浪微博', '新浪微博', '抖音']</code></pre>
+
+    <p><strong>坑 3：布尔筛选漏括号</strong></p>
+    <pre><code>df = pd.DataFrame({"点赞": [1, 200, 50, 300], "回复": [0, 10, 2, 20]})
+
+# ❌ 漏括号：Python 会按运算符优先级解析，结果完全错
+df[df["点赞"] &gt; 10 &amp; df["回复"] &lt; 15]
+
+# ✅ 每个条件加括号
+df[(df["点赞"] &gt; 10) &amp; (df["回复"] &lt; 15)]
+
+# ❌ 用 and：直接报 ValueError
+# df[(df["点赞"] &gt; 10) and (df["回复"] &lt; 15)]
+
+# ✅ 或 / 非
+df[(df["点赞"] &gt; 10) | (df["回复"] &gt; 15)]
+df[~(df["点赞"] &gt; 10)]</code></pre>
+
+    <p><strong>坑 4：用 == 判断缺失值</strong></p>
+    <pre><code>df = pd.DataFrame({"标题": ["A", None, "C"], "点赞": [1.0, np.nan, 3.0]})
+
+# ❌ 永远筛不出东西
+df[df["点赞"] == np.nan]        # 空
+df[df["标题"] == None]          # 空
+
+# ✅ 用 isna / notna
+df[df["点赞"].isna()]
+df[df["标题"].notna()]
+df.dropna(subset=["标题"])
+
+# ✅ 看一眼各列缺失情况（清洗前必做）
+print(df.isna().sum())</code></pre>
+
+    <p><strong>坑 5：str 方法遇到缺失值</strong></p>
+    <pre><code>df = pd.DataFrame({"标题": ["某市启动改造", None, "地铁新线开通"]})
+
+# ❌ 不写 na=False：结果是 object，混着 NaN
+m = df["标题"].str.contains("改造")
+print(m.dtype)             # object
+
+# ✅ 统一写 na=False
+m = df["标题"].str.contains("改造", na=False)
+print(m.dtype)             # bool
+print(df[m])
+#           标题
+# 0  某市启动改造</code></pre>
+
+    <p><strong>坑 6：loc 赋值会按列名对齐</strong></p>
+    <pre><code>df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+
+# ❌ 想交换两列，但 loc 先按列名对齐，等于没换
+df.loc[:, ["B", "A"]] = df[["A", "B"]]
+print(df)
+#    A  B
+# 0  1  3     没交换！
+# 1  2  4
+
+# ✅ 用 to_numpy() 去掉标签，只按位置盖
+df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+df.loc[:, ["B", "A"]] = df[["A", "B"]].to_numpy()
+print(df)
+#    A  B
+# 0  3  1     换过来了
+# 1  4  2</code></pre>
+
+    <p><strong>坑 7：用属性访问创建新列</strong></p>
+    <pre><code>df = pd.DataFrame({"one": [1.0, 2.0, 3.0]})
+
+# ❌ 不会创建列，只创建了一个 Python 属性，并抛 UserWarning
+df.two = [4, 5, 6]
+print(df.columns.tolist())    # ['one']
+
+# ✅ 用中括号
+df["two"] = [4, 5, 6]
+print(df.columns.tolist())    # ['one', 'two']</code></pre>
+
+    <p><strong>坑 8：to_csv 忘了 index=False</strong></p>
+    <pre><code>df = pd.DataFrame({"标题": ["A", "B"], "来源": ["日报", "晚报"]})
+
+# ❌ 多出一列无名行号
+df.to_csv("bad.csv", encoding="utf-8-sig")
+# bad.csv 内容：
+#   ,标题,来源
+#   0,A,日报
+#   1,B,晚报
+
+# ✅
+df.to_csv("good.csv", index=False, encoding="utf-8-sig")
+# good.csv 内容：
+#   标题,来源
+#   A,日报
+#   B,晚报</code></pre>
+
+    <p><strong>坑 9：loc vs iloc 用错</strong></p>
+    <pre><code>df = pd.DataFrame({"点赞": [10, 20, 30, 40]}, index=[100, 200, 300, 400])
+
+# ❌ 想取「第 1 行」，但 loc 找的是「标签叫 1 的行」
+# df.loc[1]        # KeyError: 1
+
+# ✅ 按位置取用 iloc
+print(df.iloc[1])       # 点赞 20，这是第 2 行
+
+# ✅ 按标签取用 loc
+print(df.loc[200])      # 点赞 20
+
+# 记忆：loc → Label（都是 L 开头）；iloc → integer position
+
+# ⚠️ 切片语义也不同
+print(df.loc[200:300])      # 含 300，2 行
+print(df.iloc[1:3])         # 不含 3，2 行（位置 1、2）</code></pre>
+
+    <p><strong>坑 10：整数列因缺失值变成浮点</strong></p>
+    <pre><code>s = pd.Series([1, 2, 3], dtype="int64")
+
+# ❌ 插入缺失值后 dtype 变成 float64
+s2 = s.reindex([0, 1, 2, 3])
+print(s2.dtype)         # float64
+print(s2.tolist())      # [1.0, 2.0, 3.0, nan]
+
+# ✅ 需要保持整数类型就用可空整数类型（大写 I）
+s3 = pd.Series([1, 2, 3], dtype="Int64").reindex([0, 1, 2, 3])
+print(s3.dtype)         # Int64
+print(s3.tolist())      # [1, 2, 3, &lt;NA&gt;]
+
+# 用 .sum() 看差异
+print(s2.sum())         # 6.0
+print(s3.sum())         # 6</code></pre>
+    <blockquote class="warn">
+      为什么这件事重要？因为「用户 ID」「条数」这类字段在业务上必须是整数，
+      一旦被 NaN 变成 <code>1.0</code> <code>2.0</code>，在输出报告、写进数据库、做键值匹配时都会出问题
+      （<code>"1" != "1.0"</code>）。<strong>发现整数列 dtype 变成 float，第一反应就该是「这一列有缺失值」。</strong>
+    </blockquote>
+  </section>
+
+  <section id="s5">
+    <h2>5. 应用场景（新闻传播学）</h2>
+
+    <h3>场景一：把三家平台导出的评论数据清理成统一格式</h3>
+    <p>
+      真实场景：你要做一篇「三个平台评论氛围对比」的报道。
+      但手上拿到的三份 CSV 出自三个平台，各有各的毛病：
+    </p>
+    <ul>
+      <li>微博导出的：「来源」字段是空的（意思就是微博本身），日期格式是纯数字。</li>
+      <li>抖音导出的：缺赞数的填了 <code>"-"</code>，标题列里有 <code>"无"</code>。</li>
+      <li>微信导出的：Excel 另存的，带 BOM，列名前面有看不见的 <code>\ufeff</code>。</li>
+    </ul>
+    <p>这份清理工作要把第 9 份（编码）、第 11 份（正则）和这一节的内容全部用上。</p>
+    <pre><code>import pandas as pd
+import numpy as np
+
+# ---------- 1) 读取：编码 + 缺失值约定 ----------
+def read_platform(path, platform):
+    """统一读入，把各平台的脏字符串都映射成 NA。"""
+    df = pd.read_csv(
+        path,
+        encoding="utf-8-sig",          # Excel 另存的用这个，带不带 BOM 都能读
+        na_values=["", "-", "无", "暂无", "N/A", "null"],   # 各平台占位符统一成 NA
+        dtype={"内容": "string"},       # 明确指定文本类型
+    )
+    # ✅ 关键一步：验证列名有没有 BOM 残留（第 9 份讲过）
+    suspicious_cols = [c for c in df.columns if c.startswith("\ufeff")]
+    if suspicious_cols:
+        print(f"[警告] {platform} 列名有 BOM：{suspicious_cols}")
+        df.columns = [c.lstrip("\ufeff") for c in df.columns]
+
+    df["平台"] = platform
+    print(f"{platform}: 读入 {len(df)} 条")
+    return df
+
+weibo = read_platform("微博.csv", "微博")
+douyin = read_platform("抖音.csv", "抖音")
+wechat = read_platform("微信.csv", "微信")
+
+
+# ---------- 2) 合并前先对齐列 ----------
+# 平台的列名不统一，需要重命名成同一套
+douyin = douyin.rename(columns={"comment": "内容", "like_count": "赞数", "create_time": "日期"})
+wechat = wechat.rename(columns={"留言": "内容", "点赞": "赞数", "时间": "日期"})
+
+needed_cols = ["平台", "内容", "赞数", "日期"]
+# ✅ reindex 只取需要的列（axis=1 按列）
+weibo = weibo.reindex(columns=needed_cols)
+douyin = douyin.reindex(columns=needed_cols)
+wechat = wechat.reindex(columns=needed_cols)
+
+merged = pd.concat([weibo, douyin, wechat], ignore_index=True)
+print(f"\n合并后：{len(merged)} 条")</code></pre>
+    <pre><code># ---------- 3) 清理缺失值：先诊断，再处理 ----------
+print("--- 各列缺失情况 ---")
+missing_counts = merged.isna().sum()
+missing_ratios = merged.isna().mean()
+for col in merged.columns:
+    print(f"  {col}: {missing_counts[col]} 条缺失（{missing_ratios[col]:.1%}）")
+
+# ✅ 处理策略要分开：不同列不能一刀切
+before = len(merged)
+merged = merged.dropna(subset=["内容"])          # 内容为空的丢掉
+print(f"\n因内容为空删除 {before - len(merged)} 条")
+
+# 日期：先尝试前向填充（官方所说的「Fill gaps forward」）
+merged["日期"] = merged["日期"].ffill()
+# 再处理开头就没有日期的
+merged = merged.dropna(subset=["日期"])
+
+# 赞数：用各平台自己的中位数填（比用整体均值更合理）
+merged["赞数"] = merged.groupby("平台")["赞数"].transform(
+    lambda s: s.fillna(s.median())
+)
+
+print(f"清理后剩余缺失单元格：{merged.isna().sum().sum()}")
+
+
+# ---------- 4) 类型修正 ----------
+print(f"\n赞数 dtype：{merged['赞数'].dtype}")
+if merged["赞数"].dtype == "float64":
+    # ✅ 确认没有小数后再转（避免静默截断）
+    if (merged["赞数"] % 1 == 0).all():
+        merged["赞数"] = merged["赞数"].astype("int64")
+        print("已转为 int64")
+
+merged["日期"] = pd.to_datetime(merged["日期"], errors="coerce")
+print(f"日期 dtype：{merged['日期'].dtype}")</code></pre>
+    <pre><code># ---------- 5) 分析（用这一节和第 13 份的知识）----------
+print("\n=== 平台对比 ===")
+summary = merged.groupby("平台").agg(
+    条数=("内容", "size"),
+    赞数中位数=("赞数", "median"),
+    赞数均值=("赞数", "mean"),
+    赞数最大=("赞数", "max"),
+)
+print(summary.round(1))
+
+# ✅ 用布尔筛选找「热评」，注意括号
+hot = merged[(merged["赞数"] &gt; 100) &amp; (merged["内容"].str.len() &gt; 20)]
+print(f"\n热评（&gt;100 赞 且 &gt;20 字）：{len(hot)} 条")
+
+# ✅ str.contains 一定要 na=False
+keywords = ["改造", "环保", "交通", "医疗"]
+print("\n--- 关注词命中 ---")
+for w in keywords:
+    n = merged["内容"].str.contains(w, na=False).sum()
+    print(f"  {w}: {n} 条")
+
+# ---------- 6) 导出交付文件 ----------
+merged.to_csv("三平台评论_已清理.csv", index=False, encoding="utf-8-sig")
+print("\n已导出（Excel 双击打开不乱码）")</code></pre>
+    <p>这段代码几乎用上了这一节所有的关键点：</p>
+    <ul>
+      <li><strong>读的时候就把噪声定义清楚</strong>：<code>na_values</code> 把各平台的占位符一次性映射成 <code>NA</code>，比读进来再一条条 replace 干净得多。</li>
+      <li><strong>BOM 检查</strong>：用 <code>startswith("\ufeff")</code> 主动检查列名，不靠运气。</li>
+      <li><strong>缺失值分策略</strong>：<code>dropna(subset=["内容"])</code> 删关键字段缺失的；<code>ffill()</code> 补可推导的；<code>groupby + transform + fillna</code> 分平台填统计值。</li>
+      <li><strong>类型修正</strong>：主动检查「本来是整数、因 NaN 变成 float」的情况，并<strong>先确认没有小数再转</strong>。</li>
+      <li><strong>布尔筛选取括号、str.contains 带 na=False</strong>：这两个是高频错误点。</li>
+      <li><strong>导出带 <code>index=False, encoding="utf-8-sig"</code></strong>：直接可以发给同事用 Excel 打开。</li>
+    </ul>
+    <p>
+      还有一处值得留意：<code>transform</code> 与 <code>agg</code> 的区别。
+      <code>agg</code> 把每组压成一个数（结果变短）；
+      <code>transform</code> 保持原行数（每行填上它所属组的统计值）。
+      <strong>「填缺失值」必须用 <code>transform</code>，因为它要返回和原表一样长的一列。</strong>
+    </p>
+
+    <h3>场景二：做一份可复现的「报道影响力周报」底表</h3>
+    <p>
+      真实场景：每周要出一份周报，底表包含「每篇报道的阅读量、转发量、评论量、标题字数、是否命中本周关注议题」。
+      主任最在意的是「可复现」——同一份原始数据跑脚本能得到同一份底表，
+      而且<strong>每个数字都能解释「怎么算出来的」</strong>。
+    </p>
+    <p>这就是 pandas 相对 Excel 的核心优势，也是 CoW 时代写法最讲究的地方。</p>
+    <pre><code>import pandas as pd
+import numpy as np
+
+# 一列一列地算，每一步都写成「明确赋值」：不用 inplace，不链式赋值
+# 这样每一步都能单独打印检查，而且完全符合 CoW 规则
+
+df = pd.DataFrame({
+    "标题": ["某市启动老旧小区改造", "垃圾分类新规实施首月观察",
+             "地铁新线开通首日客流", "社区医院夜间门诊调查", None],
+    "阅读量": [12000, 8500, 25000, 6300, 9000],
+    "转发量": [120, np.nan, 800, 45, 60],
+    "评论量": [88, 40, 320, 12, np.nan],
+})
+
+# ---------- 步骤 0：清洗前先记录基线（可核查性要求）----------
+baseline = {
+    "原始条数": len(df),
+    "缺失单元格数": int(df.isna().sum().sum()),
+}
+print("清洗前基线：", baseline)
+
+# ---------- 步骤 1：丢掉标题缺失的行，并记录影响 ----------
+before = len(df)
+df = df.dropna(subset=["标题"]).copy()      # ✅ 明确 .copy()，避免后续连带
+print(f"因标题缺失删除了 {before - len(df)} 条")
+
+# ---------- 步骤 2：填充互动量缺失，用中位数并注明 ----------
+df["转发量"] = df["转发量"].fillna(df["转发量"].median())
+df["评论量"] = df["评论量"].fillna(df["评论量"].median())
+
+# ---------- 步骤 3：派生列，一列一行，都是明确赋值 ----------
+df["标题字数"] = df["标题"].str.len()
+
+# ✅ 用 loc 做条件赋值（CoW 唯一正确的写法）
+df.loc[df["标题字数"] &gt; 12, "标题长度档"] = "长标题"
+df.loc[df["标题字数"] &lt;= 12, "标题长度档"] = "短标题"
+df["标题长度档"] = df["标题长度档"].fillna("未知")    # 兜底
+
+# ✅ 派生「互动总量」
+df["互动总量"] = df["转发量"] + df["评论量"]
+
+# ✅ 派生「互动率」，注意防除零
+safe_denom = df["阅读量"].replace(0, np.nan)
+df["互动率"] = (df["互动总量"] / safe_denom).round(4)
+
+# ✅ 关注议题命中（str.contains 用 na=False）
+topics = ["改造", "环保", "交通", "医疗", "教育"]
+df["命中议题"] = df["标题"].str.extract(rf"({'|'.join(topics)})", expand=False)
+df["是否关注议题"] = df["标题"].str.contains("|".join(topics), na=False)
+
+# ✅ 是否热文：两个条件必须加括号，并且只能用 loc 赋值
+df.loc[(df["阅读量"] &gt; 10000) &amp; (df["互动率"] &gt; 0.01), "是否热文"] = "是"
+df["是否热文"] = df["是否热文"].fillna("否")
+
+# ---------- 步骤 4：输出可交付的底表 ----------
+print("\n=== 周报底表 ===")
+output_cols = ["标题", "阅读量", "转发量", "评论量", "标题字数",
+               "互动总量", "互动率", "命中议题", "是否关注议题", "是否热文"]
+print(df[output_cols].to_markdown(index=False))
+
+# ---------- 步骤 5：汇总 + 全程可追溯 ----------
+print("\n=== 汇总 ===")
+print(f"纳入报道：{len(df)} 条（原始 {baseline['原始条数']} 条）")
+print(f"命中关注议题：{df['是否关注议题'].sum()} 条")
+print(f"判定为热文：{(df['是否热文'] == '是').sum()} 条")
+print(f"互动率中位数：{df['互动率'].median():.4f}")
+
+# ---------- 步骤 6：导出 ----------
+df[output_cols].to_csv("周报底表.csv", index=False, encoding="utf-8-sig")
+
+# 顺手导出「方法与口径说明」，这是新闻工作的规范动作
+spec = pd.DataFrame({
+    "字段": ["转发量", "评论量", "互动率", "是否热文", "是否关注议题"],
+    "口径说明": [
+        "缺失值用该列中位数填充",
+        "缺失值用该列中位数填充",
+        "互动总量 ÷ 阅读量，阅读量为 0 时留空",
+        "阅读量&gt;10000 且 互动率&gt;0.01",
+        f"标题包含以下任一关键词：{'、'.join(topics)}",
+    ],
+})
+print("\n=== 口径说明 ===")
+print(spec.to_markdown(index=False))
+spec.to_csv("周报口径说明.csv", index=False, encoding="utf-8-sig")</code></pre>
+    <p>这份脚本的设计思路值得完整理解：</p>
+    <ul>
+      <li><strong>每一步都是「明确赋值 + 可打印」</strong>：<code>df["新列"] = ...</code> 或 <code>df.loc[条件, "列"] = ...</code>。
+          没有一处 <code>inplace=True</code>，没有一处链式赋值。这是 CoW 时代的推荐写法，也是最好调试的写法。</li>
+      <li><strong>删数据要记账</strong>：<code>baseline["原始条数"]</code> 和删除条数都打印出来。写进方法说明里，就是可核查性的体现。</li>
+      <li><strong>条件赋值用两次 loc 覆盖所有情况，再 fillna 兜底</strong>：比 if-elif 逻辑清楚，也不会漏掉分类。</li>
+      <li><strong>防除零</strong>：<code>.replace(0, np.nan)</code> 把 0 换成 NaN，避免 <code>inf</code> 污染。</li>
+      <li><strong><code>str.extract</code> + <code>str.contains</code></strong>：一个拿命中词，一个拿布尔标志，都要 <code>na=False</code>。</li>
+      <li><strong>主动导出「口径说明」</strong>：这不是技术要求，是新闻工作的职业要求——每个数字都要能解释怎么来的。</li>
+    </ul>
+  </section>
+
+  <section id="s6">
+    <h2>6. 概念辨析</h2>
+
+    <h3>辨析 1：<code>loc</code> vs <code>iloc</code></h3>
+    <pre><code>df = pd.DataFrame({"值": [10, 20, 30]}, index=[5, 6, 7])
+
+df.loc[6]       # 找「标签是 6」的行 → 值 20
+df.iloc[6]      # ❌ IndexError: 位置 6 越界（只有 0,1,2 三个位置）
+df.iloc[1]      # 位置 1（第 2 行）→ 值 20
+
+# 切片语义不同
+df.loc[5:7]     # 含 7，3 行（标签闭区间）
+df.iloc[0:2]    # 不含 2，2 行（同 Python）</code></pre>
+    <p>
+      官方对 <code>loc</code> 的说明：「A single label, e.g. <code>5</code> or <code>'a'</code>
+      （注意 <code>5</code> 被解释为索引的<strong>标签</strong>，不是整数位置）」；
+      对 <code>iloc</code> 的说明：「primarily integer position based (from <code>0</code> to <code>length-1</code>)」。
+      记忆口诀：<strong><code>loc</code> 的 L = Label；<code>iloc</code> 的 i = integer position。</strong>
+    </p>
+
+    <h3>辨析 2：<code>df["A"][条件] = 值</code> vs <code>df.loc[条件, "A"] = 值</code></h3>
+    <pre><code>df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+
+# ❌ 链式赋值：CoW 下抛 ChainedAssignmentError，而且不生效
+df["A"][df["B"] &gt; 5] = 100
+
+# ✅ 单次 loc 操作
+df.loc[df["B"] &gt; 5, "A"] = 100</code></pre>
+    <p>
+      官方原话：「Chained assignment references a technique where an object is updated through two subsequent indexing operations」，
+      而 CoW 下「chained assignment will consistently never work and raise a <code>ChainedAssignmentError</code> warning」。
+      原因是它要同时改视图 <code>df["foo"]</code> 和 <code>df</code>，
+      而 CoW 明确禁止「一次更新多于一个对象」。
+      <strong>记住这个替换：<code>[列][条件] = 值</code> → <code>.loc[条件, 列] = 值</code>。</strong>
+    </p>
+
+    <h3>辨析 3：<code>loc</code> 对齐 vs <code>iloc</code> 不对齐</h3>
+    <pre><code>df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+
+# loc：按列名对齐 → 想交换却等于没换
+df.loc[:, ["B", "A"]] = df[["A", "B"]]
+#   A  B
+# 0 1  3     没变
+
+# 用 to_numpy 去掉标签
+df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+df.loc[:, ["B", "A"]] = df[["A", "B"]].to_numpy()
+#   A  B
+# 0 3  1     换过来了
+
+# iloc：按位置，直接盖
+df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+df.iloc[:, [1, 0]] = df[["A", "B"]]
+# 也会换过来</code></pre>
+    <p>
+      官方两条警告是并列的：<code>loc</code>「aligns all AXES」，<code>iloc</code>「does not align AXES」。
+      <strong>这个差异不报错，但结果完全不同——所以它比报错更危险。</strong>
+      判断方法是问自己：「我是想让值按标签找到对应位置，还是想按顺序铺上去？」
+    </p>
+
+    <h3>辨析 4：筛选（改变形状）vs where（保持形状）</h3>
+    <pre><code>s = pd.Series([-1, 2, -3, 4])
+
+s[s &gt; 0]            # [2, 4]，长度 2  ← 筛选
+s.where(s &gt; 0)      # NaN, 2.0, NaN, 4.0，长度 4  ← 保持形状
+s.mask(s &gt; 0)       # -1.0, NaN, -3.0, NaN  ← where 的反操作</code></pre>
+    <p>
+      官方说明 <code>where</code> 的用途是「To guarantee that selection output has the same shape as the original data」，
+      并提到「<code>mask()</code> is the inverse boolean operation of <code>where</code>」。
+      什么时候用？<strong>当你需要结果和原表行数一致时</strong>——
+      比如要把它当成另一列参与运算，或者要塞回原表而不引起对齐问题。
+    </p>
+
+    <h3>辨析 5：<code>NaN</code> vs <code>None</code> vs <code>NaT</code> vs <code>NA</code></h3>
+    <pre><code># float 列 → NaN
+pd.Series([1.0, np.nan]).dtype          # float64
+
+# object 列 → 保留你放进去的东西
+pd.Series([1, None], dtype=object)      # 显示 None
+
+# 时间列 → NaT
+pd.Series([pd.Timestamp("2020-01-01"), pd.NaT]).dtype   # datetime64[us]
+
+# 可空整数列 → NA
+pd.Series([1, pd.NA], dtype="Int64")    # 显示 &lt;NA&gt;
+
+# 判断：统一用 isna()，它会把 None 也算进去
+# 官方 Note：「isna() or notna() will also consider None a missing value.」</code></pre>
+    <p>
+      官方的分类是：<code>numpy.nan</code> 用于 NumPy 类型（缺点是「the original data type will be coerced to <code>np.float64</code> or <code>object</code>」）；
+      <code>NaT</code> 用于时间类型；<code>NA</code> 用于可空类型（「These types will maintain the original data type of the data」）。
+      <strong>实践结论：判断一律用 <code>isna()</code>，不用关心具体是哪一个。</strong>
+    </p>
+
+    <h3>辨析 6：<code>inplace=True</code> 还该不该用</h3>
+    <pre><code>df = pd.DataFrame({"A": [1, 2, 3]})
+
+# ❌ 在 CoW 下经常失效（尤其是对取出来的列操作时）
+df["A"].replace(1, 100, inplace=True)     # 不生效
+
+# ✅ 官方推荐：不用 inplace，重新赋值
+df["A"] = df["A"].replace(1, 100)
+
+# ✅ 或者用整表形式操作
+df.replace({"A": {1: 100}}, inplace=True)</code></pre>
+    <p>
+      官方在 CoW 文档里明确给出两种改写方式，并说明「A different alternative would be to not use <code>inplace</code>」。
+      加上 CoW 的核心原则「we can only change the values of an object through modifying the object itself」，
+      实践建议很明确：<strong>默认不用 <code>inplace</code>，统一写 <code>df = df.method(...)</code> 或 <code>df["列"] = ...</code>。</strong>
+      好处是：① CoW 兼容；② 链式调用友好；③ 出错时容易回退（原始对象还在）。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7. 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：</b>为什么 <code>df["点赞"][df["来源"] == "微博"] = 0</code> 不生效了？正确写法是什么？
+      <div class="ans">
+        因为这是<strong>链式赋值</strong>——两个后续的索引操作。<code>df["点赞"]</code> 先返回一个派生对象，
+        再对它做布尔索引赋值，就变成了「一条语句要同时更新两个对象」。
+        CoW 规则明确禁止这一点，官方原话是「CoW disallows updating a DataFrame or a Series that shares data with another DataFrame or Series object inplace」，
+        并说「chained assignment will consistently never work and raise a <code>ChainedAssignmentError</code> warning」。
+        正确写法是把两次索引合并成一次 <code>loc</code>：
+        <code>df.loc[df["来源"] == "微博", "点赞"] = 0</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：</b><code>df.loc[:, ["B","A"]] = df[["A","B"]]</code> 为什么没有交换两列？
+      <div class="ans">
+        因为官方明确说「pandas aligns all AXES when setting Series and DataFrame from <code>.loc</code>」。
+        赋值前会先按<strong>列名</strong>把右边对齐到左边：右边的 <code>A</code> 列被放到左边的 <code>A</code> 列位置，
+        <code>B</code> 放到 <code>B</code> 位置，等于原样放回，所以看不出变化。
+        官方给出的解法是加 <code>.to_numpy()</code>：<code>df.loc[:, ["B","A"]] = df[["A","B"]].to_numpy()</code>，
+        这样右边没有列名只剩位置，就会按顺序盖上去。
+        对比之下 <code>iloc</code>「does not align AXES」，所以 <code>df.iloc[:, [1,0]] = df[["A","B"]]</code> 也能交换成功。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：</b>为什么布尔筛选必须写 <code>df[(df["A"] &gt; 2) &amp; (df["B"] &lt; 3)]</code>，不能写成 <code>df[df["A"] &gt; 2 &amp; df["B"] &lt; 3]</code>？
+      <div class="ans">
+        因为运算符优先级。<code>&amp;</code> 的优先级比比较运算符高，所以不加括号时
+        Python 会把 <code>df["A"] &gt; 2 &amp; df["B"] &lt; 3</code> 解析成
+        <code>df["A"] &gt; (2 &amp; df["B"]) &lt; 3</code>——这跟你想的完全不同。
+        官方原文就是拿这个表达式举例的：「by default Python will evaluate an expression such as
+        <code>df['A'] &gt; 2 &amp; df['B'] &lt; 3</code> as <code>df['A'] &gt; (2 &amp; df['B']) &lt; 3</code>」，
+        而「the desired evaluation order is <code>(df['A'] &gt; 2) &amp; (df['B'] &lt; 3)</code>」。
+        另外组合多条件必须用 <code>&amp;</code> / <code>|</code> / <code>~</code>，不能用 <code>and</code> / <code>or</code> / <code>not</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：</b>为什么不能用 <code>df[df["列"] == np.nan]</code> 找缺失值？该用什么？
+      <div class="ans">
+        因为 <code>np.nan == np.nan</code> 的结果是 <code>False</code>——官方在 Warning 里明确对比了：
+        <code>None == None</code> 是 <code>True</code>，而 <code>np.nan == np.nan</code> 是 <code>False</code>，
+        <code>pd.NaT == pd.NaT</code> 是 <code>False</code>，<code>pd.NA == pd.NA</code> 得到 <code>&lt;NA&gt;</code>。
+        所以「用等号比较缺失值」根本得不到想要的结果，永远返回空。
+        正确做法是用 <code>df[df["列"].isna()]</code> 或 <code>df.dropna(subset=["列"])</code>。
+        官方还有一条 Note：<code>isna()</code> 也会把 <code>None</code> 视为缺失值，所以它是最通用可靠的判断方法。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：</b>一个原本是 <code>int64</code> 的「条数」列，插入一个缺失值后 <code>dtype</code> 变成了 <code>float64</code>。为什么？怎么避免？
+      <div class="ans">
+        因为用的是 NumPy 类型，而 <code>NaN</code> 本身是浮点数，整数类型里没有位置存它。
+        官方对 <code>numpy.nan</code> 的说明就直接点出了这个缺点：
+        「The disadvantage of using NumPy data types is that the original data type will be coerced to <code>np.float64</code> or <code>object</code>」。
+        避免方法是改用<strong>可空类型</strong>（注意大写）：<code>pd.Series([1,2,3], dtype="Int64")</code>，
+        官方说这类类型「will maintain the original data type of the data」，缺失值会显示为 <code>&lt;NA&gt;</code> 而不是 <code>NaN</code>。
+        布尔列同理，<code>boolean[pyarrow]</code> 能保持布尔类型，而 <code>np.bool_</code> 会变成 <code>object</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：</b><code>df["标题"].str.contains("改造")</code> 在标题列有缺失值时会出现什么后果？怎么修？
+      <div class="ans">
+        缺失值位置的结果是 <code>NaN</code> 而不是 <code>False</code>，
+        所以整个结果列的 dtype 会变成 <code>object</code> 而不是 <code>bool</code>，
+        拿去做索引时行为与预期不符甚至报错。
+        修法是加 <code>na=False</code>：<code>df["标题"].str.contains("改造", na=False)</code>，
+        这样缺失值位置被当成 <code>False</code>，结果 dtype 是干净的 <code>bool</code>。
+        所有 <code>.str.xxx()</code> 方法都有这个问题，建议养成「凡是用 <code>.str</code> 就顺手写 <code>na=False</code>」的习惯。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：</b><code>to_csv()</code> 为什么一定要加 <code>index=False</code>？还有哪个参数对交付很关键？
+      <div class="ans">
+        因为 DataFrame 的行索引默认会被当成一列写出去，导出的 CSV 第一列是一个没有表头的行号：
+        <code>,标题,来源</code> / <code>0,A,日报</code>。
+        别人用 Excel 打开时会看到「多了一列没有名字的列」，导入别的系统时也会多出一个字段。
+        <code>index=False</code> 就是告诉 pandas「不要写行索引」。
+        另一个关键参数是 <code>encoding="utf-8-sig"</code>——第 9 份讲过，Excel 另存或双击打开 UTF-8 的 CSV 容易乱码，
+        加 BOM 能让 Excel 正确识别。
+        所以交付 CSV 的固定组合是：<code>df.to_csv(path, index=False, encoding="utf-8-sig")</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8. 可核查参考来源</h2>
+    <table>
+      <thead>
+        <tr><th>来源</th><th>URL</th><th>用到的内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>pandas 官方用户指南《Indexing and selecting data》</td>
+          <td><a href="https://pandas.pydata.org/docs/user_guide/indexing.html">pandas.pydata.org/docs/user_guide/indexing.html</a></td>
+          <td>索引的三条用途（metadata / data alignment / getting and setting subsets）；「For production code, we recommended that you take advantage of the optimized pandas data access methods」；<code>.loc</code> 与 <code>.iloc</code> 的定义与输入类型、<code>KeyError</code> vs <code>IndexError</code>；「<code>5</code> 被解释为标签不是整数位置」；<code>callable</code> 索引与「不能从 callable 返回元组」的 Note；<code>[]</code> 返回类型表；DataFrame 的 <code>[]</code> 切行；<code>.loc</code> 切片闭区间与「Integers are valid labels, but they refer to the label and not the position」；带 step 的 <code>.loc</code> 切片语义与 <code>s.loc[10:50:5]</code> 官方示例；<code>.loc</code> 切片在未排序/重复标签下报错的条件；<code>.iloc</code> 越界的三种处理；<strong><code>.loc</code> 赋值对齐所有轴与「This will not modify df」警告</strong>；<strong><code>.iloc</code> 不对齐与「This will modify df」警告</strong>；交换列的 <code>.to_numpy()</code> 解法；属性访问不能创建新列与 <code>UserWarning</code>；属性访问的三条限制；<strong>布尔运算 <code>|</code> <code>&amp;</code> <code>~</code> 必须加括号的完整原文与优先级解析说明</strong>；NA 在布尔数组中当作 <code>False</code>；<code>loc</code> 支持两种布尔索引而 <code>iloc</code> 只支持布尔数组；<code>where()</code> / <code>mask()</code> 保持形状与「<code>mask()</code> is the inverse boolean operation of <code>where</code>」；<code>numpy.where</code> / <code>numpy.select</code> 条件扩列；<code>query()</code> 的用法、<code>in</code>/<code>not in</code> 支持、索引与列名冲突时「column name is given precedence」、「only see the performance benefits ... if your frame has more than approximately 100,000 rows」；<code>duplicated</code>/<code>drop_duplicates</code> 的 <code>keep</code> 三种取值；<code>Index.fillna</code>；<strong>Index 含缺失值的 Important 警告</strong>；<code>reindex</code> 引入 NaN 与重复标签报错；Index 的 dtype 推断与 union 的类型提升；<code>at</code>/<code>iat</code> 快速标量访问</td>
+        </tr>
+        <tr>
+          <td>pandas 官方用户指南《Copy-on-Write (CoW)》</td>
+          <td><a href="https://pandas.pydata.org/docs/user_guide/copy_on_write.html">pandas.pydata.org/docs/user_guide/copy_on_write.html</a></td>
+          <td>「<strong>Copy-on-Write is now the default with pandas 3.0</strong>」与「Copy-on-Write is the default and only mode in pandas 3.0」；1.5.0 引入、2.0 与 2.1 的优化进度；CoW 的价值（「more predictable behavior」「won't have side-effects」「delaying copies as long as possible, the average performance and memory usage will improve」）；旧行为示例（<code>subset.iloc[0] = 100</code> 污染 <code>df</code>）与「pandas indexing behavior is tricky to understand」；CoW 后的新行为；三大用户可见变化（<strong>链式赋值永不生效</strong>、底层数组变只读、一次只更新一个对象）；<code>ChainedAssignmentError</code> 与「Chained assignment will never work」；<code>df.loc[df["bar"] &gt; 5, "foo"] = 100</code> 正解；<code>df["foo"].replace(1, 5, inplace=True)</code> 失效与两种改写方式；构造函数默认复制 NumPy 数组与 <code>copy=False</code>；CoW 的完整描述（「any DataFrame or Series derived from another in any way always behaves as a copy」「CoW disallows updating ... inplace」）；<code>reset_index</code> 的惰性复制与重新赋值给同名变量的优化；<code>to_numpy()</code> 只读与 <code>ValueError: assignment destination is read-only</code>、<code>arr.flags.writeable = True</code>（「should be used with caution」）；"Patterns to avoid" 节与「Creating multiple references keeps unnecessary references alive and thus will hurt performance with Copy-on-Write」；<code>pd.options.mode.copy_on_write = "warn"</code> 属于 pandas &lt; 3.0；CoW optimizations 与 <code>drop()</code>/<code>rename()</code> 返回视图</td>
+        </tr>
+        <tr>
+          <td>pandas 官方用户指南《Working with missing data》</td>
+          <td><a href="https://pandas.pydata.org/docs/user_guide/missing_data.html">pandas.pydata.org/docs/user_guide/missing_data.html</a></td>
+          <td>三种缺失哨兵值的分类（<code>numpy.nan</code> / <code>NaT</code> / <code>NA</code>）与各自适用类型；「The disadvantage of using NumPy data types is that the original data type will be coerced to <code>np.float64</code> or <code>object</code>」；「These types will maintain the original data type of the data」；整数列与布尔列被 <code>reindex</code> 后 dtype 变化的官方输出；<code>Int64</code> 与 <code>boolean[pyarrow]</code> 的 <code>&lt;NA&gt;</code> 示例；<code>isna()</code>/<code>notna()</code> 与「will also consider <code>None</code> a missing value」的 Note；<strong><code>np.nan == np.nan</code> 为 <code>False</code>、<code>pd.NaT == pd.NaT</code> 为 <code>False</code>、<code>pd.NA == pd.NA</code> 为 <code>&lt;NA&gt;</code> 的 Warning 与四行对比示例</strong>；<code>NA</code> 在算术与比较中的传播（含「This deviates from the behaviour of <code>np.nan</code>」）与 <code>pd.NA ** 0</code> 特例；reductions 默认跳过缺失值的 Note；<code>np.log(pd.NA)</code> 与 ufunc 的 Warning；插入缺失值时哨兵值按 dtype 选择；缺失值在算术中传播与 <code>ser1 + ser2</code> 示例；求和当 0、求积当 1；<code>cumsum()</code>/<code>cumprod()</code> 默认忽略但保留位置、<code>skipna=False</code> 的行为差异；<code>dropna()</code> 与 <code>axis=1</code> 示例；<code>fillna()</code> 的定义、标量填充、object dtype 下 <code>None</code>/<code>np.nan</code>/<code>pd.NA</code> 的选择差异、非 object dtype 下统一替换；<code>ffill()</code> / <code>bfill()</code> / <code>ffill(limit=1)</code> 示例（原文档标题「Fill gaps forward or backward」）；用对齐的 <code>dff.mean()</code> 填充与 <code>dff.where(pd.notna(dff), dff.mean(), axis="columns")</code> 等价写法</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      以上 3 条来源在撰写前均已通过 WebFetch 实际抓取页面内容，页面均返回成功。
+    </p>
+  </section>
+
+  <section id="s9">
+    <h2>9. 核查记录</h2>
+    <table>
+      <thead>
+        <tr><th>核查项</th><th>状态</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>3 条来源 URL 可访问性</td><td>✅ 已核</td><td>撰写前均实际抓取成功</td></tr>
+        <tr><td>「For production code, we recommended that you take advantage of the optimized pandas data access methods」</td><td>✅ 已核（直接引用）</td><td>《Indexing and selecting data》开头</td></tr>
+        <tr><td><code>.loc</code> / <code>.iloc</code> 的定义与报错类型</td><td>✅ 已核（直接引用）</td><td>含「<code>5</code> 被解释为标签」的说明、<code>KeyError</code> vs <code>IndexError</code></td></tr>
+        <tr><td>DataFrame 的 <code>[]</code> 切行、<code>.loc</code> 切片闭区间</td><td>✅ 已核（直接引用）</td><td>「With DataFrame, slicing inside of <code>[]</code> slices the rows」与「both the start bound AND the stop bound are included」</td></tr>
+        <tr><td>带 step 的 <code>.loc</code> 切片语义与官方示例</td><td>✅ 已核（直接引用 + 官方示例）</td><td><code>s.loc[10:50:5]</code> 输出 <code>10</code> 与 <code>35</code> 为官方原文</td></tr>
+        <tr><td><code>.iloc</code> 越界三种处理</td><td>✅ 已核（直接引用）</td><td>切片「handled gracefully」、单个越界与列表越界 → <code>IndexError</code></td></tr>
+        <tr><td><strong><code>.loc</code> 赋值对齐所有轴</strong></td><td>✅ 已核（直接引用 + 官方示例）</td><td>「This will not modify <code>df</code> because the column alignment is before value assignment」与交换列示例</td></tr>
+        <tr><td><strong><code>.iloc</code> 不对齐</strong></td><td>✅ 已核（直接引用）</td><td>「does not align AXES ... because <code>.iloc</code> operates by position」</td></tr>
+        <tr><td><code>.to_numpy()</code> 交换列的解法</td><td>✅ 已核（官方示例）</td><td><code>df.loc[:, ['B', 'A']] = df[['A', 'B']].to_numpy()</code> 为官方原文</td></tr>
+        <tr><td>属性访问不能创建新列</td><td>✅ 已核（直接引用 + 官方示例）</td><td>「creates a new attribute rather than a new column and will this raise a <code>UserWarning</code>」与 <code>df_new.two = [4,5,6]</code> 示例</td></tr>
+        <tr><td>布尔运算的括号要求</td><td>✅ 已核（直接引用）</td><td>包含「must be grouped by using parentheses」与完整的优先级解析说明原文</td></tr>
+        <tr><td><code>iloc</code> 只接受布尔数组而非布尔 Series</td><td>✅ 已核（直接引用）</td><td>「<code>df.iloc[s.values, 1]</code> is ok ... But <code>df.iloc[s, 1]</code> would raise <code>ValueError</code>」</td></tr>
+        <tr><td><code>where()</code> / <code>mask()</code> 语义与保持形状</td><td>✅ 已核（直接引用）</td><td>「To guarantee that selection output has the same shape as the original data」「<code>mask()</code> is the inverse boolean operation of <code>where</code>」</td></tr>
+        <tr><td><code>query()</code> 的用法与 10 万行性能门槛</td><td>✅ 已核（直接引用 + 官方示例）</td><td>含 <code>in</code>/<code>not in</code>、列名优先于索引、「more than approximately 100,000 rows」</td></tr>
+        <tr><td><strong>CoW 在 pandas 3.0 成为默认且唯一模式</strong></td><td>✅ 已核（直接引用）</td><td>「Copy-on-Write is now the default with pandas 3.0」「Copy-on-Write is the default and only mode in pandas 3.0」</td></tr>
+        <tr><td>CoW 的三大行为变化</td><td>✅ 已核（直接引用）</td><td>「Chained assignment will never work」「will return a read-only view」「Only one pandas object is updated at once」</td></tr>
+        <tr><td><code>ChainedAssignmentError</code> 与 <code>df.loc[cond, "col"] = val</code> 正解</td><td>✅ 已核（直接引用）</td><td>CoW 文档 "Chained Assignment" 节</td></tr>
+        <tr><td>对取出的列用 <code>inplace</code> 失效及两种改写</td><td>✅ 已核（官方示例）</td><td><code>df["foo"].replace(1, 5, inplace=True)</code> 失效与 <code>df.replace({"foo": {1: 5}}, inplace=True)</code>、<code>df["foo"] = df["foo"].replace(1, 5)</code></td></tr>
+        <tr><td><code>to_numpy()</code> 只读与 <code>assignment destination is read-only</code></td><td>✅ 已核（直接引用 + 官方示例）</td><td>含 <code>arr.flags.writeable = True</code> 方案与「should be used with caution」</td></tr>
+        <tr><td>保留多余引用会损害 CoW 性能</td><td>✅ 已核（直接引用）</td><td>「Creating multiple references keeps unnecessary references alive and thus will hurt performance with Copy-on-Write」</td></tr>
+        <tr><td><code>pd.options.mode.copy_on_write</code> 属于 pandas &lt; 3.0</td><td>✅ 已核（直接引用）</td><td>官方原文「pandas 2.2 has a warning mode <code>pd.options.mode.copy_on_write = "warn"</code>」</td></tr>
+        <tr><td>三种缺失哨兵值的分类与适用类型</td><td>✅ 已核（直接引用）</td><td>《Working with missing data》开头三条</td></tr>
+        <tr><td>整数 / 布尔列因缺失值改变 dtype</td><td>✅ 已核（官方示例输出）</td><td>官方输出的 <code>dtype: float64</code> 与 <code>dtype: object</code> 为原文</td></tr>
+        <tr><td><code>Int64</code> / <code>boolean[pyarrow]</code> 保持类型</td><td>✅ 已核（官方示例输出）</td><td>含 <code>&lt;NA&gt;</code> 的官方输出</td></tr>
+        <tr><td><strong><code>np.nan == np.nan</code> 为 <code>False</code> 的完整对比</strong></td><td>✅ 已核（直接引用）</td><td>含 <code>None == None</code>、<code>pd.NaT == pd.NaT</code>、<code>pd.NA == pd.NA</code> 四行官方输出</td></tr>
+        <tr><td><code>isna()</code> 把 <code>None</code> 也算作缺失</td><td>✅ 已核（直接引用）</td><td>官方 Note 原文</td></tr>
+        <tr><td><code>NA</code> 传播与 <code>pd.NA ** 0</code> 特例</td><td>✅ 已核（直接引用 + 官方示例）</td><td>含「This deviates from the behaviour of <code>np.nan</code>」的对比说明</td></tr>
+        <tr><td>reductions 默认跳过缺失值</td><td>✅ 已核（直接引用）</td><td>「pandas defaults to skipping missing values」的 Note</td></tr>
+        <tr><td>求和当 0、求积当 1</td><td>✅ 已核（直接引用 + 官方示例）</td><td><code>pd.Series([np.nan]).sum()</code> 为 <code>0.0</code>、<code>prod()</code> 为 <code>1.0</code></td></tr>
+        <tr><td><code>cumsum()</code> 默认忽略但保留位置、<code>skipna=False</code> 的行为</td><td>✅ 已核（官方示例输出）</td><td>两组输出均为官方原文</td></tr>
+        <tr><td><code>dropna()</code> 的 <code>axis</code> 行为与示例</td><td>✅ 已核（官方示例）</td><td>默认丢行、<code>axis=1</code> 丢列的官方输出</td></tr>
+        <tr><td><code>fillna()</code> 定义与 object / 非 object 的差异</td><td>✅ 已核（直接引用 + 官方示例）</td><td>含「replaces NA values with non-NA data」与三组 object dtype 示例</td></tr>
+        <tr><td><code>ffill()</code> / <code>bfill()</code> / <code>ffill(limit=1)</code></td><td>✅ 已核（官方示例）</td><td>三组输出均为官方原文；原文档标题为「Fill gaps forward or backward」</td></tr>
+        <tr><td>用 <code>dff.mean()</code> 填充与 <code>where(pd.notna(...))</code> 等价</td><td>✅ 已核（官方示例）</td><td>两组输出一致，官方明确说「Same result as above」</td></tr>
+        <tr><td>Index 中含缺失值的 Important 警告</td><td>✅ 已核（直接引用）</td><td>「it should be avoided if you do not want any unexpected results」</td></tr>
+        <tr><td><code>dropna()</code> 的 <code>how</code> / <code>subset</code> / <code>thresh</code> 参数</td><td>⚠ 部分核</td><td>本次抓取的缺失值页面<strong>只展示了 <code>axis</code></strong>，未列出 <code>how</code>/<code>subset</code>/<code>thresh</code> 的官方定义。文中表格里这三项的说明属通用 API 知识，未在本次来源中逐条核实，建议以 <code>DataFrame.dropna</code> API 文档为准</td></tr>
+        <tr><td><code>str.contains(na=False)</code> 与 <code>.str</code> 方法表</td><td>⚠ 未在本次来源中核到</td><td>本次抓取的三个页面<strong>均未涉及 <code>.str</code> 访问器</strong>。文中关于「不写 <code>na=False</code> 会导致 dtype 变 object」的结论来自实践（逻辑上与缺失值文档中「NA 在布尔数组中当作 False」一致，但 <code>.str.contains</code> 的具体行为未核实）。<code>.str</code> 方法表其余条目同样未核实</td></tr>
+        <tr><td><code>read_csv</code> / <code>to_csv</code> 的参数（<code>encoding</code>、<code>index=False</code>、<code>na_values</code>、<code>usecols</code> 等）</td><td>⚠ 未在本次来源中核到</td><td>本次抓取的是 indexing / CoW / missing data 三页，<strong>均不含 IO 章节</strong>。<code>encoding</code> 与 <code>index=False</code> 的说明来自实践与 pandas IO 文档，未逐条核对。<code>encoding="utf-8-sig"</code> 的技术依据可回溯到第 9 份的 <code>codecs</code> 官方文档</td></tr>
+        <tr><td><code>groupby().agg()</code> / <code>transform()</code> 的用法与区别</td><td>⚠ 未在本次来源中核到</td><td>本次来源不含 groupby 章节。文中关于 <code>transform</code> 保持原行数的说明来自通用 API 知识，未核实</td></tr>
+        <tr><td><code>to_markdown()</code> / <code>read_html()</code> / <code>pd.to_datetime</code></td><td>⚠ 非本次来源内容</td><td>属 pandas IO 与类型转换功能，本次未覆盖</td></tr>
+        <tr><td>文中第 4.11 节与第 5 节全部代码</td><td>⚠ 未实测运行</td><td>代码按 pandas 3.0 的 CoW 规则编写（无链式赋值、无对子集的 <code>inplace</code>），逻辑与 API 用法已逐处检查；但本文件生成环境<strong>未安装 pandas、未实际执行</strong>。其中 <code>groupby().transform(lambda s: s.fillna(s.median()))</code> 与 <code>str.extract(rf"({'|'.join(议题)})")</code> 两处建议优先实测</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      诚实说明：本文件的核心三块内容都来自官方文档的实际抓取，可对照原文核实：
+      <br>① <strong>索引与赋值</strong>（4.3、4.4 节）——<code>loc</code>/<code>iloc</code> 定义、对齐差异、属性访问陷阱、布尔括号要求，全部有引文与官方示例；
+      <br>② <strong>Copy-on-Write</strong>（4.5 节）——本文件引用最完整的一节，包括「pandas 3.0 默认且唯一模式」、三大行为变化、全部正误示例；
+      <br>③ <strong>缺失值</strong>（4.7、4.8 节）——哨兵值分类、<code>NaN</code> 比较的 Warning、<code>dropna</code>/<code>fillna</code>/<code>ffill</code> 的官方示例输出。
+      <br><br>
+      需要你留意三处：① <strong><code>.str</code> 访问器与 <code>read_csv</code>/<code>to_csv</code> 参数</strong>在本次三个来源中完全没有覆盖，
+      文中相关表述来自实践与第 9 份的编码知识（后者有 <code>codecs</code> 官方文档支撑）；
+      ② <code>dropna()</code> 的 <code>how</code>/<code>subset</code>/<code>thresh</code>、<code>groupby</code> 相关内容未核实；
+      ③ 第 5 节两个场景代码未在本机运行，建议你搭好环境后先跑一遍再用于正式工作。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <a href="index.html">概念目录</a> ·
+      <a href="python-learning-map.html">学习地图</a> ·
+      <a href="https://github.com/Yym113/big-data-ai">GitHub 仓库</a>
+    </p>
+    <p>生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>

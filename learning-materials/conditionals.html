@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>条件判断 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>条件判断</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 5 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      条件判断就是让程序做选择。<b>翻译成中文就是「如果……就……，否则……就……」</b>。
+    </p>
+    <pre><code>if 浏览量 &gt; 10000:
+    标记为"爆款"
+else:
+    标记为"普通稿"</code></pre>
+    <p>
+      没了。真的就这么简单。所有的复杂判断都是这几句话套起来的。
+    </p>
+    <p>
+      你需要注意的其实只有两件事：
+    </p>
+    <ol>
+      <li><b>缩进就是语法。</b>Python 用缩进表示「这几行属于 if 里面」。少一个空格、多一个空格，程序的意思就变了，甚至直接报错。</li>
+      <li><b>「真」和「假」的范围比你想象的大。</b>不只是 <code>True</code> / <code>False</code> —— <code>0</code>、空字符串 <code>""</code>、空列表 <code>[]</code>、<code>None</code> 全都被当成「假」。</li>
+    </ol>
+    <pre><code>views = 0
+if views:
+    print("有人看过")
+else:
+    print("浏览量是 0")     # ← 走这里，因为 0 是"假"
+
+titles = []
+if not titles:
+    print("一条标题都没有")   # ← 走这里，空列表是"假"</code></pre>
+    <blockquote>
+      一句话记住：<b><code>if</code> 后面不需要写 <code>== True</code>。</b>
+      你只需要问「这个东西本身算不算有」—— 空的、零的、没有的，都算没有。
+    </blockquote>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>写出带 <code>if</code> / <code>elif</code> / <code>else</code> 的多分支判断，并说清 <code>elif</code> 与连续写多个 <code>if</code> 的区别；</li>
+      <li>区分 <code>=</code> 与 <code>==</code>，看到 <code>if x = 1:</code> 能立刻指出错误；</li>
+      <li>背出「哪些值算假」，并能用这个规则写出简洁的判断（如 <code>if not titles:</code>）；</li>
+      <li>用 <code>and</code> / <code>or</code> / <code>not</code> 组合条件，并解释为什么它们返回的是操作数而不是 <code>True</code>/<code>False</code>；</li>
+      <li>使用链式比较 <code>0 &lt; x &lt; 100</code>，并说明它和 <code>0 &lt; x and x &lt; 100</code> 的区别；</li>
+      <li>用 <code>in</code> / <code>not in</code> 判断成员关系，并知道它对字典是检查键。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li><code>if</code> 语句的最小写法是什么？缩进到底有多重要？</li>
+      <li><code>elif</code> 是什么？为什么要有它，直接多写几个 <code>if</code> 不行吗？</li>
+      <li><code>=</code> 和 <code>==</code> 有什么区别？为什么写错会报 <code>SyntaxError</code>？</li>
+      <li>什么样的情况算「真」？什么样的情况算「假」？</li>
+      <li><code>and</code> / <code>or</code> 的返回值是什么？为什么 <code>0 or "默认"</code> 得到 <code>"默认"</code>？</li>
+      <li><code>not</code> 有什么用？<code>if not x:</code> 和 <code>if x == False:</code> 一样吗？</li>
+      <li>链式比较 <code>0 &lt; x &lt; 100</code> 为什么能成立？它和 <code>0 &lt; x and x &lt; 100</code> 有区别吗？</li>
+      <li><code>in</code> 怎么用？对列表、字符串、字典分别检查什么？</li>
+      <li>条件和 <code>if</code> 嵌套太深时，怎么重构才不失控？</li>
+      <li><code>is</code> 和 <code>==</code> 在条件里该怎么选？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>条件判断</b>：根据条件的真假决定执行哪一段代码。Python 里用 <code>if</code> 语句实现。
+      官方教程指出：<i>「可有零个或多个 <code>elif</code> 部分，<code>else</code> 部分也是可选的。关键字 <code>elif</code> 是 <code>else if</code> 的缩写，用于避免过多的缩进。」</i>
+    </p>
+
+    <h3>4.2 最小模型：三条分支的一套骨架</h3>
+    <pre><code>views = 12800
+
+if views &gt;= 100000:
+    level = "现象级"
+elif views &gt;= 10000:
+    level = "爆款"
+elif views &gt;= 1000:
+    level = "正常"
+else:
+    level = "冷启动"
+
+print(level)     # 爆款</code></pre>
+    <p>
+      执行顺序是<b>从上往下，第一个为真的分支执行完就跳出整个 <code>if</code> 结构</b>，
+      后面的分支<b>连条件都不会求值</b>。这一点决定了 <code>elif</code> 和多个 <code>if</code> 的本质区别（见辨析 1）。
+    </p>
+    <pre><code># 等价于官方教程里的例子
+x = 42
+if x &lt; 0:
+    print('Negative changed to zero')
+elif x == 0:
+    print('Zero')
+elif x == 1:
+    print('Single')
+else:
+    print('More')
+# More</code></pre>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><code>if</code></td><td>门口第一个保安，只检查一件事</td><td>符合就放行，不符合交给下一个</td></tr>
+        <tr><td><code>elif</code></td><td>下一个保安，前面放行了就不查了</td><td>只有前面全部不合格才轮到它</td></tr>
+        <tr><td><code>else</code></td><td>谁都不管，直接进</td><td>兜底，前面全部不合格时执行</td></tr>
+        <tr><td>缩进</td><td>「这句话属于哪个保安管的」</td><td>缩进一样才是同一层，是<b>语法</b>不是排版</td></tr>
+        <tr><td>真值规则</td><td>「有没有东西」</td><td>空的、零的、没有的 → 假</td></tr>
+        <tr><td><code>and</code></td><td>两个条件都要满足</td><td>返回第一个假值，或最后一个值</td></tr>
+        <tr><td><code>or</code></td><td>满足一个就行</td><td>返回第一个真值，或最后一个值</td></tr>
+        <tr><td>链式比较</td><td>「在 0 到 100 之间」</td><td><code>0 &lt; x &lt; 100</code>，比写两遍 <code>x</code> 清爽</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 缩进就是语法</h3>
+    <pre><code># ✅ 正确
+if views &gt; 10000:
+    print("爆款")
+    print("要重点分析")
+
+# ❌ IndentationError: expected an indented block
+if views &gt; 10000:
+print("爆款")
+
+# ❌ IndentationError: unindent does not match any outer indentation level
+if views &gt; 10000:
+    print("爆款")
+      print("要重点分析")     # 多缩进了两个空格
+
+# ⚠️ 不报错，但意思完全变了
+if views &gt; 10000:
+    print("爆款")
+print("要重点分析")          # ← 这行在 if 外面，永远会执行！</code></pre>
+    <blockquote class="warn">
+      最后那种写法<b>不报错</b>，但逻辑是错的 —— 这是最难查的一类 bug。
+      做法：编辑器设置 tab 转 4 个空格，不要混用 tab 和空格。
+      PEP 8 明确要求「缩进用 4 个空格，不要用制表符」，理由是制表符在不同环境下宽度不一致，会引起混乱。
+    </blockquote>
+
+    <h3>4.5 真值测试：哪些东西算「假」</h3>
+    <p>
+      官方文档「真值测试」一节给的默认规则是：<b>一个对象被认为是「真」的，除非它的类定义了返回 <code>False</code> 的
+      <code>__bool__()</code> 方法，或定义了返回零的 <code>__len__()</code> 方法。</b>
+    </p>
+    <p>官方列出的<b>内置假值</b>清单：</p>
+    <table>
+      <thead><tr><th>类别</th><th>具体值</th></tr></thead>
+      <tbody>
+        <tr><td>定义为假的常量</td><td><code>None</code>、<code>False</code></td></tr>
+        <tr><td>任何数值类型的零</td><td><code>0</code>、<code>0.0</code>、<code>0j</code>、<code>Decimal(0)</code>、<code>Fraction(0, 1)</code></td></tr>
+        <tr><td>空序列与空集合</td><td><code>''</code>、<code>()</code>、<code>[]</code>、<code>{}</code>、<code>set()</code>、<code>range(0)</code></td></tr>
+      </tbody>
+    </table>
+    <pre><code># 用 bool() 验证
+bool(None)      # False
+bool(0)         # False
+bool(0.0)       # False
+bool("")        # False
+bool([])        # False
+bool({})        # False
+bool(set())     # False
+
+bool("0")       # True   ← 字符串 "0" 不是空字符串，所以是真！
+bool([0])       # True   ← 列表里有一个元素，非空
+bool(-1)        # True   ← 非零即真
+bool(" ")       # True   ← 一个空格也是字符</code></pre>
+    <blockquote class="warn">
+      <b><code>bool("0")</code> 是 <code>True</code>，<code>bool("False")</code> 也是 <code>True</code>。</b>
+      从文件或输入框读到的「0」「False」「否」全都是非空字符串，全都被当成真。
+      要判断字符串表示的真假，必须先转换：<code>if value.strip().lower() in ("0", "false", "no", "否"):</code>
+    </blockquote>
+    <pre><code># 实战写法：利用真值规则
+titles = []
+if not titles:                  # 比 if len(titles) == 0: 更 Pythonic
+    print("没有数据")
+
+name = ""
+if name:                        # 有内容才处理
+    print(name)
+
+count = 0
+if count:
+    print("有计数")
+else:
+    print("计数为 0")            # ← 走这里</code></pre>
+
+    <h3>4.6 布尔运算：<code>and</code> / <code>or</code> / <code>not</code></h3>
+    <p>
+      官方文档的关键提醒：<i>「具有布尔结果的操作和内置函数，对假返回 <code>0</code> 或 <code>False</code>，
+      对真返回 <code>1</code> 或 <code>True</code> …… <b>重要例外：布尔运算 <code>or</code> 和 <code>and</code> 总是返回其操作数之一。</b>」</i>
+    </p>
+    <pre><code># and：从左到右求值，返回第一个"假"的值；全是真则返回最后一个
+0 and "x"         # 0
+"a" and ""        # ""
+"a" and "b"       # "b"
+
+# or：从左到右求值，返回第一个"真"的值；全是假则返回最后一个
+0 or "默认"        # "默认"
+"a" or "b"        # "a"
+"" or 0 or None   # None
+
+# not：永远是布尔值
+not 0             # True
+not "x"           # False</code></pre>
+    <pre><code># 常见用法一：给默认值
+src = ""
+src = src or "未标注"
+print(src)        # 未标注
+
+# 常见用法二：短路保护，避免报错
+data = []
+if data and data[0] == "x":      # data 为空时不会走到 data[0]，不会 IndexError
+    print("第一项是 x")
+
+# 如果写成 data[0] == "x" and data，空列表会先崩
+
+# 常见用法三：链式提供默认值
+name = user_input or fallback or "匿名"</code></pre>
+    <blockquote class="warn">
+      <b><code>or</code> 给默认值有坑：<code>0 or 5</code> 得到 <code>5</code>，<code>"" or "x"</code> 得到 <code>"x"</code>。</b>
+      如果 <code>0</code> 本身是有意义的合法值（比如「浏览量是 0」），用 <code>or</code> 会把它换成默认值，造成数据错误。
+      这种情况应该用 <code>x if x is not None else 默认值</code>。
+    </blockquote>
+
+    <h3>4.7 链式比较</h3>
+    <p>
+      官方原文：<i>「比较可以任意链式连接；例如 <code>x &lt; y &lt;= z</code> 等价于 <code>x &lt; y and y &lt;= z</code>，
+      <b>不同之处在于 <code>y</code> 只被求值一次</b>（但两种情况下，当发现 <code>x &lt; y</code> 为假时，<code>z</code> 都完全不会被求值）。」</i>
+    </p>
+    <pre><code>x = 50
+0 &lt; x &lt; 100          # True      等价于 0 &lt; x and x &lt; 100
+0 &lt; x &lt;= 50         # True
+0 &lt; x &gt; 100         # False     实际是 0 &lt; x and x &gt; 100
+
+# 这为什么重要：y 只求值一次，函数调用不会跑两遍
+def expensive():
+    print("算了一次")
+    return 50
+
+0 &lt; expensive() &lt; 100     # 只打印一次「算了一次」
+
+# 写成这样就会算两遍
+0 &lt; expensive() and expensive() &lt; 100</code></pre>
+    <p class="meta">
+      实际写代码时，链式比较的可读性优势更明显：<code>if 1000 &lt;= views &lt; 10000:</code> 比
+      <code>if views &gt;= 1000 and views &lt; 10000:</code> 更容易一眼看懂。
+    </p>
+
+    <h3>4.8 <code>in</code>：成员关系判断</h3>
+    <p>
+      官方说明：<i>「另外两个具有相同语法优先级的运算符 <code>in</code> 和 <code>not in</code>，
+      由<i>可迭代</i>或实现了 <code>__contains__()</code> 方法的类型所支持。」</i>
+    </p>
+    <pre><code># 字符串：子串
+"AI" in "AI 重塑新闻业"        # True
+
+# 列表：元素
+"科技日报" in ["科技日报", "新闻战线"]    # True
+12800 in [12800, 3400]                  # True
+
+# 字典：检查的是键，不是值
+news = {"标题": "AI 重塑新闻业", "来源": "科技日报"}
+"来源" in news                  # True
+"科技日报" in news              # False
+"科技日报" in news.values()     # True
+
+# 元组、集合同样支持
+2 in (1, 2, 3)                 # True
+2 in {1, 2, 3}                 # True
+
+# not in
+"z" not in "abc"               # True</code></pre>
+    <pre><code># 实战：多条件筛选新闻
+tags = ["AI", "算法"]
+title = "AI 算法推荐机制的争议"
+
+if "AI" in tags or "算法" in tags:
+    print("命中关注标签")
+
+# 判断多个字符串前缀，用元组（startswith 支持元组参数）
+url = "https://x.com/news"
+if url.startswith(("http://", "https://")):
+    print("是完整链接")
+
+# 判断取值是否在允许集合里
+SOURCE_OK = {"科技日报", "新闻战线", "法治日报"}
+src = "科技日报"
+if src in SOURCE_OK:
+    print("来源已核对")</code></pre>
+
+    <h3>4.9 <code>is</code> 与 <code>==</code> 在条件里的选择</h3>
+    <pre><code>news = None
+
+if news is None:              # ✅ 判断 None 用 is（PEP 8 推荐）
+    print("没数据")
+
+if news == None:              # ⚠️ 能跑但不推荐
+    print("没数据")
+
+# == 判断值相等，is 判断是不是同一个对象
+a = [1, 2, 3]
+b = [1, 2, 3]
+a == b        # True
+a is b        # False
+
+# 官方说明：is 和 is not 的行为无法被自定义，可应用于任意两个对象，
+# 且从不会引发异常；== 对某些对象类型（如类对象）等价于 is</code></pre>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景一：给新闻自动分级并打标签</h3>
+    <pre><code>def classify(news: dict) -&gt; str:
+    """按浏览量和来源给一条新闻分级。"""
+    views = news.get("浏览", 0)
+    src = news.get("来源", "")
+
+    # 链式比较 + 真值判断的组合
+    if not src:
+        return "数据不全"
+    if views &gt;= 100000:
+        return "现象级"
+    if 10000 &lt;= views &lt; 100000:
+        return "爆款"
+    if 1000 &lt;= views &lt; 10000:
+        return "常规"
+    return "冷启动"
+
+articles = [
+    {"标题": "AI 写稿工具上线", "浏览": 12800, "来源": "科技日报"},
+    {"标题": "算法推荐争议调查", "浏览": 210000, "来源": "新闻战线"},
+    {"标题": "某地简讯", "浏览": 320, "来源": "某地方台"},
+    {"标题": "无来源稿件", "浏览": 5000},
+]
+
+for a in articles:
+    a["级别"] = classify(a)
+    print(f'{a["标题"]:&lt;12} → {a["级别"]}')
+# AI 写稿工具上线 → 爆款
+# 算法推荐争议调查 → 现象级
+# 某地简讯       → 冷启动
+# 无来源稿件     → 数据不全</code></pre>
+    <p class="meta">
+      注意 <code>classify()</code> 里用了连续的 <code>if</code> + <code>return</code>：只要执行到 <code>return</code> 函数就结束了，
+      所以不需要写一堆 <code>elif</code>。这种「卫语句」写法比层层嵌套的 <code>else</code> 更好读。
+    </p>
+
+    <h3>场景二：判断一条稿件是否值得跟进（多条件组合）</h3>
+    <pre><code>def worth_following(news: dict) -&gt; tuple:
+    """返回 (是否跟进, 原因)。"""
+    views = news.get("浏览", 0)
+    tags = news.get("标签", [])
+    src = news.get("来源", "").strip()
+
+    # 用 and 短路，避免取到不存在的键
+    if views &gt;= 10000 and "AI" in tags:
+        return True, "高热度 AI 选题"
+    if "AI" in tags and src in {"科技日报", "新闻战线"}:
+        return True, "核心来源的 AI 报道"
+    if not tags:
+        return False, "无标签，需人工判断"
+    if views &lt; 1000:
+        return False, "热度不足"
+    return False, "不满足跟进条件"
+
+cases = [
+    {"标题": "A", "浏览": 21000, "标签": ["AI"], "来源": "科技日报"},
+    {"标题": "B", "浏览": 500,  "标签": [], "来源": "某地方台"},
+    {"标题": "C", "浏览": 8000, "标签": ["AI"], "来源": "新闻战线"},
+    {"标题": "D", "浏览": 300,  "标签": ["基层"], "来源": "某地方台"},
+]
+
+for c in cases:
+    ok, why = worth_following(c)
+    print(f'{c["标题"]}: {"跟进" if ok else "跳过"} —— {why}')
+# A: 跟进 —— 高热度 AI 选题
+# B: 跳过 —— 无标签，需人工判断
+# C: 跟进 —— 核心来源的 AI 报道
+# D: 跳过 —— 热度不足</code></pre>
+    <blockquote class="ok">
+      <b>判断顺序是有讲究的。</b>把「数据不全 / 无标签」这类前置检查放在最前面，
+      后面就可以放心地用 <code>views &gt;= 10000</code> 这类比较，不用再防御性判断。
+      这就是「卫语句优先」的实践价值。
+    </blockquote>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：<code>elif</code> vs 多个独立的 <code>if</code></h3>
+    <pre><code>views = 12800
+
+# elif：命中一个就跳出，后面的条件不求值
+if views &gt;= 100000:
+    print("现象级")
+elif views &gt;= 10000:
+    print("爆款")          # ← 只打印这一行
+elif views &gt;= 1000:
+    print("常规")
+
+# 多个 if：每个条件都要单独检查，可能同时命中
+if views &gt;= 100000:
+    print("现象级")
+if views &gt;= 10000:
+    print("爆款")          # ← 也打印
+if views &gt;= 1000:
+    print("常规")          # ← 还打印！</code></pre>
+    <p class="meta">
+      互斥的等级判断要用 <code>elif</code>；互相独立的标记（比如「同时记录是否爆款、是否含 AI」）才用多个 <code>if</code>。
+    </p>
+
+    <h3>辨析 2：<code>=</code> vs <code>==</code></h3>
+    <pre><code>views = 12800         # 赋值：把 12800 贴到 views 上
+
+if views == 12800:    # 比较：问「views 是 12800 吗」
+    print("命中")
+
+if views = 12800:     # ❌ SyntaxError: invalid syntax.
+    print("命中")     #    Python 3 会直接报语法错，这其实是件好事</code></pre>
+    <blockquote class="warn">
+      在 C / Java 里 <code>if (x = 1)</code> 是合法但错误的写法（会把 1 赋给 x，然后判断 1 为真），
+      极难查。<b>Python 3 直接禁止了这种语法</b>，所以这个坑在 Python 里报错很响，不用担心。
+      真正要小心的是：把 <code>==</code> 写成 <code>=</code> 之后，很多编辑器会自动「修正」成语法错误提示，反而容易让人没看明白问题出在哪。
+    </blockquote>
+
+    <h3>辨析 3：<code>if x:</code> vs <code>if x == True:</code> vs <code>if x is True:</code></h3>
+    <pre><code>x = 1
+
+if x:               # True  ← 推荐：靠真值测试
+if x == True:       # True  ← 相当于 x == 1，因为 True == 1
+if x is True:       # False ← x 是整数 1，不是 True 这个单例对象
+
+x = "0"
+if x:               # True  ← 非空字符串
+if x == True:       # False</code></pre>
+    <pre><code># ⚠️ 最坑的一种写法
+flag = 1
+if flag is True:
+    print("不会打印")     # 因为 1 is True 为 False（虽然 1 == True 为 True）</code></pre>
+    <blockquote>
+      <b>推荐只用 <code>if x:</code></b>（真值测试）和 <code>if x is None:</code>（判 None）。
+      别写 <code>== True</code> 和 <code>is True</code>，除非你非常确定自己在干什么。
+    </blockquote>
+
+    <h3>辨析 4：<code>and</code> / <code>or</code> 返回的是操作数，不是布尔值</h3>
+    <pre><code># 这个特性很有用，但也很容易误用
+result = "" or "默认标题"
+type(result)        # &lt;class 'str'&gt;  ← 不是 bool！
+
+# 误用：以为 or 的结果一定是布尔值
+count = 0
+value = count or "没有数据"
+print(value)        # "没有数据"  ← 0 被吃掉了
+
+# 想要「只把 None 当缺失」，应该写
+count = 0
+value = count if count is not None else "没有数据"
+print(value)        # 0  ← 正确保留</code></pre>
+
+    <h3>辨析 5：<code>in</code> 对字典检查键；对字符串检查子串</h3>
+    <pre><code>news = {"标题": "AI 重塑新闻业", "来源": "科技日报"}
+
+"来源" in news               # True   检查键
+"科技日报" in news           # False  值不参与检查
+
+s = "AI 重塑新闻业"
+"AI" in s                    # True   子串检查
+"媒体" in s                  # False
+
+lst = ["AI", "算法"]
+"AI" in lst                  # True   元素检查
+["AI"] in lst                # False  列表不等于元素
+
+# 想检查复合条件，用 all() / any()
+tags = ["AI", "算法", "推荐"]
+all(t in tags for t in ["AI", "算法"])    # True
+any(t in tags for t in ["区块链", "AI"])  # True</code></pre>
+
+    <h3>辨析 6：嵌套太深怎么办 —— 卫语句与合并条件</h3>
+    <pre><code># ❌ 三层嵌套，读起来要上下扫
+def check(a):
+    if a:
+        if a.get("浏览"):
+            if a["浏览"] &gt; 10000:
+                return "爆款"
+            else:
+                return "普通"
+        else:
+            return "无浏览量"
+    else:
+        return "无数据"
+
+# ✅ 卫语句：不符合条件的先返回，主逻辑保持在最外层
+def check(a):
+    if not a:
+        return "无数据"
+    if not a.get("浏览"):
+        return "无浏览量"
+    if a["浏览"] &gt; 10000:
+        return "爆款"
+    return "普通"
+
+# ✅ 合并条件：能用 and 表达的就别嵌套
+if a and a.get("浏览") and a["浏览"] &gt; 10000:
+    ...
+# 更简洁的写法（Python 3.8+ 海象运算符，或先取变量）
+views = (a or {}).get("浏览", 0)
+if views &gt; 10000:
+    ...</code></pre>
+    <p class="meta">
+      PEP 8 建议缩进用 4 个空格，一个现实的好处是：<b>嵌套三层以后右半边就没位置了</b>，
+      这会逼着你早点用卫语句把代码拉平。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：<code>bool("0")</code> 和 <code>bool(0)</code> 分别是多少？</b>
+      <div class="ans">
+        <code>True</code> 和 <code>False</code>。<code>"0"</code> 是非空字符串，属于「真」；
+        <code>0</code> 是数值零，属于官方列出的「假」值。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：<code>if x = 1:</code> 会发生什么？</b>
+      <div class="ans">
+        <code>SyntaxError: invalid syntax</code>。Python 3 里赋值语句不能出现在条件表达式中，
+        比较要用 <code>==</code>。这是 Python 比 C / Java 安全的地方。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：<code>if a: ... elif b: ... elif c: ...</code> 中如果 <code>a</code> 和 <code>b</code> 都为真，会打印几次？</b>
+      <div class="ans">
+        一次。<code>elif</code> 只有在前面的条件全部为假时才会被求值，命中第一个为真的分支后就跳出整个结构。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>0 or "默认"</code> 的结果是什么？类型是什么？</b>
+      <div class="ans">
+        <code>"默认"</code>，类型是 <code>str</code>。官方文档说明：布尔运算 <code>or</code> 和 <code>and</code>
+        <b>总是返回其操作数之一</b>，而不是把结果转成 <code>True</code> / <code>False</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>0 &lt; x &lt; 100</code> 和 <code>0 &lt; x and x &lt; 100</code> 有什么区别？</b>
+      <div class="ans">
+        结果相同。区别在于链式比较中 <code>x</code> <b>只求值一次</b>（官方原文：<i>except that y is evaluated only once</i>）。
+        当 <code>x</code> 是函数调用时，链式写法只调用一次。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>news = {"标题": "..."}</code>，<code>"标题" in news</code> 检查的是什么？</b>
+      <div class="ans">
+        检查<b>键</b>。返回 <code>True</code>。要检查值必须写 <code>"..." in news.values()</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：想判断一个变量是不是 <code>None</code>，应该怎么写？</b>
+      <div class="ans">
+        <code>if x is None:</code>。PEP 8 推荐对单例对象 <code>None</code> 用 <code>is</code> / <code>is not</code>。
+        <code>if not x:</code> 会把 <code>0</code>、<code>""</code>、<code>[]</code> 也一起算进去，语义不同。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 更多控制流工具（4.1 if 语句）</td>
+          <td><code>if</code> / <code>elif</code> / <code>else</code> 的结构说明、「关键字 <code>elif</code> 是 <code>else if</code> 的缩写，用于避免过多的缩进」原文、官方示例代码</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/controlflow.html#if-statements">docs.python.org/zh-cn/3/tutorial/controlflow.html#if-statements</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型（真值测试）</td>
+          <td>「对象被认为是真的，除非类定义了返回 False 的 <code>__bool__()</code> 或返回零的 <code>__len__()</code>」原文、内置假值完整清单（<code>None</code>/<code>False</code>/各类零/空序列空集合）、<code>and</code> / <code>or</code> 返回操作数的重要例外</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#truth-value-testing">docs.python.org/zh-cn/3/library/stdtypes.html#truth-value-testing</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型（比较运算）</td>
+          <td>链式比较原文（<code>x &lt; y &lt;= z</code> 等价于 <code>x &lt; y and y &lt;= z</code>，但 <code>y</code> 只求值一次）、八种比较运算表、<code>==</code> 与 <code>is</code> 的区别、<code>in</code> / <code>not in</code> 的适用类型</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html#comparisons">docs.python.org/zh-cn/3/library/stdtypes.html#comparisons</a></td>
+        </tr>
+        <tr>
+          <td>PEP 8 · Python 代码风格指南</td>
+          <td>缩进用 4 个空格而不是制表符的理由、一行不超过 79 字符、运算符与逗号前后的空格规则</td>
+          <td><a href="https://peps.python.org/pep-0008/">peps.python.org/pep-0008/</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题（形参与实参的区别 / 调用按引用）</td>
+          <td>「形参由函数定义中的名称定义，参数是调用时实际传入的值」、「在 Python 中参数是通过赋值传递的」等表述（本份在条件与函数边界处引用）</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版）与 PEP 官方站点，均通过 WebFetch 实际抓取页面内容后使用</td></tr>
+        <tr><td>真值测试规则</td><td>已核。假值清单（<code>None</code>、<code>False</code>、<code>0</code>/<code>0.0</code>/<code>0j</code>/<code>Decimal(0)</code>/<code>Fraction(0,1)</code>、<code>''</code>/<code>()</code>/<code>[]</code>/<code>{}</code>/<code>set()</code>/<code>range(0)</code>）为官方原文列举</td></tr>
+        <tr><td><code>and</code> / <code>or</code> 返回操作数</td><td>已核。原文：「Important exception: the Boolean operations <code>or</code> and <code>and</code> always return one of their operands.」</td></tr>
+        <tr><td>链式比较</td><td>已核。原文：「<code>x &lt; y &lt;= z</code> is equivalent to <code>x &lt; y and y &lt;= z</code>, except that <em>y</em> is evaluated only once」</td></tr>
+        <tr><td><code>elif</code> 说明</td><td>已核。原文：「可有零个或多个 <code>elif</code> 部分……关键字 '<code>elif</code>' 是 'else if' 的缩写，用于避免过多的缩进。」</td></tr>
+        <tr><td>PEP 8 缩进规范</td><td>已核。官方教程 4.10 编码风格小节转述 PEP 8：「缩进，用 4 个空格，不要用制表符……制表符会引起混乱，最好别用。」</td></tr>
+        <tr><td><code>if x = 1</code> 报 SyntaxError</td><td>已核（间接）。Python 语法不允许在条件表达式中使用赋值语句，本份依据语言语义描述；未引用到明确的官方文档原文</td></tr>
+        <tr><td>未核到 / 部分核</td><td><code>if x = 1</code> 报错文本、<code>bool("False") is True</code> 的实际求值结果未在本机运行验证；其余条目均有官方原文支撑</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12 语法编写；新闻类示例数据为虚构；未在本机逐条运行验证</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>结构化解释、类比、新闻场景、自测题由 AI 撰写；
+      真值测试规则、布尔运算返回操作数、链式比较语义、<code>elif</code> 说明、PEP 8 缩进规范，
+      均逐条对照官方文档原文核验。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>条件判断</b> · Python 概念学习资料 第 5 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-17</p>
+  </footer>
+</div>
+</body>
+</html>
