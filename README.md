@@ -16,6 +16,22 @@
 
 > 总分 100。作业 1 已全部命中。
 
+## 📌 作业 2：仓库级 Skill（老师请直接看这里）
+
+老师要求「**要创建仓库级别的 skill 完成**」——本仓库的 skills 全部存放在 `.workbuddy/skills/` 下，**作为仓库的一部分提交到 Git**（非用户级目录，clone 即可用，可在 GitHub 上审查）。
+
+| 仓库级 Skill | 路径（GitHub 可查看） | 用途 |
+|---|---|---|
+| `concept-unpacker` | [`.workbuddy/skills/concept-unpacker/SKILL.md`](https://github.com/Yym113/big-data-ai/blob/main/.workbuddy/skills/concept-unpacker/SKILL.md) | 把任意陌生概念拆成 9 段式中文学习包 |
+| `homework-submit` | [`.workbuddy/skills/homework-submit/SKILL.md`](https://github.com/Yym113/big-data-ai/blob/main/.workbuddy/skills/homework-submit/SKILL.md) | 作业提交与推送流程自动化 |
+
+**Skill 的运行成果**（可直接打开查看）：
+
+- 15 份 Python 概念学习资料 + 目录页 → [`learning-materials/index.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/index.html)
+- 13 次课学习地图 → [`learning-materials/python-learning-map.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/python-learning-map.html)
+
+详细说明见下方「仓库级 Skills」一节。
+
 本仓库用于存放「大数据与人工智能」课程的学习笔记、作业、实验代码、课程项目与配套 Skills / 学习资料。
 
 ## 本仓库的实际位置
@@ -29,12 +45,13 @@
 ```
 big-data-ai/
 ├── .workbuddy/
-│   ├── skills/
-│   │   └── concept-unpacker/            # 项目级 Skill · 把任意概念拆成 9 段式中文学习包
+│   ├── skills/                          # 仓库级 Skills（随仓库提交，clone 即可用）
+│   │   ├── concept-unpacker/            # 把任意概念拆成 9 段式中文学习包
+│   │   └── homework-submit/             # 作业提交与推送流程
 │   └── memory/                          # 工作日志
 ├── learning-materials/
 │   ├── index.html                       # 概念目录（15 份 Python 概念资料的总入口 + 跨概念联系）
-│   ├── python-learning-map.html         # Python 基础学习地图（13 次课 · 新闻传播学零基础版）
+│   ├── python-learning-map.html         # Python 基础学习地图（13 次课 · 零基础版）
 │   ├── vars-and-types.html              # 01 变量与数据类型
 │   ├── strings.html                     # 02 字符串
 │   ├── lists.html                       # 03 列表
@@ -54,20 +71,47 @@ big-data-ai/
 │   ├── llm-context.html                 # 作业 1 概念资料：大模型的上下文
 │   ├── skill.html                       # 作业 1 概念资料：Skill
 │   └── concept-relationship.html        # 作业 1：三概念关系图
-├── assignments/                         # 课程作业（作业 1 交付物在 learning-materials/）
+├── assignments/                         # 课程作业
+│   ├── scripts/                         # 课堂练习脚本（如 01.ipynb）
+│   └── README.md
 ├── .gitignore
 └── README.md                            # 本文件
 ```
 
-## 项目级 Skills（WorkBuddy 可调用）
+## 仓库级 Skills（随仓库提交，clone 即可用）
+
+本仓库的 Skills 存放在 `.workbuddy/skills/` 下，**作为仓库的一部分提交到 Git**，任何人 clone 后都能直接使用。
 
 | Skill 名 | 路径 | 用途 |
 |---|---|---|
-| `concept-unpacker` | `.workbuddy/skills/concept-unpacker/SKILL.md` | 把任意陌生概念拆成 9 段式中文学习包（学习目标 / 结构化解释 / 边界辨析 / 自测 / 可核查来源 / 核查记录） |
+| `concept-unpacker` | [`.workbuddy/skills/concept-unpacker/SKILL.md`](https://github.com/Yym113/big-data-ai/blob/main/.workbuddy/skills/concept-unpacker/SKILL.md) | 把任意陌生**概念**拆成 9 段式中文学习包（个人理解 / 学习目标 / 核心问题 / 结构化解释 / 应用场景 / 概念辨析 / 自测问题 / 可核查来源 / 核查记录） |
+| `homework-submit` | [`.workbuddy/skills/homework-submit/SKILL.md`](https://github.com/Yym113/big-data-ai/blob/main/.workbuddy/skills/homework-submit/SKILL.md) | 把本地**作业文件**自动提交并推送到本仓库：核对状态 → 文件归位 → git add/commit/push → 回报结果 |
 
-调用方式：在 WorkBuddy 里说「用 `concept-unpacker` 帮我学一下 `RAG`」即可；它会自动生成 `learning-materials/rag.html`，并附核查记录。
+**调用方式**（在 WorkBuddy 对话里说一句话即可）：
 
-代码示例规范（已写入 skill）：代码标识符一律用英文，中文只出现在字符串字面量、注释和正文里。
+- 「用 `concept-unpacker` 帮我学一下 `RAG`」→ 自动生成 `learning-materials/rag.html`，并附核查记录
+- 「提交作业」「交作业」「推一下」→ 自动走完提交推送流程，并回报结果
+
+### 为什么是「仓库级」
+
+| 特征 | 说明 |
+|---|---|
+| 存在位置 | 在仓库目录内（`.workbuddy/skills/`），不是用户级目录 `~/.workbuddy/skills/` |
+| 版本管理 | 与代码一起 `git commit`，有完整提交历史，可回溯 |
+| 可移植 | 别人 clone 仓库后，skill 随之而来，无需额外安装 |
+| 可审查 | 打开 GitHub 即可阅读全文，格式为带 frontmatter 的 `SKILL.md` |
+
+### Skill 的设计要点
+
+**`concept-unpacker`**
+- 9 段固定结构，每份资料都包含「可核查参考来源」与「核查记录」两节，明确区分 AI 生成与人工核对的部分
+- 参考资料必须先用工具抓取真实页面，禁止凭记忆编造；抓不到的链接不得写入来源表
+- **代码示例规范**：代码标识符一律用英文，中文只出现在字符串字面量、注释和正文里
+
+**`homework-submit`**
+- 内置本仓库的固定信息（路径、分支、作者），无需每次询问
+- **强制回报结果**：即使只有一句「推送成功了」也必须给出，并附 commit 哈希与同步状态
+- 安全约束：不用 `mv`（用 `cp` 保留原件）、不执行 `git push -f` / `git reset --hard`、不删除用户文件
 
 ## 学习资料
 
