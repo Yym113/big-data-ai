@@ -69,7 +69,7 @@
   <header>
     <h1>字符串</h1>
     <p class="subtitle">
-      Python 概念学习资料 · 第 2 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：新闻传播学零基础<br>
+      Python 概念学习资料 · 第 2 份 &nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：人工智能与大数据课程 零基础<br>
       <a href="index.html">← 返回概念目录</a>
     </p>
   </header>
@@ -99,9 +99,9 @@
       关键在下一句：<b>字符串是「不可变」的。</b>这四个字很像术语，其实说的是——
       <b>你拿到的那张印好的报纸，改不了字；想改，只能重新印一份。</b>
     </p>
-    <pre><code>s = "新闻学"
-s[0] = "新"        # 报错！TypeError: 'str' object does not support item assignment
-s = "新闻传播学"     # 这样做可以 —— 但这不是「改」，是换了张纸</code></pre>
+    <pre><code>s = "文本"
+s[0] = "文"        # 报错！TypeError: 'str' object does not support item assignment
+s = "文本处理"     # 这样做可以 —— 但这不是「改」，是换了张纸</code></pre>
     <p>
       为什么这个区别重要？因为它决定了你处理文本时<b>所有的写法</b>：
       所有字符串方法（<code>.replace()</code>、<code>.upper()</code>、<code>.strip()</code>）都<b>不修改原字符串，而是返回一个新字符串</b>。
