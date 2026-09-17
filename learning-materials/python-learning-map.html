@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python 基础学习地图（13 次课 · 新闻传播学零基础版）</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    h4 { font-size: 0.98rem; margin: 1.1em 0 0.4em; color: var(--muted); }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      margin: 12px 0;
+      padding: 10px 16px;
+      border-radius: 4px;
+    }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .tag {
+      display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px;
+      background: var(--accent-bg); color: var(--accent); font-weight: 600; margin-right: 6px;
+    }
+    .tag.do { background: var(--ok-bg); color: var(--ok); }
+    .tag.no { background: #fdeaea; color: #a32c2c; }
+    .tag.stage { background: var(--purple-bg); color: var(--purple); }
+    .lesson-head {
+      display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+      border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px;
+    }
+    .lesson-no {
+      background: var(--accent); color: #fff; font-weight: 700;
+      min-width: 30px; height: 30px; padding: 0 6px; border-radius: 15px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; flex-shrink: 0;
+    }
+    .half {
+      background: var(--purple-bg); border-left: 3px solid var(--purple);
+      border-radius: 4px; padding: 10px 16px; margin: 12px 0;
+    }
+    .half b { color: var(--purple); }
+    .outcome {
+      background: var(--ok-bg); border: 1px solid #cfe6d8; border-radius: 6px;
+      padding: 8px 14px; margin-top: 12px; font-size: 0.93rem;
+    }
+    .outcome b { color: var(--ok); }
+    .why {
+      background: #f7f5f0; border-left: 3px solid #b0a898; border-radius: 4px;
+      padding: 8px 14px; margin-top: 10px; font-size: 0.9rem; color: var(--muted);
+    }
+    .why b { color: #6b6355; }
+    .stage-title {
+      background: var(--accent); color: #fff; border-radius: 8px;
+      padding: 14px 22px; margin: 32px 0 20px; font-size: 1.15rem; font-weight: 600;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .stage-title .num { font-size: 0.85rem; opacity: 0.75; font-weight: 400; }
+    footer {
+      margin-top: 32px; padding-top: 16px;
+      border-top: 1px dashed var(--border);
+      color: var(--muted); font-size: 0.85em;
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 20px 14px 60px; }
+      section { padding: 18px 16px; }
+      h1 { font-size: 1.55rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Python 基础学习地图</h1>
+    <p class="subtitle">
+      面向新闻传播学 · 零基础自学 &nbsp;|&nbsp; 13 次课 × 90 分钟（上下各 45 分钟）= 共 19.5 小时<br>
+      <b>本阶段目标：把 Python 基础打够用</b>；人工智能理论与应用是后续课程，本地图不涉及
+    </p>
+  </header>
+
+  <section>
+    <h2>这份地图的定位</h2>
+    <p>
+      你这 13 次课的任务只有一个：<b>掌握足够用的 Python 基础知识</b>。人工智能的理论和应用在后面单独的课程里。
+      所以这份地图做了一次非常明确的范围界定：
+    </p>
+    <blockquote>
+      <b>只教「用得到的基础」，不教「语言的全部」。</b><br>
+      判断标准就一条：<b>这个知识点，在后面的 AI 阶段会不会直接用到？</b><br>
+      会 → 认真学、反复练。不会 → 这 13 次课里不碰，需要时再补。
+    </blockquote>
+    <p class="meta">
+      「足够用」的具体定义，见下方《够用的标准》一节。那是这份地图的验收线。
+    </p>
+  </section>
+
+  <section>
+    <h2>够用的标准（13 次课结束时的验收线）</h2>
+    <p>学完这 13 次课，你应该能做到下面这 6 件事。<b>做不到，就是没学够；做得到，就可以停。</b></p>
+    <table>
+      <thead>
+        <tr><th style="width:40px">#</th><th>能力</th><th>检验方式</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>读懂并修改一段别人写的 Python 代码</td><td>拿到一个 50 行的脚本，能说出每部分在干什么</td></tr>
+        <tr><td>2</td><td>用变量、列表、字典组织数据</td><td>把一个新闻表存成「列表套字典」的结构</td></tr>
+        <tr><td>3</td><td>用 <code>for</code> / <code>if</code> / 函数完成批量处理</td><td>写一个函数，传入标题列表，返回含某关键词的所有标题</td></tr>
+        <tr><td>4</td><td>读写文件（TXT / CSV），处理中文编码</td><td>读一个 UTF-8 的 CSV，处理后存回新文件</td></tr>
+        <tr><td>5</td><td>装库、查文档、调库解决实际问题</td><td>看到 <code>import xxx</code> 报错能自己解决；能照着文档用新库</td></tr>
+        <tr><td>6</td><td>看懂报错并自己修复</td><td>遇到 <code>UnicodeDecodeError</code> / <code>FileNotFoundError</code> 能定位并改对</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>第 5 条和第 6 条最重要。</b>编程不是背语法，是「遇到问题能自己找路」。语法记不住可以查，
+      但「会不会查、敢不敢试」决定你后面能不能跟上 AI 课程。
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>13 次课全局路线</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:72px">课次</th>
+          <th>上半场 45 min</th>
+          <th>下半场 45 min</th>
+          <th style="width:170px">当次产出</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="4" style="background:var(--purple-bg); font-weight:600; color:var(--purple)">阶段一 · 语言入门（课 1–4）</td></tr>
+        <tr><td><b>1</b></td><td>环境搭建 + 第一个程序</td><td>变量 + 数据类型</td><td>环境跑通，能运行脚本</td></tr>
+        <tr><td><b>2</b></td><td>字符串全套操作</td><td>列表：增删改查 + 切片</td><td>标题列表处理脚本</td></tr>
+        <tr><td><b>3</b></td><td>字典：键值对建模</td><td>元组 / 集合 / 嵌套结构</td><td>一条新闻的结构化表示</td></tr>
+        <tr><td><b>4</b></td><td><code>if</code> 条件判断全套</td><td><code>for</code> / <code>while</code> 循环</td><td>批量筛选标题</td></tr>
+
+        <tr><td colspan="4" style="background:var(--purple-bg); font-weight:600; color:var(--purple)">阶段二 · 组织逻辑（课 5–8）</td></tr>
+        <tr><td><b>5</b></td><td>函数：定义 / 参数 / 返回值</td><td>作用域 + 默认参数 + 多返回值</td><td>自己的工具函数库</td></tr>
+        <tr><td><b>6</b></td><td>列表推导式 + <code>lambda</code></td><td><code>sorted</code> / <code>map</code> / <code>filter</code></td><td>一行代码完成筛选排序</td></tr>
+        <tr><td><b>7</b></td><td>文件读写：TXT + 编码问题</td><td>CSV 读写 + <code>with</code> 语法</td><td>读写新闻数据文件</td></tr>
+        <tr><td><b>8</b></td><td>异常处理 <code>try/except</code></td><td>调试技巧 + 常见报错对照</td><td>能自己修报错的脚本</td></tr>
+
+        <tr><td colspan="4" style="background:var(--purple-bg); font-weight:600; color:var(--purple)">阶段三 · 文本与数据实战（课 9–13）</td></tr>
+        <tr><td><b>9</b></td><td>字符串进阶：正则表达式入门</td><td>正则实战：清洗新闻文本</td><td>文本清洗函数</td></tr>
+        <tr><td><b>10</b></td><td>模块与包：<code>import</code> 机制</td><td>pip 装库 + 虚拟环境概念</td><td>会用第三方库</td></tr>
+        <tr><td><b>11</b></td><td>numpy 基础：数组与运算</td><td>numpy 索引 / 切片 / 统计</td><td>数值数据批量处理</td></tr>
+        <tr><td><b>12</b></td><td>pandas 基础：读表 + 查看</td><td>pandas 筛选 / 排序 / 分组</td><td>新闻表分析脚本</td></tr>
+        <tr><td><b>13</b></td><td>matplotlib 基础绘图</td><td>综合项目：新闻数据小分析</td><td>一张图 + 一份分析报告</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      <b>课 9–13 是重点，不是补充。</b>阶段一、二（课 1–8）是打地基，阶段三才是你后面 AI 课上真正会用到的东西 ——
+      文本清洗、numpy、pandas、画图。如果时间被压缩，宁可压缩课 3 的元组/集合，也要保证课 9–13 上完。
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>第 0 步（开课前，不计入 13 次课）</h2>
+    <p>装好环境，别让环境问题吃掉课时。</p>
+    <pre><code># 1. 确认 Python 版本（命令提示符或 VS Code 终端里执行）
+python --version
+
+# 2. 13 次课需要的库，一次装齐
+pip install numpy pandas matplotlib jieba
+# 国内慢的话加清华镜像：
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy pandas matplotlib jieba</code></pre>
+    <blockquote class="ok">
+      验证：在 Python 里跑 <code>import numpy, pandas, matplotlib, jieba</code>，不报错就过了。
+    </blockquote>
+  </section>
+
+  <div class="stage-title">
+    <span>阶段一 · 语言入门</span>
+    <span class="num">课 1–4 &nbsp;|&nbsp; 目标：能读懂代码、能写简单逻辑</span>
+  </div>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">1</span>
+      <h2 style="border:none; padding:0; margin:0;">环境搭建 + 第一个程序 + 变量与类型</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 环境 + 第一个程序</b>
+      <ul>
+        <li>安装 Python / VS Code，配置解释器（这是新手最容易卡住的一步，务必先解决）</li>
+        <li>三种运行方式：命令行 <code>python a.py</code>、VS Code 里点运行、交互式 <code>python</code> 解释器</li>
+        <li><code>print("Hello")</code> —— 理解「代码是写给计算机的指令」</li>
+        <li>常见问题：中文乱码、<code>python 不是内部命令</code>、保存成 <code>.py</code> 而非 <code>.txt</code></li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 变量与数据类型</b>
+      <ul>
+        <li>变量 = 给数据起名字：<code>title = "AI 重塑新闻业"</code></li>
+        <li>四种基本类型：整数 <code>int</code>、小数 <code>float</code>、字符串 <code>str</code>、布尔 <code>bool</code></li>
+        <li><code>type()</code> 查看类型；类型转换 <code>int("123")</code> / <code>str(456)</code></li>
+        <li>变量命名规则：字母/数字/下划线，不能数字开头，区分大小写</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>title = "AI 重塑新闻编辑部的工作流"
+views = 12800
+is_top = True
+
+print(title, type(title))
+print(views + 1)
+print("阅读量：" + str(views))</code></pre>
+    <div class="why"><b>为什么学这个：</b>任何 AI 应用的输入都是「数据」，变量就是装数据的盒子。后面读 CSV、跑模型，第一步永远是搞清楚「我手上是什么类型的数据」。</div>
+    <div class="outcome"><b>课后必做：</b>把环境跑通，成功打印出 3 行字（含中文）。如果中文乱码，把编码问题解决掉再进下一课。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">2</span>
+      <h2 style="border:none; padding:0; margin:0;">字符串操作 + 列表</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 字符串</b>
+      <ul>
+        <li>拼接 <code>+</code>、重复 <code>*</code>、长度 <code>len()</code></li>
+        <li>切分 <code>split()</code>、替换 <code>replace()</code>、去空格 <code>strip()</code></li>
+        <li>查找 <code>find()</code> / 判断包含 <code>in</code></li>
+        <li>大小写 <code>upper()</code> / <code>lower()</code>；格式化 <code>f"{title} —— {source}"</code></li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 列表</b>
+      <ul>
+        <li>创建 <code>titles = []</code>、取值 <code>titles[0]</code>、最后一项 <code>titles[-1]</code></li>
+        <li>切片 <code>titles[0:3]</code> —— 这一招后面处理数据天天用</li>
+        <li>增删改：<code>append()</code> / <code>insert()</code> / <code>remove()</code> / <code>pop()</code></li>
+        <li>长度 <code>len()</code>、排序 <code>sort()</code>、反转 <code>reverse()</code></li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>titles = ["AI 重塑新闻业", "暴雨引发内涝", "大模型进入内容审核"]
+titles.append("新能源汽车销量创新高")
+
+# 切片：前两条
+print(titles[0:2])
+
+# 字符串处理
+t = "  AI 重塑新闻业  "
+print(t.strip().replace("AI", "人工智能"))
+print(titles[0].split(" "))</code></pre>
+    <div class="why"><b>为什么学这个：</b>新闻数据本质就是「一大堆字符串」。清洗文本 = 字符串操作；一批新闻 = 列表。<b>这两样是后面所有工作的原材料。</b></div>
+    <div class="outcome"><b>课后必做：</b>建一个 10 条标题的列表，用切片取出前 3 条和后 2 条，各自打印。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">3</span>
+      <h2 style="border:none; padding:0; margin:0;">字典 · 元组 · 集合 · 嵌套结构</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 字典</b>
+      <ul>
+        <li>为什么需要字典：一条新闻有标题、来源、时间、正文 —— 用列表记不住谁是谁</li>
+        <li>创建 <code>news = {"标题": "...", "来源": "..."}</code>、取值 <code>news["标题"]</code></li>
+        <li>安全取值 <code>get()</code>、增改 <code>news["新键"] = 值</code>、删除 <code>del</code></li>
+        <li>遍历：<code>for k, v in news.items()</code></li>
+        <li><b>重点：列表套字典</b> —— <code>[{"标题": ...}, {"标题": ...}]</code>，这是后面 CSV 和 JSON 的标准形态</li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 元组 / 集合 / 嵌套</b>
+      <ul>
+        <li>元组 <code>(1, 2, 3)</code>：不可修改，用于「不该被改的数据」</li>
+        <li>集合 <code>{1, 2, 3}</code>：自动去重 —— 统计「有几个不同来源」时很好用</li>
+        <li>嵌套：字典里放列表、列表里放字典，多层结构怎么取值</li>
+        <li>三种结构的选用速查表</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code># 列表套字典：一次存多条新闻（这是最重要的结构）
+news_list = [
+    {"标题": "AI 重塑新闻业", "来源": "新华社", "浏览": 12800},
+    {"标题": "暴雨引发内涝", "来源": "本地日报", "浏览": 3400},
+]
+
+for n in news_list:
+    print(n["来源"], "·", n["标题"])
+
+# 集合去重：有几个不同来源
+sources = {n["来源"] for n in news_list}
+print("来源数：", len(sources))</code></pre>
+    <div class="why"><b>为什么学这个：</b>CSV 读进来是表，JSON 读进来是字典，AI 模型的输出也常是字典。<b>「列表套字典」是数据世界最通用的形状</b>，必须练熟。</div>
+    <div class="outcome"><b>课后必做：</b>用「列表套字典」表示 5 条新闻（含标题/来源/浏览三列），遍历打印，并统计有多少个不同来源。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">4</span>
+      <h2 style="border:none; padding:0; margin:0;">条件判断 + 循环</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · <code>if</code> 全套</b>
+      <ul>
+        <li><code>if</code> / <code>elif</code> / <code>else</code> 分支</li>
+        <li>比较运算：<code>==</code> <code>!=</code> <code>&gt;</code> <code>&lt;</code> <code>&gt;=</code>（注意 <code>=</code> 和 <code>==</code> 的区别）</li>
+        <li>逻辑运算：<code>and</code> / <code>or</code> / <code>not</code></li>
+        <li>成员判断：<code>if "AI" in title:</code> —— 文本筛选用得最多</li>
+        <li>嵌套判断与「提前 continue」的写法</li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 循环</b>
+      <ul>
+        <li><code>for x in list</code>：遍历列表、字符串、字典</li>
+        <li><code>range()</code>：<code>for i in range(5)</code>、配合 <code>len()</code> 按序号遍历</li>
+        <li><code>enumerate()</code>：同时拿到序号和值</li>
+        <li><code>while</code> 循环 + <code>break</code> / <code>continue</code></li>
+        <li>累加器模式：<code>total = 0</code> → 循环里 <code>total += x</code>（后面统计词频、求和都用它）</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>titles = ["AI 重塑新闻业", "暴雨引发内涝", "大模型进入内容审核", "新能源汽车销量创新高"]
+
+# 筛选
+for t in titles:
+    if "AI" in t or "大模型" in t:
+        print("科技类：", t)
+
+# 累加器：统计总字数
+total = 0
+for i, t in enumerate(titles):
+    total += len(t)
+print("平均标题长度：", total / len(titles))</code></pre>
+    <div class="why"><b>为什么学这个：</b>「批量处理」是编程的核心价值。手工筛 10 条标题没意义，但筛 10 万条就必须靠循环。<b>循环 + 判断 = 你后面做一切数据处理的骨架。</b></div>
+    <div class="outcome"><b>课后必做：</b>20 条标题的列表，用循环筛出含指定关键词的、统计其数量、算出平均长度。</div>
+  </section>
+
+  <div class="stage-title">
+    <span>阶段二 · 组织逻辑</span>
+    <span class="num">课 5–8 &nbsp;|&nbsp; 目标：代码可复用、能读写真实文件、能自己修错</span>
+  </div>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">5</span>
+      <h2 style="border:none; padding:0; margin:0;">函数</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 函数基础</b>
+      <ul>
+        <li>为什么需要函数：同一段逻辑写第二遍就该封装</li>
+        <li>定义与调用：<code>def 函数名(参数):</code> → <code>return 结果</code></li>
+        <li>参数与返回值；没有 <code>return</code> 时返回 <code>None</code></li>
+        <li>把课 4 的筛选逻辑封装成 <code>filter_titles(titles, keyword)</code></li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 函数进阶</b>
+      <ul>
+        <li>默认参数 <code>def f(x, sep=" ")</code>（注意：默认参数别用可变对象）</li>
+        <li>关键字参数调用 <code>f(sep=",", x=data)</code></li>
+        <li>返回多个值：<code>return a, b</code>（其实是返回元组）</li>
+        <li>作用域：局部变量 vs 全局变量；为什么函数里改不动外面的列表</li>
+        <li>函数文档字符串 <code>"""说明"""</code></li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>def filter_titles(titles, keyword):
+    """返回所有包含 keyword 的标题"""
+    result = []
+    for t in titles:
+        if keyword in t:
+            result.append(t)
+    return result
+
+def title_stats(titles):
+    """返回标题总数和平均长度"""
+    if not titles:
+        return 0, 0
+    total = sum(len(t) for t in titles)
+    return len(titles), round(total / len(titles), 1)
+
+hit = filter_titles(["AI 新闻", "暴雨内涝", "AI 审核"], "AI")
+print(hit)
+print(title_stats(hit))</code></pre>
+    <div class="why"><b>为什么学这个：</b>后面的 AI 课，你几乎不会从零写算法，都是<b>调用现成的函数</b>。会写函数，才能看懂别人写的函数；<code>def f(x): ... return y</code> 这个形式必须一眼看穿。</div>
+    <div class="outcome"><b>课后必做：</b>写 3 个自己的工具函数（筛选标题 / 统计词数 / 格式化成表格行），存成一个 <code>my_tools.py</code>。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">6</span>
+      <h2 style="border:none; padding:0; margin:0;">推导式 + 内置函数（写得更少，做得更多）</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 列表推导式与 <code>lambda</code></b>
+      <ul>
+        <li>列表推导式：<code>[t for t in titles if "AI" in t]</code> —— 三行循环变一行</li>
+        <li>带条件、带运算的推导式</li>
+        <li>字典推导式 <code>{k: v for ...}</code>（了解即可）</li>
+        <li><code>lambda</code>：<code>lambda x: len(x)</code> —— 临时用一次的小函数</li>
+        <li>什么时候<b>不该</b>用推导式：逻辑超过一层，就老老实实写循环</li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 常用内置函数</b>
+      <ul>
+        <li><code>len</code> / <code>sum</code> / <code>max</code> / <code>min</code> / <code>abs</code> / <code>round</code></li>
+        <li><code>sorted(data, key=..., reverse=True)</code> —— 按指定规则排序，<b>实战高频</b></li>
+        <li><code>map()</code> / <code>filter()</code>：批量转换 / 批量筛选</li>
+        <li><code>zip()</code>：把两个列表配对</li>
+        <li><code>any()</code> / <code>all()</code>：判断「有没有满足的」/「是不是都满足」</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>news_list = [
+    {"标题": "AI 重塑新闻业", "浏览": 12800},
+    {"标题": "暴雨引发内涝", "浏览": 3400},
+    {"标题": "大模型进入内容审核", "浏览": 9600},
+]
+
+# 推导式筛选
+ai_news = [n for n in news_list if "AI" in n["标题"] or "大模型" in n["标题"]]
+
+# 按浏览量倒序排（key 指定排序依据）
+hot = sorted(news_list, key=lambda n: n["浏览"], reverse=True)
+
+for n in hot:
+    print(n["浏览"], n["标题"])</code></pre>
+    <div class="why"><b>为什么学这个：</b><code>sorted(key=lambda ...)</code> 是 pandas 排序的底层逻辑；推导式是 pandas 筛选的底层逻辑。<b>先在小数据上把这两招练成肌肉记忆，第 12 课的 pandas 会轻松很多。</b></div>
+    <div class="outcome"><b>课后必做：</b>把课 4 的 20 条标题任务，用推导式 + <code>sorted</code> 重写一遍，对比代码长度。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">7</span>
+      <h2 style="border:none; padding:0; margin:0;">文件读写（TXT / CSV / 编码）</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 文本文件与编码</b>
+      <ul>
+        <li><code>open("a.txt", "r", encoding="utf-8")</code> 读 / <code>"w"</code> 写 / <code>"a"</code> 追加</li>
+        <li><b><code>with open(...) as f:</code> 写法</b> —— 自动关闭文件，永远用这个</li>
+        <li>读全部 <code>read()</code> / 读一行 <code>readline()</code> / 按行遍历 <code>for line in f</code></li>
+        <li><b>中文编码三大坑</b>：<code>UnicodeDecodeError</code> → 加 <code>encoding="utf-8"</code>；还报错试 <code>gbk</code>；Windows 记事本存 UTF-8 会带 BOM，用 <code>utf-8-sig</code></li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · CSV 读写</b>
+      <ul>
+        <li>用标准库 <code>csv</code> 读：<code>csv.reader</code> / <code>csv.DictReader</code>（推荐后者，直接得字典）</li>
+        <li>写 CSV：<code>csv.writer</code> / <code>DictWriter</code>；<code>newline=""</code> 防止多空行</li>
+        <li>把「列表套字典」存成 CSV，再从 CSV 读回「列表套字典」</li>
+        <li>用 Excel 打开 CSV 中文乱码 —— 这是 Excel 的问题，不是你的代码问题（用「数据→从文本导入」选 UTF-8）</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>import csv
+
+# 写：列表套字典 -> CSV
+news_list = [
+    {"标题": "AI 重塑新闻业", "来源": "新华社"},
+    {"标题": "暴雨引发内涝", "来源": "本地日报"},
+]
+with open("news.csv", "w", encoding="utf-8-sig", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["标题", "来源"])
+    writer.writeheader()
+    writer.writerows(news_list)
+
+# 读：CSV -> 列表套字典
+with open("news.csv", encoding="utf-8-sig") as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row["来源"], "·", row["标题"])</code></pre>
+    <div class="why"><b>为什么学这个：</b><b>这是本阶段最关键的一课。</b>后面的 AI 课程里，数据永远以文件形式存在（CSV / TXT）。<b>「把数据读进来 → 处理 → 存出去」，这个闭环打通了，你才算真的会用 Python。</b></div>
+    <div class="outcome"><b>课后必做：</b>手工做一份 20 行的新闻 CSV（标题/来源/浏览），用 Python 读进来，筛选+排序后，存成一个新文件。全程不打开 Excel 编辑。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">8</span>
+      <h2 style="border:none; padding:0; margin:0;">异常处理 + 调试（学会自救）</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 异常处理</b>
+      <ul>
+        <li>异常是什么：程序出错就抛异常，不处理就崩</li>
+        <li><code>try / except</code> 基本结构；捕获特定异常 <code>except FileNotFoundError:</code></li>
+        <li>常见异常类型：<code>FileNotFoundError</code> / <code>KeyError</code> / <code>IndexError</code> / <code>ValueError</code> / <code>TypeError</code></li>
+        <li><code>finally</code> 与「出错也要执行」的场景</li>
+        <li><b>原则</b>：不要用 <code>except: pass</code> 把错误吃掉 —— 那是给自己埋雷</li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 调试技巧</b>
+      <ul>
+        <li><b>读懂报错信息</b>：从最后一行往前看，定位到你的文件名和行号（Traceback 的自下而上读法）</li>
+        <li>打印调试法：<code>print()</code> 打出中间变量，确认数据到哪一步不对</li>
+        <li>类型检查：<code>type(x)</code> / <code>len(x)</code> —— 90% 的错是「类型不对」或「数据不是你以为的样子」</li>
+        <li>VS Code 断点调试入门（可选，但强烈建议试一次）</li>
+        <li>高效提问模板：<b>目标 + 代码 + 完整报错 + 已试过什么</b></li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code># 读文件时做好防护
+try:
+    with open("news.csv", encoding="utf-8") as f:
+        content = f.read()
+except FileNotFoundError:
+    print("文件不存在，请检查路径：", "news.csv")
+except UnicodeDecodeError:
+    print("编码不对，试试 encoding='gbk'")
+
+# 调试：把中间状态打出来
+news = {"标题": "AI 新闻"}
+print("news 的类型：", type(news))
+print("标题：", news.get("来源", "（没有来源字段）"))</code></pre>
+    <div class="why"><b>为什么学这个：</b>这一课的价值不在语法，在<b>心态</b>。零基础的人卡住，99% 不是「不会写」，是「看到报错就慌」。<b>学会读报错、自己定位问题，这是自学能不能继续下去的分水岭。</b></div>
+    <div class="outcome"><b>课后必做：</b>故意制造 5 种不同的报错（文件不存在、键不存在、下标越界、类型错误、编码错误），每种都看一遍报错信息并修好。</div>
+  </section>
+
+  <div class="stage-title">
+    <span>阶段三 · 文本与数据实战</span>
+    <span class="num">课 9–13 &nbsp;|&nbsp; 目标：真正拿数据做出东西（本阶段重点）</span>
+  </div>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">9</span>
+      <h2 style="border:none; padding:0; margin:0;">正则表达式（文本清洗的利器）</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 正则基础</b>
+      <ul>
+        <li>正则解决什么问题：按「模式」而不是「精确内容」查找和替换</li>
+        <li><code>re</code> 模块四个函数：<code>search</code> / <code>findall</code> / <code>sub</code> / <code>split</code></li>
+        <li>元字符入门：<code>\d</code> 数字、<code>\w</code> 单词字符、<code>\s</code> 空白、<code>.</code> 任意字符</li>
+        <li>量词：<code>*</code> <code>+</code> <code>?</code> <code>{2,5}</code>；字符集 <code>[abc]</code>、<code>[^abc]</code></li>
+        <li>中文范围 <code>[\u4e00-\u9fa5]</code>（记这一个就够）</li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 正则实战</b>
+      <ul>
+        <li>清洗四件套：去标点、去多余空白、去 HTML 标签、去 URL</li>
+        <li>提取：从文本里抓出所有数字 / 日期 / 邮箱</li>
+        <li>把清洗逻辑封装成函数 <code>clean_text(s)</code></li>
+        <li>正则的坑：<code>r"..."</code> 原始字符串为什么要加 <code>r</code></li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>import re
+
+text = "【重磅】AI 重塑新闻业！详见 https://example.com 阅读 12800 次<br>"
+
+# 1. 去 HTML 标签
+text = re.sub(r"<.*?>", "", text)
+# 2. 去网址
+text = re.sub(r"https?://\S+", "", text)
+# 3. 去标点（保留中文和字母数字）
+text = re.sub(r"[^\w\u4e00-\u9fa5]", "", text)
+
+print(text)                    # 重磅AI重塑新闻业详见阅读12800次
+print(re.findall(r"\d+", text))  # ['12800']</code></pre>
+    <div class="why"><b>为什么学这个：</b>真实世界的新闻文本全是「脏」的 —— 带标签、带推广语、带特殊符号。<b>不洗干净，后面的分词、统计、建模全部失真。</b>正则就是那把刷子。</div>
+    <div class="outcome"><b>课后必做：</b>准备 10 条「带杂质」的标题（含网址、话题标签、emoji、多余空格），写一个清洗函数把它们统一成干净文本。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">10</span>
+      <h2 style="border:none; padding:0; margin:0;">模块、包与第三方库</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 模块与 <code>import</code></b>
+      <ul>
+        <li>模块 = 一个 <code>.py</code> 文件；包 = 一堆模块的文件夹</li>
+        <li>三种导入：<code>import x</code> / <code>from x import y</code> / <code>import x as z</code></li>
+        <li>把自己的 <code>my_tools.py</code> 导进来用（课 5 的成果）</li>
+        <li><code>if __name__ == "__main__":</code> 是什么意思（知道就行）</li>
+        <li>Python 标准库有多全：<code>math</code> / <code>random</code> / <code>datetime</code> / <code>os</code> / <code>json</code> / <code>collections</code> 各看一个例子</li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · pip 与虚拟环境</b>
+      <ul>
+        <li><code>pip install 库名</code> / <code>pip list</code> / <code>pip uninstall</code></li>
+        <li>国外源慢 → 换清华镜像 <code>-i https://pypi.tuna.tsinghua.edu.cn/simple</code></li>
+        <li>虚拟环境是什么、为什么需要（项目之间版本不打架）；<code>python -m venv .venv</code> 建一个试一次</li>
+        <li><code>requirements.txt</code>：记录项目依赖（<code>pip freeze &gt; requirements.txt</code>）</li>
+        <li>报 <code>ModuleNotFoundError</code> 的标准排查顺序</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code># 标准库
+import json, random
+from datetime import datetime
+from collections import Counter
+
+print(datetime.now().strftime("%Y-%m-%d"))
+print(random.choice(["A", "B", "C"]))
+
+# 词频统计：一行拿到 Top3（后面做文本分析直接用）
+words = "新闻 传播 新闻 数据 传播 新闻".split()
+print(Counter(words).most_common(3))   # [('新闻', 3), ('传播', 2), ('数据', 1)]</code></pre>
+    <div class="why"><b>为什么学这个：</b>后面 AI 课程要装一堆库。<b><code>pip install</code> 报错、导入失败、版本冲突</b>，是新手最常见的拦路虎。这一课不是学知识，是<b>提前拆掉地雷</b>。</div>
+    <div class="outcome"><b>课后必做：</b>建一个虚拟环境，在里面装 <code>jieba</code> 并成功用它切一句话；导出 <code>requirements.txt</code>。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">11</span>
+      <h2 style="border:none; padding:0; margin:0;">numpy：数值批量运算</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 数组基础</b>
+      <ul>
+        <li>为什么需要 numpy：Python 列表做 10 万次运算很慢，numpy 快几十倍</li>
+        <li>创建数组：<code>np.array([1,2,3])</code> / <code>np.zeros(5)</code> / <code>np.arange(10)</code> / <code>np.linspace(0,1,5)</code></li>
+        <li><b>核心特性：向量化运算</b> —— <code>arr * 2</code>、<code>arr + arr</code> 直接对每个元素生效，不用写循环</li>
+        <li>形状 <code>shape</code>、维度 <code>ndim</code>、类型 <code>dtype</code></li>
+        <li>二维数组（矩阵）：行、列的概念</li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 索引与统计</b>
+      <ul>
+        <li>索引与切片：<code>arr[0]</code>、<code>arr[0:5]</code>、二维 <code>arr[0, 1]</code>、<code>arr[:, 0]</code>（取一列）</li>
+        <li>布尔索引（<b>重点</b>）：<code>arr[arr &gt; 100]</code> —— 这就是 pandas 筛选的底层原理</li>
+        <li>统计函数：<code>mean</code> / <code>std</code> / <code>max</code> / <code>min</code> / <code>sum</code> / <code>median</code></li>
+        <li>按轴运算 <code>axis=0</code> / <code>axis=1</code>（知道含义即可）</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>import numpy as np
+
+# 10 条新闻的浏览量
+views = np.array([12800, 3400, 9600, 21000, 1500, 7800, 43000, 2200, 6600, 11000])
+
+# 向量化运算：不用写循环
+print("万为单位的浏览量：", views / 10000)
+
+# 布尔索引：筛出爆款
+print("爆款标题位置：", np.where(views > 10000))
+
+# 统计
+print("均值", views.mean(), "中位数", np.median(views), "最高", views.max())</code></pre>
+    <div class="why"><b>为什么学这个：</b>numpy 是所有数据科学和 AI 库的地基 —— pandas 建立在它上面，所有机器学习模型的内部运算都是 numpy 数组。<b>「布尔索引」这一招，学通了 pandas 筛选就不用背。</b></div>
+    <div class="outcome"><b>课后必做：</b>造一组 30 个浏览量数字，用 numpy 算出均值/中位数/标准差，筛出高于均值的部分，并算出它们占比。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">12</span>
+      <h2 style="border:none; padding:0; margin:0;">pandas：表格数据处理（最重要的一课）</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 读表与查看</b>
+      <ul>
+        <li>核心概念：<code>DataFrame</code>（整张表）与 <code>Series</code>（一列）</li>
+        <li><code>pd.read_csv("news.csv")</code>；中文乱码加 <code>encoding="utf-8-sig"</code>；指定列名 <code>names=</code></li>
+        <li>查看：<code>head()</code> / <code>tail()</code> / <code>shape</code> / <code>info()</code> / <code>describe()</code> / <code>columns</code></li>
+        <li>选列 <code>df["标题"]</code>、选多列 <code>df[["标题","来源"]]</code></li>
+        <li>存回文件 <code>df.to_csv("out.csv", index=False, encoding="utf-8-sig")</code></li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 筛选 / 排序 / 分组（四板斧）</b>
+      <ul>
+        <li><b>筛选</b>：<code>df[df["浏览"] &gt; 10000]</code>、多条件 <code>&amp;</code> <code>|</code>、文本包含 <code>df["标题"].str.contains("AI", na=False)</code></li>
+        <li><b>排序</b>：<code>df.sort_values("浏览", ascending=False)</code></li>
+        <li><b>计数</b>：<code>df["来源"].value_counts()</code> —— 哪个媒体发得最多</li>
+        <li><b>分组</b>：<code>df.groupby("来源")["浏览"].mean()</code> —— 各来源平均浏览量</li>
+        <li>新增列：<code>df["标题长度"] = df["标题"].str.len()</code></li>
+        <li><code>apply()</code>：把自定义函数套到每一行/每一列</li>
+      </ul>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>import pandas as pd
+
+df = pd.read_csv("news.csv", encoding="utf-8-sig")
+
+print(df.shape)          # (200, 4)
+print(df.head())         # 看前 5 行
+
+# 四板斧
+hot = df[df["浏览"] > 10000]                        # 筛选
+top10 = df.sort_values("浏览", ascending=False).head(10)   # 排序
+by_source = df["来源"].value_counts()                # 计数
+avg = df.groupby("来源")["浏览"].mean().sort_values(ascending=False)  # 分组
+
+# 新增列 + 按条件打标
+df["标题长度"] = df["标题"].str.len()
+df["是否爆款"] = df["浏览"].apply(lambda x: "是" if x > 10000 else "否")
+
+df.to_csv("news_processed.csv", index=False, encoding="utf-8-sig")</code></pre>
+    <div class="why"><b>为什么学这个：</b><b>这是 13 次课里最重要的一课。</b>不管你后面做情感分析、文本分类还是任何 AI 应用，<b>第一步永远是「用 pandas 把数据读进来、清理好」</b>。这一课学扎实，后面的 AI 课你就有 70% 的把握跟上。</div>
+    <div class="outcome"><b>课后必做：</b>用一份 100+ 行的新闻 CSV，完成：① 筛出含某关键词的；② 按浏览量排 Top10；③ 统计各来源数量；④ 算出各来源平均浏览量；⑤ 结果存成新 CSV。</div>
+  </section>
+
+  <section>
+    <div class="lesson-head">
+      <span class="lesson-no">13</span>
+      <h2 style="border:none; padding:0; margin:0;">matplotlib 绘图 + 综合小项目</h2>
+    </div>
+    <div class="half">
+      <b>上半场 45 min · 画图基础</b>
+      <ul>
+        <li>为什么画图：数字表格看不出趋势，图一看就明白</li>
+        <li><code>matplotlib.pyplot as plt</code> 基本流程：准备数据 → 画 → 加标题/轴标签 → <code>show()</code> / <code>savefig()</code></li>
+        <li>三种常用图：折线 <code>plot</code>、柱状 <code>bar</code>、散点 <code>scatter</code></li>
+        <li><b>中文显示方块问题</b>：<code>plt.rcParams["font.sans-serif"] = ["SimHei"]</code>（Windows）/ <code>["Arial Unicode MS"]</code>（macOS）</li>
+        <li>存图 <code>plt.savefig("chart.png", dpi=300, bbox_inches="tight")</code></li>
+        <li>pandas 直接画：<code>df["来源"].value_counts().plot.bar()</code></li>
+      </ul>
+    </div>
+    <div class="half">
+      <b>下半场 45 min · 综合小项目</b>
+      <p>把前 12 次课的东西全串起来，做一份完整的「新闻数据分析」：</p>
+      <ol>
+        <li>读入 200 条新闻 CSV</li>
+        <li>清洗标题（去标点、去杂质）</li>
+        <li>筛出含关键词的条目</li>
+        <li>统计各来源数量、各来源平均浏览量</li>
+        <li>画 3 张图：来源分布柱状图、浏览量分布直方图、浏览量 Top10 条形图</li>
+        <li>把清洗后的数据存成新 CSV</li>
+        <li>写一段 200 字结论：你从数据里看到了什么</li>
+      </ol>
+    </div>
+    <h3>要写出来的代码</h3>
+    <pre><code>import pandas as pd
+import matplotlib.pyplot as plt
+
+# 中文显示设置（Windows）
+plt.rcParams["font.sans-serif"] = ["SimHei"]
+plt.rcParams["axes.unicode_minus"] = False
+
+df = pd.read_csv("news_processed.csv", encoding="utf-8-sig")
+
+# 图 1：各来源条数
+df["来源"].value_counts().head(10).plot.bar(figsize=(8,5))
+plt.title("各来源新闻条数")
+plt.tight_layout()
+plt.savefig("chart1_source.png", dpi=300)
+
+# 图 2：浏览量分布
+df["浏览"].plot.hist(bins=20, figsize=(8,5))
+plt.title("浏览量分布")
+plt.savefig("chart2_views.png", dpi=300)
+
+plt.show()</code></pre>
+    <div class="why"><b>为什么学这个：</b>分析结果最终要给人看。<b>一张图胜过一千行代码输出</b> —— 这条在后面做 AI 应用（情感分布、分类结果）时同样成立。</div>
+    <div class="outcome"><b>结课验收：</b>用「够用的标准」那 6 条自测一遍。全过 → Python 基础阶段完成，可以进后面的 AI 课程。</div>
+  </section>
+
+  <section>
+    <h2>学 / 不学一览（这 13 次课的范围）</h2>
+    <table>
+      <thead><tr><th>学（会用到）</th><th>不学（这 13 次课不碰）</th></tr></thead>
+      <tbody>
+        <tr><td>变量、四种基本类型、类型转换</td><td>面向对象：类、对象、继承、多态、魔术方法</td></tr>
+        <tr><td>字符串操作、列表、字典、元组、集合</td><td>装饰器、生成器、迭代器、闭包、上下文管理器原理</td></tr>
+        <tr><td><code>if</code> / <code>for</code> / <code>while</code> / 推导式</td><td>多线程、多进程、异步 <code>asyncio</code></td></tr>
+        <tr><td>函数、参数、返回值、作用域</td><td>元类、描述符、<code>__slots__</code></td></tr>
+        <tr><td>文件读写、CSV、异常处理、调试</td><td>数据库操作、网络编程、Web 框架（Django/Flask）</td></tr>
+        <tr><td>正则表达式、模块与包、pip、虚拟环境</td><td>自己发布包到 PyPI</td></tr>
+        <tr><td>numpy 基础、pandas 读表/筛选/排序/分组</td><td>numpy 高级广播、pandas 多表 join / 透视表 / 时间序列</td></tr>
+        <tr><td>matplotlib 三种基础图</td><td>seaborn / plotly 等高级可视化库</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      右栏不是「不重要」，是<b>「后面 AI 课程用不着，或者用到了再学更快」</b>。19.5 小时很宝贵，花在刀刃上。
+    </blockquote>
+  </section>
+
+  <section>
+    <h2>卡住时的自救流程（按顺序做）</h2>
+    <ol>
+      <li><b>先完整读完报错</b>，尤其最后一行和 Traceback 里的文件名+行号。</li>
+      <li>高频错误对照表：
+        <table>
+          <thead><tr><th>报错关键词</th><th>大概率原因</th><th>怎么改</th></tr></thead>
+          <tbody>
+            <tr><td><code>UnicodeDecodeError</code></td><td>读文件没指定编码</td><td>加 <code>encoding="utf-8"</code>，还错试 <code>gbk</code> 或 <code>utf-8-sig</code></td></tr>
+            <tr><td><code>ModuleNotFoundError</code></td><td>库没装 / 装错环境</td><td><code>pip install 库名</code>；检查是不是装到了另一个 Python 环境</td></tr>
+            <tr><td><code>FileNotFoundError</code></td><td>路径不对</td><td>确认文件和脚本同目录，或用绝对路径</td></tr>
+            <tr><td><code>KeyError</code></td><td>字典里没这个键</td><td>先 <code>print(d.keys())</code> 看有什么；用 <code>get()</code> 兜底</td></tr>
+            <tr><td><code>IndexError</code></td><td>下标超范围</td><td>检查 <code>len()</code>，注意下标从 0 开始</td></tr>
+            <tr><td><code>IndentationError</code></td><td>缩进不一致</td><td>统一用 4 个空格，别混 Tab</td></tr>
+            <tr><td>图表中文方块</td><td>没设中文字体</td><td><code>plt.rcParams["font.sans-serif"] = ["SimHei"]</code></td></tr>
+          </tbody>
+        </table>
+      </li>
+      <li>还没解决：<b>打印中间变量</b>，确认数据到哪一步变得「不是你以为的样子」。</li>
+      <li>最后才问人/AI，提问带上：<b>我的目标 + 完整代码 + 完整报错 + 已经试过什么</b>。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>几次课之后往哪走</h2>
+    <p>13 次课跑完、6 条验收标准全过，你就具备了「用 Python 处理数据」的基本功，可以进后面的人工智能理论与应用课程。届时会用到：</p>
+    <ul>
+      <li><b>pandas + numpy</b>（课 11–12）→ 数据预处理，占 AI 项目 60% 的工作量</li>
+      <li><b>正则 + 字符串操作</b>（课 2、9）→ 文本清洗，自然语言处理的第一步</li>
+      <li><b>函数 + 循环 + 推导式</b>（课 4–6）→ 看懂模型的调用方式</li>
+      <li><b>matplotlib</b>（课 13）→ 结果可视化</li>
+      <li><b>pip + 虚拟环境</b>（课 10）→ 装 AI 库（sklearn、transformers 等）</li>
+    </ul>
+    <p class="meta">
+      换句话说：这 13 次课挑的知识点，全部是为后面的 AI 课程铺的路 —— 不多学一句用不上的东西。
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      <b>Python 基础学习地图</b> · 面向新闻传播学零基础自学 · 13 次课 × 90 分钟 = 19.5 小时<br>
+      存放位置：<code>learning-materials/python-learning-map.html</code><br>
+      配套资源：<a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">
+      本页为学习规划，非知识性引用文本；代码示例均已按 Python 3.12 标准库 / 主流第三方库写法核对。
+    </p>
+  </footer>
+</div>
+</body>
+</html>
