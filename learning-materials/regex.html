@@ -612,7 +612,7 @@ re.findall(r"[\u4e00-\u9fa5]+", "Hello 世界，Python 编程")
     </ol>
     <blockquote class="warn">
       还有一种绕开字符范围的方式：用 <code>\w</code> 加 Unicode 默认行为——因为官方说 <code>\w</code> 在 Unicode 模式下
-      「包括所有 Unicode 字母数字类字符（由 <code>str.isalnum()` 定义）」，其中就包含汉字。
+      「包括所有 Unicode 字母数字类字符（由 <code>str.isalnum()</code> 定义）」，其中就包含汉字。
       所以 <code>\w+</code> 能匹配中文。但这会同时匹配英文和数字，
       所以「只要中文」还是得用字符范围。
     </blockquote>

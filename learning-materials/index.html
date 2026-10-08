@@ -92,7 +92,7 @@
   <header>
     <h1>概念目录</h1>
     <p class="subtitle">
-      Python 基础概念学习资料 · 共 15 个概念 &nbsp;|&nbsp; 配套 <a href="python-learning-map.html">13 次课学习地图</a><br>
+      Python 基础概念学习资料 · 共 16 个概念 &nbsp;|&nbsp; 配套 <a href="python-learning-map.html">13 次课学习地图</a><br>
       每个概念一份独立资料，本页负责建立概念之间的联系
     </p>
   </header>
@@ -115,6 +115,7 @@
       <b>依赖主线</b>（虚线框是还没生成的）
       <div class="arrow-row">
         <span class="node">变量与类型</span><span class="arrow">→</span>
+        <span class="node">运算符</span><span class="arrow">→</span>
         <span class="node">字符串</span><span class="arrow">→</span>
         <span class="node">列表</span><span class="arrow">→</span>
         <span class="node">字典</span><span class="arrow">→</span>
@@ -155,6 +156,12 @@
         <span class="no">01</span><span class="badge done">已完成</span>
         <div class="name">变量与数据类型</div>
         <div class="desc">变量是名字、类型是形状。四种基本类型、类型转换、浮点精度、命名规则</div>
+      </a>
+
+      <a class="card" href="operators.html">
+        <span class="no">01.5</span><span class="badge done">已完成</span>
+        <div class="name">运算符</div>
+        <div class="desc">对数据下的指令。算术 / 比较 / 逻辑 / 赋值 / 成员 / 身份 / 位运算，以及优先级与 PEP 8 书写规范</div>
       </a>
 
       <a class="card" href="strings.html">
@@ -259,7 +266,7 @@
 
     </div>
     <blockquote class="ok">
-      <b>15 个概念已全部生成完毕。</b>建议按 01 → 15 的顺序读；如果只想先跑通一条线，
+      <b>16 个概念已全部生成完毕。</b>建议按 01 → 15 的顺序读（01.5 运算符是插在第 1、2 份之间的补充，建议第一遍就一起读）；如果只想先跑通一条线，
       可以走「01 → 03 → 04 → 06 → 09 → 14」这条最短路径，它覆盖了处理新闻数据最常用的一整套操作。
     </blockquote>
   </section>
@@ -334,6 +341,20 @@
       不管后面用什么高级工具，数据永远以文件形式存在。<code>read_csv</code> 帮你省掉手写 <code>open</code> 的活，
       但底层就是课 09 学的东西 —— 包括那个绕不过去的中文编码问题。
     </p>
+
+    <h3>联系 7：运算符是所有类型共享的「动作接口」—— 跨「运算符 / 变量 / 字符串 / 列表 / pandas」</h3>
+    <div class="arrow-row">
+      <span class="node">变量与类型</span><span class="arrow">→</span>
+      <span class="node">运算符</span><span class="arrow">→</span>
+      <span class="node">字符串 / 列表</span><span class="arrow">→</span>
+      <span class="node">pandas</span>
+    </div>
+    <p>
+      同一个符号在不同类型上是不同动作：<code>+</code> 敲数字是加法、敲字符串是拼接、敲列表是接续、敲 pandas 的 Series 是逐元素相加。
+      <b>所以「运算符」不是独立的一课，它是所有类型共用的动作层</b> —— 学完类型再看运算符，字符串与列表那些「+ 和 * 还能这么用」的写法会自动串起来。
+      反过来，凡是报 <code>TypeError</code> 的运算，几乎都是「运算符遇到了它不认识的类型组合」。
+      详见 <a href="operators.html#s6">运算符 · 概念辨析</a> 与 <a href="vars-and-types.html#s6">变量与类型 · 辨析 2</a>。
+    </p>
   </section>
 
   <section>
@@ -350,7 +371,7 @@
     </p>
     <h3>这些和 13 次课学习地图是什么关系？</h3>
     <p>
-      <a href="python-learning-map.html">学习地图</a>是「什么时候学什么」的日程表；本页的 15 份资料是「每个知识点具体讲什么」的内容。
+      <a href="python-learning-map.html">学习地图</a>是「什么时候学什么」的日程表；本页的 16 份资料是「每个知识点具体讲什么」的内容。
       地图里第 N 课讲的内容，通常对应这里 1–2 份概念资料。
     </p>
   </section>

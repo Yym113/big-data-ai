@@ -54,6 +54,20 @@ description: 把任意一个陌生概念，拆成「可自学、可复述、可�
 
 ## 自检清单（生成完成后逐条核对，再宣告完成）
 
+**第一步先跑脚本**，它比人眼快且不会漏（脚本随本 skill 一起提交在 `scripts/lint_html.py`）：
+
+```bash
+python .workbuddy/skills/concept-unpacker/scripts/lint_html.py learning-materials
+```
+
+检查四项：① 标签闭合与嵌套是否错位；② 目录锚点 `href="#sN"` 是否都有对应 `id`；
+③ 页内本地链接（相对文件名）是否存在；④ **代码标识符是否混入中文**。
+退出码 `0` = 全部通过，`1` = 有文件待修（问题逐条打印）。
+Windows 下若中文输出乱码，先执行 `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8` 再调用。
+
+脚本通过后，再人眼过一遍下面这几条：
+
+- [ ] 上述脚本退出码为 0
 - [ ] 每条参考链接都用 WebFetch 或浏览器访问过，返回 200（或明确说明哪条核不到）
 - [ ] 没有「看似资料里有但实际不存在」的引用
 - [ ] 自测题答案都在正文里有解释

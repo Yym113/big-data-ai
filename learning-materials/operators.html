@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>运算符 | Python 概念学习资料</title>
+  <style>
+    :root {
+      --bg: #fafaf7;
+      --card: #ffffff;
+      --border: #e2e0d8;
+      --text: #1a1a17;
+      --muted: #5a5a55;
+      --accent: #2c5a87;
+      --accent-bg: #ecf2f8;
+      --link: #1d5b9c;
+      --code-bg: #f3f1ea;
+      --warn: #b45309;
+      --warn-bg: #fdf6ec;
+      --ok: #2f7a4f;
+      --ok-bg: #eef7f1;
+      --purple: #4a3d8c;
+      --purple-bg: #f0edf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 32px 24px 80px; }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; font-size: 2.1rem; color: var(--accent); }
+    h2 { margin-top: 0; font-size: 1.35rem; color: var(--text); border-left: 4px solid var(--accent); padding-left: 12px; }
+    h3 { font-size: 1.05rem; margin-top: 1.4em; }
+    .subtitle { color: var(--muted); font-size: 0.95rem; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px 28px; margin-bottom: 20px; }
+    ul, ol { padding-left: 22px; }
+    li { margin: 4px 0; }
+    blockquote { border-left: 3px solid var(--accent); background: var(--accent-bg); margin: 12px 0; padding: 10px 16px; border-radius: 4px; }
+    blockquote.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    blockquote.ok { border-left-color: var(--ok); background: var(--ok-bg); }
+    code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.92em; font-family: Consolas, "Courier New", monospace; }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+    pre code { background: none; padding: 0; font-size: 0.88em; line-height: 1.6; }
+    table { border-collapse: collapse; border: 1px solid var(--border); width: 100%; margin: 12px 0; font-size: 0.94rem; }
+    th, td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); font-weight: 600; }
+    a { color: var(--link); }
+    .meta { color: var(--muted); font-size: 0.88em; }
+    .toc { background: var(--accent-bg); border: 1px solid #cfe0ee; border-radius: 8px; padding: 16px 24px; margin-bottom: 20px; }
+    .toc h3 { margin: 0 0 8px; color: var(--accent); }
+    .toc ol { margin: 0; padding-left: 20px; }
+    .toc a { text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .qa { border-left: 3px solid var(--purple); background: var(--purple-bg); border-radius: 4px; padding: 10px 16px; margin: 10px 0; }
+    .qa b { color: var(--purple); }
+    .qa .ans { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font-size: 0.85em; }
+    .badge { display:inline-block; font-size:0.75rem; padding:2px 8px; border-radius:10px; background:var(--accent-bg); color:var(--accent); font-weight:600; }
+    @media (max-width: 640px) { .wrap { padding: 20px 14px 60px; } section { padding: 18px 16px; } h1 { font-size: 1.55rem; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>运算符</h1>
+    <p class="subtitle">
+      Python 概念学习资料 · 第 1.5 份（插在第 1、2 份之间）&nbsp;|&nbsp; 深度：入门 &nbsp;|&nbsp; 适用：人工智能与大数据课程 零基础<br>
+      <a href="index.html">← 返回概念目录</a>
+    </p>
+  </header>
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#s1">个人理解（先说人话）</a></li>
+      <li><a href="#s2">学习目标</a></li>
+      <li><a href="#s3">核心问题清单</a></li>
+      <li><a href="#s4">结构化解释</a></li>
+      <li><a href="#s5">应用场景</a></li>
+      <li><a href="#s6">概念辨析</a></li>
+      <li><a href="#s7">自测问题</a></li>
+      <li><a href="#s8">可核查参考来源</a></li>
+      <li><a href="#s9">本次生成的核查记录</a></li>
+    </ol>
+  </nav>
+
+  <section id="s1">
+    <h2>1 · 个人理解（先说人话）</h2>
+    <p>
+      上一份资料说：<b>变量是名字，类型是形状</b>。那运算符是什么？
+      <b>运算符是你对盒子里的东西下的指令 —— 是动词。</b>
+    </p>
+    <pre><code>total = 12 + 30
+#         ↑ 这就是运算符：告诉 Python「把这两个数加起来」</code></pre>
+    <p>
+      但运算符最反直觉的一点是：<b>同一个符号，遇到不同的类型，干的是完全不同的事。</b>
+    </p>
+    <pre><code>12 + 30        # 42        两个数字 → 加法
+"12" + "30"    # "1230"    两个字符串 → 拼接，不是加法
+[1, 2] + [3]   # [1, 2, 3] 两个列表 → 接成一串
+
+# 同理，* 也不只是乘法：
+3 * 4          # 12         数字 × 数字 → 乘法
+"ab" * 3       # "ababab"   字符串 × 整数 → 重复三次</code></pre>
+    <blockquote>
+      一句话记住：<b>运算符是给数据下的指令，结果由两边数据的类型决定。</b>
+      所以「这个符号是什么意思」这个问题，永远要先回答「它两边的数据是什么类型」。
+      这也是为什么第 1 份资料要先讲类型 —— 不讲类型，运算符根本没法讲。
+    </blockquote>
+    <p>
+      还有一条贯穿全程的规则：<b>运算符有先后顺序，不确定就用括号。</b>
+      官方教程专门为这件事加了一条脚注：<code>**</code> 比 <code>-</code> 优先级更高，所以 <code>-3**2</code> 会被解释成 <code>-(3**2)</code>，结果是 <code>-9</code>；
+      想要 <code>9</code> 就得写 <code>(-3)**2</code>。这不是冷知识，是新手必然会踩的坑。
+    </p>
+  </section>
+
+  <section id="s2">
+    <h2>2 · 学习目标</h2>
+    <p>学完这份资料，你应该能：</p>
+    <ol>
+      <li>说出 Python 运算符的<b>七大类</b>，并各自举一个例子；</li>
+      <li>解释 <code>/</code> 与 <code>//</code> 的区别，并准确预测 <code>17/3</code>、<code>17//3</code>、<code>-7//2</code>、<code>-7%2</code> 的结果；</li>
+      <li>解释为什么 <code>and</code> / <code>or</code> 返回的是<b>操作数本身</b>而不是 <code>True</code> / <code>False</code>，并会用 <code>s or "默认值"</code> 兜底；</li>
+      <li>区分 <code>==</code> 与 <code>is</code>，并说出判断 <code>None</code> 时该用哪个；</li>
+      <li>看懂官方优先级表，并养成「拿不准就加括号」的习惯；</li>
+      <li>按 PEP 8 的要求正确书写运算符两侧的空格；</li>
+      <li>知道位运算符是干什么的，以及为什么现阶段可以先放着不深入。</li>
+    </ol>
+  </section>
+
+  <section id="s3">
+    <h2>3 · 核心问题清单</h2>
+    <p>按「最小工作单元 → 与外部关系 → 边界与误用」递进：</p>
+    <ol>
+      <li>为什么 <code>+</code> 有时候是加法、有时候是拼接？决策依据是什么？</li>
+      <li><code>/</code> 和 <code>//</code> 到底差在哪？为什么 Python 非要搞两个除法？</li>
+      <li><code>%</code> 除了「求余数」还有什么实际用途？负数取余为什么结果跟我想的不一样？</li>
+      <li><code>**</code> 的结合方向是左还是右？为什么 <code>2**3**2</code> 不等于 <code>(2**3)**2</code>？</li>
+      <li><code>and</code> / <code>or</code> 到底返回什么？为什么 <code>"a" or "b"</code> 得到的是 <code>"a"</code> 而不是 <code>True</code>？</li>
+      <li><code>=</code> 和 <code>==</code> 为什么不能混？写错会报什么错？</li>
+      <li><code>==</code> 和 <code>is</code> 有什么区别？什么时候必须用 <code>is</code>？</li>
+      <li><code>a &lt; b &lt; c</code> 在 Python 里为什么合法？它等价于什么？</li>
+      <li>位运算符 <code>&amp; | ^ ~ &lt;&lt; &gt;&gt;</code> 是干什么的？零基础要不要掌握？</li>
+      <li><code>+=</code> 和 <code>= ... + ...</code> 是一回事吗？为什么说法不完全一样？</li>
+      <li>这么多运算符碰到一起，谁先算？记不住怎么办？</li>
+    </ol>
+  </section>
+
+  <section id="s4">
+    <h2>4 · 结构化解释</h2>
+
+    <h3>4.1 定义</h3>
+    <p>
+      <b>运算符（operator）</b>：用来对一个或多个「操作数（operand）」执行某种运算的符号。
+      在 Python 中，运算符对操作数做什么，<b>由操作数的类型决定</b> —— 同一个符号挂到不同类型上，可以调用完全不同的实现。
+    </p>
+    <p>
+      这也是 Python 官方给出的算术转换规则的由来：官方文档在 <code>+</code>、<code>-</code>、<code>*</code>、<code>/</code>、<code>//</code>、<code>%</code> 的说明里都反复写着
+      <b>「数字参数被转换为通用类型」</b>（numeric arguments are first converted to a common type），
+      而 <code>+</code> 单独补了一句：参数「要么都是数字，要么都是同类型的序列」，前者相加、后者拼接。
+    </p>
+
+    <h3>4.2 最小模型：一条表达式怎么被算出来</h3>
+    <pre><code>result = "reads: " + str(12800)
+
+# 1. 先看优先级：str(...) 是函数调用，最高优先级，先算 → "12800"
+# 2. 现在两边都是 str，+ 选择「拼接」这条实现 → "reads: 12800"
+# 3. 赋值符 = 把结果贴到名字 result 上
+
+bad = "reads: " + 12800
+# TypeError: can only concatenate str (not "int") to str
+# ↑ 同一个 + ，左边是 str 右边是 int，找不到能同时处理两者的实现 → 报错</code></pre>
+    <blockquote>
+      <b>关键点：运算符没有「通用含义」，只有「针对某类型的含义」。</b>
+      报 <code>TypeError</code> 时，本质上不是运算符坏了，而是你让它处理了一对它不认识的类型组合。
+    </blockquote>
+
+    <h3>4.3 类比</h3>
+    <table>
+      <thead><tr><th>概念</th><th>类比</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>运算符</td><td>动词 / 工具</td><td>「加起来」「比较一下」「取反」</td></tr>
+        <tr><td>操作数</td><td>被操作的东西</td><td>工具拿来用的材料</td></tr>
+        <tr><td>类型决定行为</td><td>同一把锤子，敲钉子 / 敲核桃</td><td><code>+</code> 敲数字是加法，敲字符串是拼接</td></tr>
+        <tr><td>优先级</td><td>先锯后钉的工序</td><td>顺序错了，做出来的是废品（<code>-3**2</code>）</td></tr>
+        <tr><td>括号</td><td>先干这一步</td><td>拿不准就加，不加括号才是有风险的写法</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.4 七大类运算符速查</h3>
+    <table>
+      <thead><tr><th>类别</th><th>运算符</th><th>典型例子</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td>算术</td><td><code>+ - * / // % **</code></td><td><code>17 // 3</code></td><td><code>5</code></td></tr>
+        <tr><td>比较</td><td><code>== != &lt; &lt;= &gt; &gt;=</code></td><td><code>5 &gt;= 5</code></td><td><code>True</code></td></tr>
+        <tr><td>逻辑</td><td><code>and or not</code></td><td><code>not ""</code></td><td><code>True</code></td></tr>
+        <tr><td>赋值</td><td><code>= += -= *= /= //= %= **=</code></td><td><code>n += 1</code></td><td>就地更新 <code>n</code></td></tr>
+        <tr><td>成员</td><td><code>in</code> <code>not in</code></td><td><code>"Py" in "Python"</code></td><td><code>True</code></td></tr>
+        <tr><td>身份</td><td><code>is</code> <code>is not</code></td><td><code>x is None</code></td><td><code>True</code> / <code>False</code></td></tr>
+        <tr><td>位</td><td><code>&amp; | ^ ~ &lt;&lt; &gt;&gt;</code></td><td><code>6 &amp; 3</code></td><td><code>2</code></td></tr>
+      </tbody>
+    </table>
+    <p class="meta">
+      说明：<code>is</code> / <code>in</code> 与六个比较运算符<b>优先级完全相同</b>（官方原文：「请注意比较、成员检测和标识号检测均为相同优先级」）。
+    </p>
+
+    <h3>4.5 算术运算符：真正需要理解的部分</h3>
+
+    <h4>（1）<code>/</code> 与 <code>//</code>：为什么要有两个除法</h4>
+    <pre><code>17 / 3    # 5.666666666666667   ← 除法运算总是返回浮点数
+17 // 3   # 5                    ← 向下取整除法，丢弃小数部分
+17 % 3    # 2                    ← 取余
+5 * 3 + 2 # 17                   ← 官方用这行说明三者关系</code></pre>
+    <p>
+      官方教程的原话是：<b>「除法运算（<code>/</code>）总是返回浮点数」</b>。
+      想要整数结果就用 <code>//</code>；要余数用 <code>%</code>。
+    </p>
+    <p>
+      <code>//</code> 的名字容易骗人：它不是「截断小数」，而是<b>向下取整（floor，朝负无穷方向）</b>。
+      官方文档给了四组对照：
+    </p>
+    <table>
+      <thead><tr><th>表达式</th><th>结果</th><th>为什么</th></tr></thead>
+      <tbody>
+        <tr><td><code>1 // 2</code></td><td><code>0</code></td><td>0.5 向下取整</td></tr>
+        <tr><td><code>(-1) // 2</code></td><td><code>-1</code></td><td>-0.5 向下取整 → 更小的整数</td></tr>
+        <tr><td><code>1 // (-2)</code></td><td><code>-1</code></td><td>-0.5 向下取整</td></tr>
+        <tr><td><code>(-1) // (-2)</code></td><td><code>0</code></td><td>0.5 向下取整</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      <b>新手必踩：负数整除。</b><code>-7 // 2</code> 的结果是 <code>-4</code>（不是 -3），因为 -3.5 向下取整到 -4。
+      想验证就记住官方给的恒等式：<code>x == (x // y) * y + (x % y)</code>，以及 <code>divmod(x, y) == (x // y, x % y)</code>。
+    </blockquote>
+
+    <h4>（2）<code>%</code>：结果的符号跟着除数走</h4>
+    <p>
+      官方原文：<b>「取模运算符的结果符号总是与第二个操作数相同（或为零）」</b>，
+      并且结果的绝对值严格小于第二个操作数的绝对值。所以 <code>-7 % 2</code> 是 <code>1</code>，而 <code>7 % -2</code> 是 <code>-1</code>。
+    </p>
+    <p>实际用途（比「求余数」这个说法有用得多）：</p>
+    <pre><code># 判奇偶：偶数对 2 取余为 0
+count = 7
+if count % 2 == 0:
+    print("even")
+else:
+    print("odd")
+
+# 周期循环：第 i 条数据分到 7 个桶里的哪一个
+bucket = i % 7
+
+# 补零显示：把 3 显示成 003
+label = str(3).zfill(3)   # 这也是「字符串格式化」的用法，见第 2 份资料</code></pre>
+
+    <h4>（3）<code>**</code>：右结合，且与一元符号有坑</h4>
+    <p>
+      官方优先级表注写明：<b>「相同单元格内的运算符从左至右组合（只有幂运算符和条件表达式是从右至左组合的）」</b>。
+      所以 <code>2 ** 3 ** 2</code> 等于 <code>2 ** 9 = 512</code>，而不是 <code>8 ** 2 = 64</code>。
+    </p>
+    <pre><code>10 ** 2     # 100     整数底数与正整数指数 → int
+10 ** -2    # 0.01    指数为负 → 结果转为 float
+2 ** -1     # 0.5     幂运算符绑定（比其右侧的一元运算符）松，所以是 2 ** (-1)
+-3 ** 2     # -9      等价于 -(3**2)，不是 (-3)**2
+(-3) ** 2   # 9       想要 9 就得这么写</code></pre>
+    <p class="meta">
+      其他官方给出的边界：<code>0 ** 0</code> 定义为 <code>1</code>；对 <code>0.0</code> 取负幂会抛 <code>ZeroDivisionError</code>；对负数取分数幂会返回 <code>complex</code>。
+    </p>
+
+    <h4>（4）当 <code>+</code> 和 <code>*</code> 遇到序列</h4>
+    <p>
+      官方原文：<code>+</code> 的两个参数「要么都是数字，要么都是<b>同类型</b>的序列」——后者执行拼接。
+      <code>*</code> 则允许「一个是整数、另一个是序列」，此时执行重复；<b>负数重复次数会得到空序列</b>。
+    </p>
+    <pre><code>3 * "un" + "ium"          # 'unununium'        官方教程原例
+[1, 4, 9] + [16, 25]      # [1, 4, 9, 16, 25]  列表拼接
+"ab" * 0                  # ''                 重复 0 次
+"ab" * -1                 # ''                 负数视为 0</code></pre>
+    <blockquote class="warn">
+      <b>经典陷阱：<code>[[]] * 3</code>。</b>
+      官方文档专门用一段警告这件事：<code>[[]] * 3</code> 得到的是<b>三个指向同一个空列表的引用</b>，
+      所以 <code>lists[0].append(3)</code> 之后整个 <code>lists</code> 会变成 <code>[[3], [3], [3]]</code>。
+      正确做法是用推导式：<code>[[] for i in range(3)]</code>。
+    </blockquote>
+
+    <h4>（5）混合类型的算术：窄的变宽的</h4>
+    <pre><code>4 * 3.75 - 1   # 14.0   官方教程原例：混合类型运算会把整数转换为浮点数
+1 + 1.0        # 2.0
+"1" + 1        # TypeError: can only concatenate str (not "int") to str</code></pre>
+    <p>
+      官方「内置类型」章节的原话是：当二元算术运算符的两个操作数是不同的内置数值类型时，
+      <b>「较窄」的类型会被拓宽到另一个的类型</b>。但注意 —— 这条规则只对数值类型成立，跟字符串没关系。
+    </p>
+
+    <h3>4.6 逻辑运算符：<code>and</code> / <code>or</code> 返回的不是布尔值</h3>
+    <p>
+      这是本文最重要的一个认知纠正。官方原文（语言参考 6.11 布尔运算）：
+    </p>
+    <blockquote>
+      <b>「表达式 <code>x and y</code> 首先对 x 求值；如果 x 为假则返回该值；否则对 y 求值并返回其结果值。」</b><br>
+      <b>「表达式 <code>x or y</code> 首先对 x 求值；如果 x 为真则返回该值；否则对 y 求值并返回其结果值。」</b><br>
+      「请注意 <code>and</code> 和 <code>or</code> 都不限制其返回的值和类型必须为 <code>False</code> 和 <code>True</code>，而是返回最后被求值的操作数。」
+    </blockquote>
+    <pre><code>"a" or "b"      # 'a'      左边为真 → 直接返回左边
+"" or "b"       # 'b'      左边为假 → 返回右边
+[] and "x"      # []       左边为假 → 短路，返回左边
+"y" and "x"     # 'x'      左边为真 → 返回右边
+not ""          # True     只有 not 一定返回布尔值
+not "foo"       # False    官方特别指出：不是返回 '' 而是 False</code></pre>
+    <p>
+      官方还给出了这么设计的理由：假设 <code>s</code> 是一个「当其为空时应被替换为默认值」的字符串，
+      那么 <code>s or "foo"</code> 就能得到想要的结果。<b>这就是它最常用的实战场景</b>（见第 5 节）。
+    </p>
+    <p>
+      另外，「假值」的完整清单也是官方定义的：<code>False</code>、<code>None</code>、任何数值零、以及空字符串和空容器。
+      其余一切都是真值。
+    </p>
+
+    <h3>4.7 比较运算符：可以串起来写</h3>
+    <p>
+      官方原文：<b>「<code>a op1 b op2 c ... y opN z</code> 就等价于 <code>a op1 b and b op2 c and ... y opN z</code>，
+      不同点在于每个表达式最多只被求值一次。」</b>
+    </p>
+    <pre><code>x = 3
+0 &lt; x &lt;= 5      # True    等价于 0 &lt; x and x &lt;= 5，但 x 只求值一次
+0 &lt; x &gt; 2       # True    合法！但注意：它<b>不</b>表示 x 与 2 之外还比较了 0 和 2
+
+# 官方原话：「a op1 b op2 c 不意味着在 a 和 c 之间进行任何比较」
+# 所以 x &lt; y &gt; z 是完全合法的写法，也不代表 x &lt; z。</code></pre>
+
+    <h3>4.8 <code>is</code> 与 <code>==</code>：比的是两个不同的东西</h3>
+    <table>
+      <thead><tr><th>写法</th><th>比较的是什么</th><th>类比</th></tr></thead>
+      <tbody>
+        <tr><td><code>a == b</code></td><td><b>值</b>是否相等（调用 <code>__eq__</code>，内置类型按值比）</td><td>两个盒子里的东西是不是一样</td></tr>
+        <tr><td><code>a is b</code></td><td><b>是不是同一个对象</b>（等价于 <code>id(a) == id(b)</code>）</td><td>是不是同一个盒子本身</td></tr>
+      </tbody>
+    </table>
+    <pre><code>a = [1, 2]
+b = [1, 2]
+a == b     # True    值一样
+a is b     # False   是两个不同的列表对象
+
+x = None
+x is None  # True    ← 这才是判断 None 的标准写法
+a is not b # True</code></pre>
+    <p>
+      官方 FAQ 的结论很干脆：<b>「其他大多数情况下，都不建议使用身份相等性测试，而应采用相等性测试。」</b>
+      官方文档还补充：<code>is</code> / <code>is not</code> 的行为<b>无法被自定义</b>，可以作用于任意两个对象且<b>永不抛异常</b>。
+    </p>
+
+    <h3>4.9 运算符优先级（官方完整表）</h3>
+    <p>下表直接来自官方「6.17 运算符优先级」，从最高优先级（最先绑定）到最低：</p>
+    <table>
+      <thead><tr><th>运算符</th><th>描述</th></tr></thead>
+      <tbody>
+        <tr><td><code>(expr)</code>、<code>[expr]</code>、<code>{key: value}</code>、<code>{expr}</code></td><td>括号 / 列表 / 字典 / 集合 显示</td></tr>
+        <tr><td><code>x[i]</code>、<code>x[i:j]</code>、<code>x(args)</code>、<code>x.attr</code></td><td>抽取（含切片）、调用、属性引用</td></tr>
+        <tr><td><code>await x</code></td><td>await 表达式</td></tr>
+        <tr><td><code>**</code></td><td>乘方</td></tr>
+        <tr><td><code>+x</code>、<code>-x</code>、<code>~x</code></td><td>正、负、按位非</td></tr>
+        <tr><td><code>*</code>、<code>@</code>、<code>/</code>、<code>//</code>、<code>%</code></td><td>乘、矩阵乘、除、整除、取余</td></tr>
+        <tr><td><code>+</code>、<code>-</code></td><td>加、减</td></tr>
+        <tr><td><code>&lt;&lt;</code>、<code>&gt;&gt;</code></td><td>移位</td></tr>
+        <tr><td><code>&amp;</code></td><td>按位与</td></tr>
+        <tr><td><code>^</code></td><td>按位异或</td></tr>
+        <tr><td><code>|</code></td><td>按位或</td></tr>
+        <tr><td><code>in</code>、<code>not in</code>、<code>is</code>、<code>is not</code>、<code>&lt;</code>、<code>&lt;=</code>、<code>&gt;</code>、<code>&gt;=</code>、<code>!=</code>、<code>==</code></td><td>比较、成员检测、标识号检测</td></tr>
+        <tr><td><code>not x</code></td><td>布尔逻辑非</td></tr>
+        <tr><td><code>and</code></td><td>布尔逻辑与</td></tr>
+        <tr><td><code>or</code></td><td>布尔逻辑或</td></tr>
+        <tr><td><code>if ... else ...</code></td><td>条件表达式</td></tr>
+        <tr><td><code>lambda</code></td><td>lambda 表达式</td></tr>
+        <tr><td><code>:=</code></td><td>赋值表达式（海象运算符）</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>给零基础的一句话用法：</b>表不用背。
+      真正需要记住的只有三条 ——
+      ① 括号最高，<code>not</code> 比 <code>and</code> 低、<code>and</code> 比 <code>or</code> 低；
+      ② 比较运算符整组在算术之后；③ <b>拿不准就加括号，加括号永远不会错。</b>
+    </blockquote>
+    <p class="meta">
+      官方对此还有两个易被忽视的点：
+      ① <code>not</code> 的优先级低于非布尔运算符，所以 <code>not a == b</code> 会被解释为 <code>not (a == b)</code>，而 <code>a == not b</code> 是语法错误；
+      ② 位运算的优先级「低于数值运算、高于比较运算」。
+    </p>
+
+    <h3>4.10 增强赋值：<code>+=</code> 是简写，但不完全等同</h3>
+    <pre><code>n = 1
+n += 1        # 等价于 n = n + 1</code></pre>
+    <p>
+      对数字而言两者没差别。但对<b>可变序列</b>，官方文档写明 <code>s += t</code> 的效果是
+      <b>「用 t 的内容扩展 s」</b>（基本等同于 <code>s[len(s):len(s)] = t</code>）—— 也就是<b>就地修改原对象</b>，
+      而不是造一个新列表。这个差别在「两个变量指向同一个列表」时会显形，属于第 3 份《列表》的坑，这里先知道有这么回事。
+    </p>
+    <p>另外 <code>*=</code> 对序列也成立，官方注明：<b>零和负数会清空序列</b>。</p>
+
+    <h3>4.11 位运算符：知道是什么，暂时不用深挖</h3>
+    <p>
+      官方定义：位运算<b>只对整数有意义</b>，结果「如同在具有无限多个符号位的二进制补码中执行」。
+      优先级上，二元位运算<b>低于数值运算、高于比较运算</b>；一元 <code>~</code> 与 <code>+</code> / <code>-</code> 同优先级。
+    </p>
+    <table>
+      <thead><tr><th>运算</th><th>结果</th><th>官方备注</th></tr></thead>
+      <tbody>
+        <tr><td><code>x &amp; y</code></td><td>按位与</td><td>—</td></tr>
+        <tr><td><code>x | y</code></td><td>按位或</td><td>—</td></tr>
+        <tr><td><code>x ^ y</code></td><td>按位异或</td><td>—</td></tr>
+        <tr><td><code>x &lt;&lt; n</code></td><td>左移 n 位</td><td>等价于乘以 <code>pow(2, n)</code>；<b>负移位计数会抛 <code>ValueError</code></b></td></tr>
+        <tr><td><code>x &gt;&gt; n</code></td><td>右移 n 位</td><td>等价于整除 <code>pow(2, n)</code></td></tr>
+        <tr><td><code>~x</code></td><td>按位取反</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="warn">
+      <b>一个官方明确的坑：不要把 <code>&amp;</code> / <code>|</code> / <code>^</code> 当逻辑运算符用。</b>
+      官方原文说得很直接：对两个布尔值用 <code>&amp;</code> / <code>|</code> / <code>^</code> 确实能得到等价结果，
+      但<b>「应优先使用逻辑运算符 <code>and</code>、<code>or</code> 和 <code>!=</code>」</b>。
+      原因之一是它们<b>不短路</b>：<code>x != 0 and 1/x &gt; 1</code> 是安全的，写成 <code>&amp;</code> 就可能在 x 为 0 时直接除零。
+      另一个明确的信号：官方已标注<b>自 3.12 起对布尔值使用 <code>~</code> 的写法被弃用，并将在 3.16 报错</b>。
+    </blockquote>
+    <p class="meta">
+      现阶段的态度：知道 <code>&amp;</code> / <code>|</code> / <code>^</code> / <code>&lt;&lt;</code> / <code>&gt;&gt;</code> 存在、能读懂；
+      在自己写业务代码时用 <code>and</code> / <code>or</code> 表达条件即可。
+    </p>
+
+    <h3>4.12 书写规范：PEP 8 怎么说</h3>
+    <p>PEP 8 的原文规定：</p>
+    <blockquote>
+      <b>「总是在这些二元运算符的两侧各用一个空格：赋值（<code>=</code>）、增强赋值（<code>+=</code>、<code>-=</code> 等）、
+      比较（<code>==</code>、<code>&lt;</code>、<code>&gt;</code>、<code>!=</code>、<code>&lt;=</code>、<code>&gt;=</code>、<code>in</code>、<code>not in</code>、<code>is</code>、<code>is not</code>）、
+      布尔（<code>and</code>、<code>or</code>、<code>not</code>）。」</b>
+    </blockquote>
+    <p>而当不同优先级的运算符混用时，PEP 8 建议<b>只在优先级较低的那些运算符周围加空格</b>：</p>
+    <pre><code># 正确（PEP 8 原例）
+i = i + 1
+submitted += 1
+x = x*2 - 1
+hypot2 = x*x + y*y
+c = (a+b) * (a-b)
+
+# 错误（PEP 8 原例）
+i=i+1
+submitted +=1
+x = x * 2 - 1
+hypot2 = x * x + y * y
+c = (a + b) * (a - b)</code></pre>
+    <blockquote class="warn">
+      这条规则有个例外，也是新手最容易搞错的一处：
+      <b>「不要在用于指示关键字参数或未标注类型的函数默认值时为 <code>=</code> 加空格」</b>，但
+      <b>「当默认值带类型注解时，则要给 <code>=</code> 加空格」</b>。
+    </blockquote>
+    <pre><code># 正确
+def complex(real, imag=0.0):
+    return magic(r=real, i=imag)
+
+def munge(sep: AnyStr = None): ...          # 带注解 → 加空格
+def munge(input: AnyStr, limit=1000): ...   # 无注解 → 不加
+
+# 错误
+def complex(real, imag = 0.0):
+    return magic(r = real, i = imag)</code></pre>
+    <p>另外 PEP 8 还有一条「Pet Peeves」：<b>不要为了对齐而使用多于一个空格</b>。</p>
+  </section>
+
+  <section id="s5">
+    <h2>5 · 应用场景</h2>
+
+    <h3>场景 1：用 <code>//</code> <code>%</code> <code>/</code> 做一份数据小结</h3>
+    <p>假设你统计了一批文章的阅读量，要输出「平均阅读量」和「平均每篇多少字」：</p>
+    <pre><code>total_views = 128430
+article_count = 37
+
+avg_views = total_views / article_count        # 3471.08...  / 得到精确的浮点结果
+per_bucket = total_views // article_count      # 3471         // 得到整数，用于「每篇至少多少」
+rest = total_views % article_count             # 剩下来的零头
+
+print(f"平均 {avg_views:.1f} 次阅读，约 {per_bucket} 次的整份，余 {rest} 次")
+# 平均 3471.1 次阅读，约 3471 次的整份，余 33 次</code></pre>
+    <p class="meta">
+      知识点对应：官方教程明确「<code>/</code> 总是返回浮点数」，<code>//</code> 为整除，<code>%</code> 为余数，且 <code>x == (x // y) * y + (x % y)</code>。
+    </p>
+
+    <h3>场景 2：用 <code>or</code> 给缺失字段兜底 + 用比较运算符做筛选</h3>
+    <p>从表格里读出来的数据常常缺字段，<code>or</code> 的「返回操作数本身」这一特性正好用得上：</p>
+    <pre><code>raw_title = ""
+raw_source = "科技日报"
+
+title = raw_title or "（无标题）"      # '' 为假 → 返回右边 → "（无标题）"
+source = raw_source or "未知来源"      # 非空为真 → 返回左边 → "科技日报"
+
+views = 12800
+if views &gt;= 10000 and source != "未知来源":
+    print(f"{title} | {source} | 热文")</code></pre>
+    <p>
+      这里的 <code>and</code> 也是短路的：如果 <code>views &gt;= 10000</code> 为假，
+      右边根本不会被求值 —— 官方的说法是「它只在第一个参数为真时才求值第二个参数」。
+    </p>
+    <p>
+      再补一个身份比较的标准用法：从表格里取出来的空值常常是 <code>NaN</code> 或 <code>None</code>，
+      判断时用 <code>is None</code>，不要用 <code>== None</code>（官方 FAQ 的建议是「其他大多数情况下，都不建议使用身份相等性测试」，
+      但判断 <code>None</code> 恰恰是它被推荐的标准场景）。
+    </p>
+  </section>
+
+  <section id="s6">
+    <h2>6 · 概念辨析</h2>
+
+    <h3>辨析 1：<code>=</code> 与 <code>==</code>（最高频的笔误）</h3>
+    <pre><code>views = 100        # 赋值：把 100 贴到名字 views 上
+views == 100       # 比较：问「views 是不是等于 100」→ True / False</code></pre>
+    <p>
+      在 <code>if</code> 里写成 <code>if views = 100</code> 会直接 <code>SyntaxError</code>（Python 不像 C 那样允许赋值表达式混进条件里）。
+      这算是好事：错误当场暴露，而不是悄悄跑出错误结果。
+    </p>
+
+    <h3>辨析 2：<code>/</code> 与 <code>//</code> —— 不是「精度」的区别，是「结果类型」的区别</h3>
+    <table>
+      <thead><tr><th>表达式</th><th><code>/</code></th><th><code>//</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>17 / 3</code> 类</td><td><code>17/3 = 5.666666666666667</code></td><td><code>17//3 = 5</code></td></tr>
+        <tr><td>返回类型</td><td>总是 <code>float</code></td><td>整数操作数给 <code>int</code>，浮点操作数给 <code>float</code></td></tr>
+        <tr><td>取整方向</td><td>不取整</td><td><b>朝负无穷</b>（<code>-7//2 = -4</code>）</td></tr>
+      </tbody>
+    </table>
+    <p>不要以为 <code>//</code> 是「丢掉小数部分」——那是 <code>int()</code> 的行为。这两者对负数结果不同：<code>int(-3.5)</code> 是 <code>-3</code>，<code>-3.5 // 1</code> 是 <code>-4.0</code>。</p>
+
+    <h3>辨析 3：<code>==</code> 与 <code>is</code></h3>
+    <p>
+      两者回答的是不同问题：<b>「内容一样吗」</b> vs <b>「是同一个东西吗」</b>。
+      官方 FAQ 的原话是「<code>is</code> 运算符可用于测试对象的身份相等性。<code>a is b</code> 等价于 <code>id(a) == id(b)</code>」，
+      并明确不建议用它测常量值。反过来，<code>is</code> 的两个正当用途是：判断 <code>None</code>，以及判断单例对象。
+    </p>
+
+    <h3>辨析 4：<code>and</code> / <code>or</code> 与 <code>&amp;</code> / <code>|</code></h3>
+    <p>
+      它们长得像，但属于两类运算符：前者是<b>逻辑运算</b>（短路、返回操作数本身），后者是<b>位运算</b>（不短路、对整数按位算）。
+      对布尔值使用 <code>&amp;</code> / <code>|</code> 语法上可行，但官方明确<b>「应优先使用 <code>and</code>、<code>or</code> 和 <code>!=</code>」</b>。
+      最实际的差别是短路：<code>x != 0 and 1/x &gt; 1</code> 不会崩，<code>x != 0 &amp; 1/x &gt; 1</code> 会。
+    </p>
+
+    <h3>辨析 5：<code>+=</code> 与 <code>s = s + ...</code> 在列表上不完全等价</h3>
+    <p>
+      对数字完全等价；对<b>可变序列</b>，官方文档写明 <code>s += t</code> 的效果是「用 t 的内容扩展 s」（约等于 <code>s[len(s):len(s)] = t</code>），
+      是<b>就地修改</b>。所以当另一个变量也指向同一个列表时，它会被一起改到。这一点在《列表》那份资料里会展开。
+    </p>
+
+    <h3>辨析 6：链式比较容易看错</h3>
+    <p>
+      <code>x &lt; y &gt; z</code> 是合法表达式，等价于 <code>x &lt; y and y &gt; z</code>，
+      <b>它没有比较 x 和 z</b>。官方原文专门提醒了这一点：<code>a op1 b op2 c</code> 不意味着在 a 和 c 之间做任何比较。
+      想比较 x 和 z 就明确写出来。
+    </p>
+  </section>
+
+  <section id="s7">
+    <h2>7 · 自测问题</h2>
+
+    <div class="qa">
+      <b>Q1：<code>17 / 3</code>、<code>17 // 3</code>、<code>17 % 3</code> 分别是多少？三者什么关系？</b>
+      <div class="ans">
+        依次是 <code>5.666666666666667</code>、<code>5</code>、<code>2</code>。关系是官方给出的恒等式：<code>17 == (17 // 3) * 3 + (17 % 3)</code>，即 <code>5*3+2</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q2：<code>-7 // 2</code> 和 <code>-7 % 2</code> 分别是多少？</b>
+      <div class="ans">
+        <code>-4</code> 和 <code>1</code>。整除是<b>朝负无穷取整</b>（-3.5 → -4），不是截断；取模结果的符号<b>跟随第二个操作数</b>（这里是正数 2），所以是 1。验证：<code>(-7 // 2) * 2 + (-7 % 2) == -8 + 1 == -7</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q3：<code>-3 ** 2</code> 和 <code>(-3) ** 2</code> 结果一样吗？为什么？</b>
+      <div class="ans">
+        不一样：<code>-9</code> 和 <code>9</code>。<code>**</code> 的优先级高于一元负号，所以 <code>-3 ** 2</code> 被解释为 <code>-(3 ** 2)</code>。这是官方教程脚注明确点出的坑。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q4：<code>"" or "default"</code>、<code>[] and "x"</code> 分别得到什么？</b>
+      <div class="ans">
+        <code>'default'</code> 和 <code>[]</code>。<code>or</code> 在左边为假时返回右边；<code>and</code> 在左边为假时短路并返回左边本身（空列表，不是 <code>False</code>）。这就是官方说的「返回最后被求值的操作数」。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q5：<code>a = [1, 2]</code>、<code>b = [1, 2]</code>，<code>a == b</code> 和 <code>a is b</code> 分别是什么？判断 <code>None</code> 该用哪个？</b>
+      <div class="ans">
+        <code>True</code> 和 <code>False</code>。两个列表内容一样（<code>==</code> 为真），但是两个不同对象（<code>is</code> 为假）。判断 <code>None</code> 用 <code>is</code>，即 <code>x is None</code>。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q6：<code>"1" + 1</code> 会怎样？<code>1 + 1.0</code> 呢？</b>
+      <div class="ans">
+        <code>"1" + 1</code> 抛 <code>TypeError</code>（<code>+</code> 对 str 与 int 的组合没有定义）；<code>1 + 1.0</code> 得到 <code>2.0</code>，因为混合数值类型会把「较窄」的 int 拓宽为 float。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q7：<code>lists = [[]] * 3</code> 之后执行 <code>lists[0].append(1)</code>，<code>lists</code> 变成什么？正确写法是什么？</b>
+      <div class="ans">
+        变成 <code>[[1], [1], [1]]</code>，因为三个元素是同一个列表对象的引用。正确写法是推导式 <code>[[] for i in range(3)]</code>。这是官方文档专门警告的例子。
+      </div>
+    </div>
+
+    <div class="qa">
+      <b>Q8：为什么建议用 <code>and</code> 而不是 <code>&amp;</code> 来连接条件？</b>
+      <div class="ans">
+        因为 <code>and</code> <b>短路</b>（第一个操作数为假时不再求值第二个），而 <code>&amp;</code> 会两侧都算，可能引发除零之类的意外错误。官方也明确建议优先使用 <code>and</code>、<code>or</code> 和 <code>!=</code>。
+      </div>
+    </div>
+  </section>
+
+  <section id="s8">
+    <h2>8 · 可核查参考来源</h2>
+    <table>
+      <thead><tr><th>来源</th><th>用到的内容</th><th>链接</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Python 官方文档 · 表达式（含 6.17 运算符优先级）</td>
+          <td>优先级完整表、结合性（仅 <code>**</code> 与条件表达式右结合）、算术运算符语义、<code>//</code> 向下取整、<code>%</code> 符号规则、<code>divmod</code> 恒等式、链式比较、<code>and</code>/<code>or</code> 短路与返回值、<code>is</code>/<code>is not</code>、<code>not</code> 的优先级、海象运算符 <code>:=</code></td>
+          <td><a href="https://docs.python.org/zh-cn/3/reference/expressions.html">docs.python.org/zh-cn/3/reference/expressions.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 内置类型</td>
+          <td>混合算术的「拓宽」规则、数值运算表、<code>pow(0,0)=1</code>、位运算定义与优先级、负移位计数抛 <code>ValueError</code>、序列的 <code>+</code> / <code>*</code> 与 <code>[[]] * 3</code> 警告、增强赋值 <code>+=</code> / <code>*=</code> 语义、<code>bool</code> 是 <code>int</code> 的子类、对布尔值用 <code>~</code> 自 3.12 弃用</td>
+          <td><a href="https://docs.python.org/zh-cn/3/library/stdtypes.html">docs.python.org/zh-cn/3/library/stdtypes.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方教程 · 速览（3.1 用作计算器）</td>
+          <td><code>+ - * /</code> 入门示例、<code>/</code> 总是返回浮点数、<code>17//3</code> / <code>17%3</code> 与 <code>5*3+2</code> 的对照、混合类型运算示例 <code>4 * 3.75 - 1</code>、<code>3 * "un" + "ium"</code>、<code>-3**2</code> 脚注</td>
+          <td><a href="https://docs.python.org/zh-cn/3/tutorial/introduction.html">docs.python.org/zh-cn/3/tutorial/introduction.html</a></td>
+        </tr>
+        <tr>
+          <td>Python 官方文档 · 编程常见问题</td>
+          <td><code>is</code> 等价于 <code>id(a) == id(b)</code>、「其他大多数情况下都不建议使用身份相等性测试」、不宜用 <code>is</code> 测常量值、逗号不是运算符</td>
+          <td><a href="https://docs.python.org/zh-cn/3/faq/programming.html">docs.python.org/zh-cn/3/faq/programming.html</a></td>
+        </tr>
+        <tr>
+          <td>PEP 8 · Python 代码风格指南</td>
+          <td>二元运算符两侧空格规则、不同优先级混用时的空格建议（含正误示例）、关键字参数与默认值处不加空格、带类型注解时加空格、不应用多余空格对齐</td>
+          <td><a href="https://peps.python.org/pep-0008/">peps.python.org/pep-0008/</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="s9">
+    <h2>9 · 本次生成的核查记录</h2>
+    <table>
+      <thead><tr><th>环节</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>参考资料真实性</td><td>5 条来源全部为 Python 官方文档（docs.python.org 中文版）与 PEP 官方站点，均已抓取实际页面内容核对，非凭记忆生成</td></tr>
+        <tr><td>优先级表</td><td>逐行对照官方「6.17 运算符优先级」表格转录，含表注「相同单元格内从左至右组合，只有幂运算符和条件表达式从右至左」</td></tr>
+        <tr><td>除法与取模</td><td><code>17/3</code>、<code>17//3</code>、<code>17%3</code>、<code>5*3+2</code> 数字与官方教程示例一致；<code>//</code> 的「朝负无穷取整」与四组负数示例、<code>x == (x//y)*y + (x%y)</code> 恒等式来自官方文档原文</td></tr>
+        <tr><td><code>and</code> / <code>or</code> 返回值</td><td>逐字引用官方「返回最后被求值的操作数」及其官方理由示例 <code>s or 'foo'</code></td></tr>
+        <tr><td><code>is</code> / <code>==</code></td><td>采用官方 FAQ 原句「其他大多数情况下，都不建议使用身份相等性测试，而应采用相等性测试」</td></tr>
+        <tr><td>位运算弃用提示</td><td>官方标注「自 3.12 版本弃用：对布尔值使用按位取反运算符 <code>~</code> 已弃用，并将在 Python 3.16 报错」，本文照录</td></tr>
+        <tr><td>PEP 8 空格规则</td><td>正误代码示例逐条对照 PEP 8「Other Recommendations」与「Pet Peeves」章节原文</td></tr>
+        <tr><td>代码示例</td><td>由 AI 生成，按 Python 3.12+ 语法编写；其中标注「官方原例」的代码块均逐字来自对应官方页面</td></tr>
+        <tr><td>未核实项 / 局限</td><td>本文未展开运算符重载（特殊方法 <code>__add__</code> 等）与位运算的工程用途，这两项超出「入门」深度；文中对它们的提及仅为定性描述，未引用具体文档条目</td></tr>
+      </tbody>
+    </table>
+    <blockquote class="ok">
+      <b>AI 生成 + 人工核对：</b>个人理解、类比、应用场景、自测题由 AI 撰写；
+      运算符语义、优先级表、边界行为（负数整除 / 取模符号 / 幂的右结合 / 零除）、<code>and</code> / <code>or</code> 返回值规则、<code>is</code> 与 <code>==</code> 的区别、PEP 8 空格规则均逐条对照官方文档核验，核验范围见上表。
+    </blockquote>
+  </section>
+
+  <footer>
+    <p>
+      <b>运算符</b> · Python 概念学习资料 第 1.5 份<br>
+      <a href="index.html">概念目录</a> &nbsp;·&nbsp;
+      <a href="python-learning-map.html">Python 基础学习地图</a> &nbsp;·&nbsp;
+      <a href="https://github.com/Yym113/big-data-ai">Yym113/big-data-ai</a>
+    </p>
+    <p class="meta">生成方式：concept-unpacker skill · 参考资料已逐条核验 · 2026-09-24</p>
+  </footer>
+</div>
+</body>
+</html>

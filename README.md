@@ -27,7 +27,7 @@
 
 **Skill 的运行成果**（可直接打开查看）：
 
-- 15 份 Python 概念学习资料 + 目录页 → [`learning-materials/index.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/index.html)
+- 16 份 Python 概念学习资料 + 目录页 → [`learning-materials/index.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/index.html)
 - 13 次课学习地图 → [`learning-materials/python-learning-map.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/python-learning-map.html)
 
 详细说明见下方「仓库级 Skills」一节。
@@ -50,9 +50,10 @@ big-data-ai/
 │   │   └── homework-submit/             # 作业提交与推送流程
 │   └── memory/                          # 工作日志
 ├── learning-materials/
-│   ├── index.html                       # 概念目录（15 份 Python 概念资料的总入口 + 跨概念联系）
+│   ├── index.html                       # 概念目录（16 份 Python 概念资料的总入口 + 跨概念联系）
 │   ├── python-learning-map.html         # Python 基础学习地图（13 次课 · 零基础版）
 │   ├── vars-and-types.html              # 01 变量与数据类型
+│   ├── operators.html                   # 01.5 运算符（算术/比较/逻辑/赋值/成员/身份/位运算 + 优先级 + PEP 8）
 │   ├── strings.html                     # 02 字符串
 │   ├── lists.html                       # 03 列表
 │   ├── dicts.html                       # 04 字典
@@ -117,13 +118,13 @@ big-data-ai/
 
 `learning-materials/` 目录下的概念学习资料：
 
-### Python 概念系列（15 份 + 目录页）
+### Python 概念系列（16 份 + 目录页）
 
 从 [`index.html`](https://github.com/Yym113/big-data-ai/blob/main/learning-materials/index.html) 进入 —— 它是总入口，含依赖主线图与 6 组**跨概念联系**。
 
 | 阶段 | 编号与文件 |
 |---|---|
-| 一 · 语言入门 | `01` vars-and-types · `02` strings · `03` lists · `04` dicts |
+| 一 · 语言入门 | `01` vars-and-types · `01.5` operators · `02` strings · `03` lists · `04` dicts |
 | 二 · 组织逻辑 | `05` conditionals · `06` loops · `07` functions · `08` comprehensions · `09` file-io · `10` exceptions |
 | 三 · 文本与数据实战 | `11` regex · `12` modules-and-packages · `13` numpy · `14` pandas · `15` matplotlib |
 
@@ -149,7 +150,7 @@ big-data-ai/
 ## 学习进度
 
 - [ ] 大数据基础
-- [x] Python 编程基础（学习地图 + 15 份概念资料已就绪，待按 13 次课逐节学习）
+- [x] Python 编程基础（学习地图 + 16 份概念资料已就绪，待按 13 次课逐节学习）
 - [ ] 数据处理与分析
 - [ ] 机器学习
 - [ ] 深度学习
